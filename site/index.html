@@ -37,17 +37,17 @@ input, select, textarea { font: inherit; color: inherit; }
 .sn-logo img { width: 32px; height: 33.9475px; display: block; }
 .sn-items { padding-top: 12px; display: flex; flex-direction: column; }
 .sn-item { width: 64px; height: 48px; padding-left: 20px; display: flex; align-items: center; background: #262633; }
-.sn-item img { width: 24px; height: 24px; display: block; }
+.sn-item img { width: 24px; height: 24px; display: block; filter: brightness(0) invert(1); } /* Figma shows every nav icon white; some exports come out black */
 .sn-item:hover { background: #31313f; } .sn-item.active { background: var(--olive); }
 .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.appbar { height: 64px; flex: none; display: flex; align-items: flex-start; justify-content: space-between; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.08); position: relative; z-index: 5; }
-.ab-project { height: 55px; display: flex; align-items: center; gap: 12px; padding: 20px 24px 20px 16px; font-size: 14px; line-height: 20px; color: #54545D; }
+.appbar { height: 64px; flex: none; display: flex; align-items: center; justify-content: space-between; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.08); position: relative; z-index: 5; }
+.ab-project { height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 24px 0 16px; font-size: 14px; line-height: 20px; color: #54545D; }
 .ab-pick { display: flex; align-items: center; gap: 16px; padding: 6px 8px 6px 12px; border: .75px solid #D9D8A2; border-radius: 6px; color: var(--olive); font-weight: 500; font-size: 14px; letter-spacing: .1px; }
 .ab-pick img { width: 24px; height: 24px; display: block; }
-.ab-right { height: 56px; display: flex; align-items: center; }
-.ab-lang { width: 66px; height: 56px; display: flex; align-items: center; justify-content: center; padding: 16px 14px; font-size: 12px; line-height: 1.6; letter-spacing: .4px; color: #5A5D5F; }
+.ab-right { height: 64px; display: flex; align-items: center; }
+.ab-lang { width: 66px; height: 64px; display: flex; align-items: center; justify-content: center; padding: 0 14px; font-size: 12px; line-height: 1.6; letter-spacing: .4px; color: #5A5D5F; }
 .ab-lang img { width: 20px; height: 20px; display: block; }
-.ab-user { height: 56px; display: flex; align-items: center; padding: 4px 24px; border-left: 1px solid #DCDCDD; }
+.ab-user { height: 64px; display: flex; align-items: center; padding: 0 24px; border-left: 1px solid #DCDCDD; }
 .ab-user img { width: 32px; height: 32px; border-radius: 16px; object-fit: cover; object-position: bottom; display: block; }
 .body { flex: 1; min-height: 0; display: flex; }
 
