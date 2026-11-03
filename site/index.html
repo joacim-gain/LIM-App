@@ -516,9 +516,9 @@ function details(id) {
       <div class="dr-name">${p ? p.name + ': ' : ''}${a.name}</div><div class="dr-id">ID ${a.id}</div>
       <div class="dr-link">
         <div class="dr-zones"><span class="lbl2">Linked zones</span><div class="zl2">${zoneChips || '<span class="none">Not linked to any zone</span>'}</div></div>
-        <button class="obtn" id="drAct" ${!linked && bl ? 'disabled' : ''}><span class="ms s16">${linked ? 'link_off' : 'link'}</span>${linked ? 'Unlink from this zone' : 'Link to this zone'}</button>
         <div class="dr-tl">${tlHtml(a)}<div class="lbl"><span>2026</span><span>Zone duration</span><span>2027</span></div></div>
         ${crosses(a) ? `<div class="dr-note"><span class="ms s16">warning_amber</span><span>${bl ? 'Crosses the zone duration. Turn off Lock zone duration to link it.' : 'Crosses the zone duration (02.09.2026 – 31.03.2027).'}</span></div>` : ''}
+        <button class="obtn" id="drAct" ${!linked && bl ? 'disabled' : ''}><span class="ms s16">${linked ? 'link_off' : 'link'}</span>${linked ? 'Unlink from this zone' : 'Link to this zone'}</button>
       </div>
       <div class="pn-sec">Task-Info</div>
       <div class="pn-2">${kvd('Start Date', a.start)}${kvd('End Date', a.end)}</div>
