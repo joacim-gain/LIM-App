@@ -31,16 +31,24 @@ input, select, textarea { font: inherit; color: inherit; }
 .app { display: flex; height: 100vh; }
 
 /* side nav + app bar (as Planning) */
-.sidenav { width: 64px; flex: none; background: var(--raisin-500); display: flex; flex-direction: column; z-index: 10; }
-.sn-account { width: 64px; height: 64px; background: var(--raisin-600); display: grid; place-items: center; }
-.sn-account img { width: 24px; height: 24px; }
-.sn-item { width: 64px; height: 48px; display: grid; place-items: center; color: #fff; }
+/* left nav + top nav · Figma "Left Nav" (12962:66997) and "Top Navigation" (12945:34569) */
+.sidenav { width: 64px; flex: none; background: #262633; display: flex; flex-direction: column; z-index: 10; }
+.sn-logo { height: 64px; padding: 16px; display: flex; align-items: center; }
+.sn-logo img { width: 32px; height: 33.9475px; display: block; }
+.sn-items { padding-top: 12px; display: flex; flex-direction: column; }
+.sn-item { width: 64px; height: 48px; padding-left: 20px; display: flex; align-items: center; background: #262633; }
+.sn-item img { width: 24px; height: 24px; display: block; }
 .sn-item:hover { background: #31313f; } .sn-item.active { background: var(--olive); }
 .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.appbar { height: 64px; flex: none; display: flex; align-items: center; border-bottom: 1px solid var(--border-field); padding-right: 24px; }
-.ab-project { margin-left: 24px; width: 390px; height: 64px; display: flex; align-items: center; gap: 8px; padding-right: 32px; border-right: 1px solid var(--border-field); font-weight: 500; font-size: 14px; }
-.ab-project .v { flex: 1; color: var(--olive); } .ab-project .ms { color: var(--olive); }
-.ab-lang { display: flex; align-items: center; gap: 2px; margin-right: 40px; color: var(--t2); }
+.appbar { height: 64px; flex: none; display: flex; align-items: flex-start; justify-content: space-between; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.08); position: relative; z-index: 5; }
+.ab-project { height: 55px; display: flex; align-items: center; gap: 12px; padding: 20px 24px 20px 16px; font-size: 14px; line-height: 20px; color: #54545D; }
+.ab-pick { display: flex; align-items: center; gap: 16px; padding: 6px 8px 6px 12px; border: .75px solid #D9D8A2; border-radius: 6px; color: var(--olive); font-weight: 500; font-size: 14px; letter-spacing: .1px; }
+.ab-pick img { width: 24px; height: 24px; display: block; }
+.ab-right { height: 56px; display: flex; align-items: center; }
+.ab-lang { width: 66px; height: 56px; display: flex; align-items: center; justify-content: center; padding: 16px 14px; font-size: 12px; line-height: 1.6; letter-spacing: .4px; color: #5A5D5F; }
+.ab-lang img { width: 20px; height: 20px; display: block; }
+.ab-user { height: 56px; display: flex; align-items: center; padding: 4px 24px; border-left: 1px solid #DCDCDD; }
+.ab-user img { width: 32px; height: 32px; border-radius: 16px; object-fit: cover; object-position: bottom; display: block; }
 .body { flex: 1; min-height: 0; display: flex; }
 
 /* ---------- Add Zone form (left, beside the nav) ---------- */
@@ -62,7 +70,13 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .radio { display: flex; align-items: center; gap: 8px; } .radio .ms { color: var(--olive); } .radio.off { color: var(--t3); } .radio.off .ms { color: var(--t3); }
 .dates { border: 1px solid var(--olive-200); background: var(--olive-tint); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
 .dates .row { display: grid; grid-template-columns: 1.2fr .8fr 1.2fr; gap: 12px; }
-.uline { height: 28px; border-bottom: 1px solid var(--t3); display: flex; align-items: center; font-size: 14px; } .uline .ms { color: var(--olive); margin-left: auto; }
+.uline { height: 28px; border-bottom: 1px solid var(--t3); display: flex; align-items: center; font-size: 14px; position: relative; } .uline .ms { color: var(--olive); margin-left: auto; }
+.fld > label.uline { display: flex; margin: 0; font-size: 14px; color: var(--t1); }
+.uline:focus-within { border-bottom: 2px solid var(--olive); }
+.dpick { cursor: pointer; } .dpick input { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.dur-in { flex: none; width: 4ch; min-width: 0; border: 0; outline: 0; background: none; font-size: 14px; padding: 0; -moz-appearance: textfield; }
+.dur-in::-webkit-inner-spin-button { -webkit-appearance: none; } .dur-u { color: var(--t2); }
+.radios .radio { font-size: 14px; }
 .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .obtn { height: 32px; border: 1px solid var(--olive); border-radius: 4px; color: var(--t1); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; background: #fff; }
 .obtn:hover { background: var(--olive-50); }
@@ -246,22 +260,25 @@ th.tlh { padding: 0; }
 <body>
 <div class="app">
   <aside class="sidenav">
-    <div class="sn-account"><img src="assets/avatar.png" alt=""></div>
-    <div class="sn-item"><span class="ms">dashboard</span></div>
-    <div class="sn-item active"><span class="ms">layers_clear</span></div>
-    <div class="sn-item"><span class="ms">event_note</span></div>
-    <div class="sn-item"><span class="ms">trending_up</span></div>
-    <div class="sn-item"><span class="ms">business</span></div>
-    <div class="sn-item"><span class="ms">people</span></div>
-    <div class="sn-item"><span class="ms">cloud_upload</span></div>
-    <div class="sn-item"><span class="ms">account_balance</span></div>
+    <div class="sn-logo"><img src="assets/nav/lim-mark.svg" alt="LIM"></div>
+    <nav class="sn-items">
+      <button class="sn-item" data-nav="Planning" title="Planning"><img src="assets/nav/planning.svg" alt=""></button>
+      <button class="sn-item active" data-nav="Sites" title="Sites"><img src="assets/nav/sites.svg" alt=""></button>
+      <button class="sn-item" data-nav="Analysis" title="Analysis"><img src="assets/nav/analysis.svg" alt=""></button>
+      <button class="sn-item" data-nav="Project" title="Project"><img src="assets/nav/project.svg" alt=""></button>
+      <button class="sn-item" data-nav="Team" title="Team"><img src="assets/nav/team.svg" alt=""></button>
+      <button class="sn-item" data-nav="Administrator" title="Administrator"><img src="assets/nav/admin.svg" alt=""></button>
+      <button class="sn-item" data-nav="File Upload" title="File Upload"><img src="assets/nav/upload.svg" alt=""></button>
+      <button class="sn-item" data-nav="DMS" title="DMS"><img src="assets/nav/dms.svg" alt=""></button>
+    </nav>
   </aside>
   <div class="main">
     <header class="appbar">
-      <div class="ab-project">Viewing Project: <span class="v">Big_Project</span><span class="ms s24">keyboard_arrow_down</span></div>
-      <span class="sp"></span>
-      <span class="ab-lang">EN <span class="ms s16">keyboard_arrow_down</span></span>
-      <img src="assets/amberg-logo.svg" alt="Amberg Loglay" width="129" height="28">
+      <div class="ab-project">Viewing Project:<span class="ab-pick">Aliyev Centre<img src="assets/nav/caret-project.svg" alt=""></span></div>
+      <div class="ab-right">
+        <span class="ab-lang">EN<img src="assets/nav/caret-lang.svg" alt=""></span>
+        <span class="ab-user"><img src="assets/nav/avatar.png" alt=""></span>
+      </div>
     </header>
     <div class="body">
       <!-- Add Zone form · Figma 13336:6396 left panel; Back moved beside the title; Details tab merged in as sections -->
@@ -270,16 +287,16 @@ th.tlh { padding: 0; }
         <div class="f-head"><button class="f-back" title="Back"><span class="ms">arrow_back</span></button>Add Zone</div>
         <div class="f-body">
           <div class="fld"><label>Name <span class="req">*</span></label><input class="inp" placeholder="Enter name..."></div>
-          <div class="radios"><span class="radio"><span class="ms">radio_button_checked</span>Single Shape</span><span class="radio off"><span class="ms">radio_button_unchecked</span>Multi Shape</span></div>
+          <div class="radios" id="shapeMode"><button class="radio" data-m="single"><span class="ms">radio_button_checked</span>Single Shape</button><button class="radio off" data-m="multi"><span class="ms">radio_button_unchecked</span>Multi Shape</button></div>
           <div class="grid2">
             <div class="fld"><label>Type <span class="req">*</span></label><button class="inp ph" data-dd="type" data-ph="Select type"><span class="ell">Select type</span><span class="ms">expand_more</span></button></div>
             <div class="fld"><label>Status</label><button class="inp ph" data-dd="status" data-ph="Select status"><span class="ell">Select status</span><span class="ms">expand_more</span></button></div>
           </div>
           <div class="dates">
             <div class="row">
-              <div class="fld"><label>Start Date <span class="req">*</span></label><div class="uline">02.09.2026<span class="ms s16">event</span></div></div>
-              <div class="fld"><label>Duration</label><div class="uline">210 d</div></div>
-              <div class="fld"><label>End Date <span class="req">*</span></label><div class="uline">31.03.2027<span class="ms s16">event</span></div></div>
+              <div class="fld"><label>Start Date <span class="req">*</span></label><label class="uline dpick"><span id="zStartTxt"></span><span class="ms s16">event</span><input type="date" id="zStart"></label></div>
+              <div class="fld"><label>Duration</label><label class="uline"><input class="dur-in" type="number" min="1" id="zDur"><span class="dur-u">d</span></label></div>
+              <div class="fld"><label>End Date <span class="req">*</span></label><label class="uline dpick"><span id="zEndTxt"></span><span class="ms s16">event</span><input type="date" id="zEnd"></label></div>
             </div>
             <div class="btns">
               <button class="obtn" id="linkBtn"><span class="ms s16">link</span>Link Activity <span class="badge" id="linkCount">0</span></button>
@@ -354,7 +371,7 @@ th.tlh { padding: 0; }
           </div>
           <div class="d-chips" id="chips"></div>
           <div class="d-table"><table><colgroup id="cols"></colgroup><thead><tr id="thead"></tr></thead><tbody id="rows"></tbody></table></div>
-          <div class="d-foot"><span id="lockNote"></span><span class="sp"></span><button class="tbtn" id="reset">Reset</button><button class="pbtn" id="save">Save</button></div>
+          <div class="d-foot"><span id="lockNote"></span><span class="sp"></span><button class="tbtn" id="reset">Reset</button></div>
         </section>
       </div>
     </div>
@@ -520,7 +537,7 @@ function details(id) {
       <div class="dr-link">
         <div class="dr-zones"><span class="lbl2">Linked zones</span><div class="zl2">${zoneChips || '<span class="none">Not linked to any zone</span>'}</div></div>
         <div class="dr-tl">${tlHtml(a)}<div class="lbl"><span>2026</span><span>Zone duration</span><span>2027</span></div></div>
-        ${crosses(a) ? `<div class="dr-note"><span class="ms s16">warning_amber</span><span>${bl ? 'Crosses the zone duration. Turn off Lock zone duration to link it.' : 'Crosses the zone duration (02.09.2026 – 31.03.2027).'}</span></div>` : ''}
+        ${crosses(a) ? `<div class="dr-note"><span class="ms s16">warning_amber</span><span>${bl ? 'Crosses the zone duration. Turn off Lock zone duration to link it.' : `Crosses the zone duration (${fmt(ZONE.start)} – ${fmt(ZONE.end)}).`}</span></div>` : ''}
         <button class="obtn" id="drAct" ${!linked && bl ? 'disabled' : ''}><span class="ms s16">${linked ? 'link_off' : 'link'}</span>${linked ? 'Unlink from this zone' : 'Link to this zone'}</button>
       </div>
       <div class="pn-sec">Task-Info</div>
@@ -646,10 +663,33 @@ $('#grip').addEventListener('pointerdown', e => {
 // toolbar: shape tool + border width
 $$('.tb-i[data-tool]').forEach(b => b.addEventListener('click', () => { $$('.tb-i[data-tool]').forEach(x => x.classList.toggle('on', x === b)); $('#draw').classList.toggle('circle', b.dataset.tool === 'circle'); }));
 
+// zone dates: Start / Duration / End stay in sync; changes re-check which activities cross the zone duration
+const iso = dt => new Date(dt.getTime() - dt.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const addDays = (s, n) => { const x = d(s); x.setDate(x.getDate() + n); return iso(x); };
+function showZone() {
+  $('#zStart').value = ZONE.start; $('#zEnd').value = ZONE.end; $('#zDur').value = days(ZONE.start, ZONE.end) - 1;
+  $('#zStartTxt').textContent = fmt(ZONE.start); $('#zEndTxt').textContent = fmt(ZONE.end);
+  render();
+}
+$$('.dpick').forEach(l => l.addEventListener('click', e => { e.preventDefault(); const i = l.querySelector('input'); try { i.showPicker(); } catch (_) { i.focus(); } }));
+$('#zStart').addEventListener('change', e => { if (!e.target.value) return; const n = days(ZONE.start, ZONE.end) - 1; ZONE.start = e.target.value; ZONE.end = addDays(ZONE.start, n); showZone(); });
+$('#zEnd').addEventListener('change', e => { if (!e.target.value) return; ZONE.end = e.target.value < ZONE.start ? ZONE.start : e.target.value; showZone(); });
+$('#zDur').addEventListener('change', e => { const n = Math.max(1, Math.round(+e.target.value || 1)); ZONE.end = addDays(ZONE.start, n); showZone(); });
+
+// Single Shape: a new drag replaces the shape · Multi Shape: each drag adds a shape
+let multi = false;
+$('#shapeMode').addEventListener('click', e => {
+  const b = e.target.closest('.radio'); if (!b) return;
+  multi = b.dataset.m === 'multi';
+  $$('#shapeMode .radio').forEach(r => { const on = r === b; r.classList.toggle('off', !on); r.querySelector('.ms').textContent = on ? 'radio_button_checked' : 'radio_button_unchecked'; });
+  if (!multi) $$('#stage .draw.extra').forEach(x => x.remove());
+});
+
 // draw a shape on the plan (drag); Esc cancels
 const stage = $('#stage'), draw = $('#draw');
 stage.addEventListener('pointerdown', e => {
   const r = stage.getBoundingClientRect(), x0 = (e.clientX - r.left) / r.width * 100, y0 = (e.clientY - r.top) / r.height * 100;
+  if (multi && draw.style.display !== 'none') { const keep = draw.cloneNode(); keep.removeAttribute('id'); keep.classList.add('extra'); stage.appendChild(keep); }
   stage.setPointerCapture(e.pointerId); draw.style.display = '';
   const mv = ev => { const x = (ev.clientX - r.left) / r.width * 100, y = (ev.clientY - r.top) / r.height * 100;
     Object.assign(draw.style, { left: Math.min(x, x0) + '%', top: Math.min(y, y0) + '%', width: Math.abs(x - x0) + '%', height: Math.abs(y - y0) + '%' }); };
@@ -658,7 +698,7 @@ stage.addEventListener('pointerdown', e => {
 });
 addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (menuEl) closeMenu(); else if ($('#fpop')) closeFilter(); else if (cur) closeDetails(); else draw.style.display = 'none'; });
 
-render();
+showZone();
 </script>
 <script src="../nav.js"></script>
 </body>

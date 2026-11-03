@@ -1,5 +1,5 @@
 /* LIM-App switching between modules — added to every demo page by publish.sh (working folders stay untouched).
-   Side nav: Sites icon → Site demo, Planning icon → latest Planning page. Amberg logo → start page. LIM logo favicon. */
+   Side nav: Sites icon → Site demo, Planning icon → latest Planning page. Amberg logo / LIM logo → start page. LIM logo favicon. */
 (function () {
   const PLANNING = '../planning/single-line.html'; // latest Planning page — update when Planning moves to a newer file
   const SITE = '../site/';
@@ -11,14 +11,14 @@
     return null;
   };
   document.addEventListener('click', (e) => {
-    const logo = e.target.closest('img[alt="Amberg Loglay"]');
+    const logo = e.target.closest('img[alt="Amberg Loglay"], img[alt="LIM"]');
     if (logo) { location.href = '../'; return; }
     const item = e.target.closest('.sn-item');
     const url = item && target(item);
     if (url) { e.stopPropagation(); e.preventDefault(); location.href = url; }
   }, true);
   const mark = () => {
-    document.querySelectorAll('img[alt="Amberg Loglay"]').forEach((l) => { l.style.cursor = 'pointer'; l.title = 'All modules'; });
+    document.querySelectorAll('img[alt="Amberg Loglay"], img[alt="LIM"]').forEach((l) => { l.style.cursor = 'pointer'; l.title = 'All modules'; });
     document.querySelectorAll('.sn-item').forEach((i) => { if (target(i)) i.style.cursor = 'pointer'; });
   };
   // LIM logo favicon on every module page
