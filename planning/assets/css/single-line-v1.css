@@ -1,0 +1,43 @@
+/* Single-line ribbon (prototype) · same style as the LIM ribbon row 1 (64px, #F2F2F2, 1×16 lines, 32px icon buttons) */
+.sl-bar { height: 64px; display: flex; align-items: center; gap: 4px; padding: 8px 16px; background: var(--subtle); border-bottom: 1px solid var(--border-bar); }
+.sl-items { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow: hidden; padding-left: 8px; }
+.sl-g { display: flex; align-items: center; gap: 4px; flex: none; }
+
+/* search · collapsed = search + filter icons in the LIM search box; open = the full 380px box */
+.sl-search { width: 84px; flex: none; min-width: 0; transition: width .18s ease-out; }
+.sl-search.open { width: 380px; }
+.sl-search:not(.open) input, .sl-search:not(.open) .rb-chips, .sl-search:not(.open) .rb-clear { width: 0; min-width: 0; flex: 0 0 0; padding: 0; overflow: hidden; opacity: 0; }
+.sl-search:not(.open) { cursor: pointer; }
+.sl-sicon { width: 24px; height: 24px; flex: none; display: grid; place-items: center; color: var(--t2); border-radius: 50%; }
+.sl-search:not(.open) .sl-sicon:hover { background: var(--subtle); }
+
+/* Time Period · the LIM dropdown field without its label (label in tooltip) */
+.sl-field { width: 136px; }
+
+/* dropdown icon buttons · 32px, icon + ▾, same hover as the row 1 icons */
+.sl-dd { height: 32px; display: flex; align-items: center; padding: 0 2px 0 6px; border-radius: 4px; color: var(--t2); flex: none; }
+.sl-dd .s16 { margin-left: -2px; }
+.sl-dd:hover, .sl-dd.on { background: rgba(38,38,51,.06); }
+.sl-dd.set { color: var(--olive); }          /* a non-default value is set */
+
+/* hide the top bar (maximize) */
+#slMax { color: var(--olive); }
+#slMax:hover { background: var(--olive-50); }
+.app.topbar-hidden .appbar { display: none; }
+
+/* pop-ups */
+.sl-pop { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
+.sl-lr { justify-content: space-between; height: 20px; }
+.sl-pop .rb-stepper { width: 168px; }
+.sl-vcol { display: flex; flex-direction: column; gap: 6px; }
+.sl-hdiv { height: 1px; background: var(--border-field); margin: 4px 0; }
+.menu .mi.mhead { height: 28px; font-size: 10px; line-height: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t2); cursor: default; }
+.menu .mi.mhead:hover { background: none; }
+
+/* search suggestions · LIM menu */
+.sl-sug { padding: 4px 0; }
+.sl-sh { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; font-size: 12px; color: var(--t2); }
+.sl-sh .ms { color: var(--t3); }
+.sl-k { font-size: 10px; color: var(--t3); }
+.sl-st { padding: 4px 12px; }
+.menu .mi.hi { background: var(--subtle); }

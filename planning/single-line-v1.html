@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LIM · Planning (single-line ribbon v1)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23969300'/%3E%3Cpath d='M7 10h10v4H7zm4 6h14v4H11zm-2 6h8v4H9z' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/app.css?v=20261029.2">
+<link rel="stylesheet" href="assets/css/single-line-v1.css?v=20261102.1">
+</head>
+<body>
+<div class="app" id="app">
+  <!-- Side navigation · LIM Figma "Group 97" (64px, raisin) -->
+  <aside class="sidenav">
+    <button class="sn-account" id="avatarBtn" data-tip="Max Mustermann" data-tip-pos="right"><img src="assets/fig/avatar.png" alt=""></button>
+    <nav class="sn-items" id="snItems"></nav>
+  </aside>
+  <div class="main">
+    <!-- App bar · LIM Figma "app bar/no nesting 1 ECAP 3" -->
+    <header class="appbar">
+      <button class="ab-project" id="projectBtn">
+        <span class="ab-l">Viewing Project:</span>
+        <span class="ab-v" id="projectName">Amazon</span>
+        <span class="ms s24">keyboard_arrow_down</span>
+      </button>
+      <span class="sp"></span>
+      <img class="ab-logo" src="assets/fig/amberg-logo.svg" alt="Amberg Loglay" width="129" height="28">
+    </header>
+    <div class="workspace">
+      <div class="ribbon sl" id="ribbon"></div>
+      <div class="ws-body">
+        <section class="planning" id="planning"><div class="gantt" id="gantt"></div></section>
+        <aside class="panel hidden" id="panel"></aside>
+      </div>
+    </div>
+  </div>
+</div>
+<button class="fab" id="fab" data-tip="Add activity" data-tip-pos="left"><span class="ms s24">add</span></button>
+<div id="layer"></div>
+<div id="toasts"></div>
+<div id="tip" class="tip"></div>
+<input type="file" id="importFile" class="hidden" accept=".csv,.xlsx,.xml,.mpp">
+
+<script src="assets/js/data.js?v=20261029.2"></script>
+<script src="assets/js/store.js?v=20261029.2"></script>
+<script src="assets/js/ui.js?v=20261029.2"></script>
+<script src="assets/js/time.js?v=20261029.2"></script>
+<script src="assets/js/gantt.js?v=20261029.2"></script>
+<script src="assets/js/ribbon-single-v1.js?v=20261102.1"></script>
+<script src="assets/js/panels.js?v=20261029.2"></script>
+<script src="assets/js/app.js?v=20261029.2"></script>
+</body>
+</html>
