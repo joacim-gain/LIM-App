@@ -1,5 +1,5 @@
-/* Single-line ribbon (prototype v2) · LIM ribbon row 1 style (#F2F2F2, 1×16 lines, 32px icon buttons) in a 40px row */
-.sl-bar { height: 40px; display: flex; align-items: center; gap: 4px; padding: 4px 16px; background: var(--subtle); border-bottom: 1px solid var(--border-bar); }
+/* Single-line ribbon (prototype v2) · LIM ribbon row 1 style (#F2F2F2, 1×16 lines, 32px icon buttons) in a 48px row */
+.sl-bar { height: 48px; display: flex; align-items: center; gap: 4px; padding: 8px 16px; background: var(--subtle); border-bottom: 1px solid var(--border-bar); }
 .sl-bar .rb-text { height: 32px; }
 .sl-items { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow: hidden; }
 .sl-g { display: flex; align-items: center; gap: 4px; flex: none; }
@@ -60,5 +60,11 @@
 /* Column menu · checkboxes on the left */
 .menu.sl-cols .mi .ms.ck { color: var(--olive); }
 
-/* Classic layout · row 1 is 12px shorter (52px) */
-.ribbon:not(.sl) .rb-row1 { height: 52px; }
+/* Classic layout · row 1 is 48px, like the single line */
+.ribbon:not(.sl) .rb-row1 { height: 48px; padding-top: 6px; padding-bottom: 6px; }
+
+/* Single line layout icon · only the top bar of view_agenda, centred */
+.ms.sl-one { clip-path: inset(0 0 52% 0); transform: translateY(24%); }
+
+/* menu icons sit in a 24px slot, so evened-out icon sizes keep the labels aligned */
+.menu .mi > .ms:first-child { width: 24px; text-align: center; }

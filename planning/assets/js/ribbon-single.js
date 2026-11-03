@@ -18,15 +18,26 @@ window.R = (function () {
   const switchHtml = (on, id, label) => `<button class="rb-switch ${on ? 'on' : ''}" id="${id}" role="switch" aria-checked="${on}"><i class="sw"><i></i></i><span>${label}</span></button>`;
   const iconBtn = (id, icon, tip, disabled) => `<button class="rb-ib" id="${id}" data-tip="${tip}" ${disabled ? 'disabled' : ''}>${ms(icon, 's20')}</button>`;
   // dropdown button: label + ▾, or icon + ▾ (label: null). Labelled ones show their icon instead when the row is too narrow
-  const ddBtn = (id, icon, label, tip, on) => `<button class="sl-dd ${label ? '' : 'ic'} ${on ? 'set' : ''}" id="${id}" data-tip="${esc(tip)}">${ms(icon, 's20 sl-ic')}${label ? `<span class="sl-lb">${esc(label)}</span>` : ''}${ms('arrow_drop_down', 's16')}</button>`;
+  const ddBtn = (id, icon, label, tip, on, icCls = '') => `<button class="sl-dd ${label ? '' : 'ic'} ${on ? 'set' : ''}" id="${id}" data-tip="${esc(tip)}">${ms(icon, `s20 sl-ic ${icCls}`)}${label ? `<span class="sl-lb">${esc(label)}</span>` : ''}${ms('arrow_drop_down', 's16')}</button>`;
   const LAYOUTS = [
-    ['single', 'view_stream', 'Single line'],
-    ['classic', 'view_agenda', 'Classic'],
+    // Single line = one bar of the Classic icon (view_agenda, top bar only · .sl-one)
+    ['single', 'view_agenda', 'Single line', 'sl-one'],
+    ['classic', 'view_agenda', 'Classic', ''],
   ];
   // Ribbon layout · icon dropdown showing the current layout's icon
   const curLayout = () => LAYOUTS.find((l) => l[0] === (classic() ? 'classic' : 'single'));
-  const layoutDd = () => ddBtn('slLayout', curLayout()[1], null, `Ribbon layout: ${curLayout()[2]}`);
-  const layoutMenu = (a) => UI.menu(a, [{ label: 'Ribbon layout', disabled: true }, ...LAYOUTS.map(([k, icon, t]) => ({ label: t, icon, on: curLayout()[0] === k, onClick: () => { if (curLayout()[0] !== k) setLayout(k); } }))], { width: 200, align: 'right' }) && markHead();
+  const layoutDd = () => ddBtn('slLayout', curLayout()[1], null, `Ribbon layout: ${curLayout()[2]}`, false, curLayout()[3]);
+  function layoutMenu(a) {
+    const m = UI.menu(a, [{ label: 'Ribbon layout', disabled: true }, ...LAYOUTS.map(([k, icon, t]) => ({ label: t, icon, on: curLayout()[0] === k, onClick: () => { if (curLayout()[0] !== k) setLayout(k); } }))], { width: 200, align: 'right' });
+    if (!m) return; markHead();
+    m.querySelectorAll('.mi:not([disabled])').forEach((b, i) => LAYOUTS[i][3] && b.querySelector('.ms').classList.add(LAYOUTS[i][3]));
+  }
+  // Material glyphs fill their box differently (zoom and search look small, refresh and info look right):
+  // these sizes give every 20px ribbon icon about the same visible size as refresh / info
+  const ICON_PX = { search: 23, zoom_in: 23, zoom_out: 23, filter_list: 22, sort: 22, view_column: 22, format_list_bulleted: 22, import_export: 22, view_agenda: 22, lock_outline: 20 };
+  const evenIcons = (root, sel = '.ms.s20') => root && root.querySelectorAll(sel).forEach((i) => { const px = ICON_PX[i.textContent.trim()]; if (px) i.style.fontSize = px + 'px'; });
+  // menus opened from the ribbon (⋯, Ribbon layout, search tools) get the same icon sizes
+  new MutationObserver((ms_) => ms_.forEach((m) => m.addedNodes.forEach((n) => n.nodeType === 1 && evenIcons(n, '.mi > .ms:first-child')))).observe(document.getElementById('layer'), { childList: true, subtree: true });
   const ZOOM_MAX = 200;
   const check = (id, on, label) => `<button class="rb-check ${on ? 'on' : ''}" id="${id}" role="checkbox" aria-checked="${on}"><i class="cb">${on ? ms('check', 's16') : ''}</i><span>${label}</span></button>`;
   const radio = (name, val, on, label, disabled) => `<button class="rb-radio ${on ? 'on' : ''}" data-radio="${name}" data-val="${val}" ${disabled ? 'disabled' : ''}><i class="rd"></i><span>${label}</span></button>`;
@@ -73,7 +84,7 @@ window.R = (function () {
           <div class="rb-zc">${iconBtn('rbZoomOut', 'zoom_out', `Zoom out (${v.zoom}%)`, v.zoom <= 50)}<button class="sl-fit" id="rbFit" data-tip="Back to the default view">Fit</button>${iconBtn('rbZoomIn', 'zoom_in', `Zoom in (${v.zoom}%)`, v.zoom >= ZOOM_MAX)}</div></div>
         <div class="sl-g" data-g="refresh" data-p="3"><i class="rb-vd"></i>${iconBtn('rbRefresh', 'sync', 'Refresh')}<button class="rb-ib" id="rbInfo" data-tip="Last updated on: ${fmt(LIM_DATA.LAST_UPDATED)}">${ms('info', 's20')}</button></div>
         <div class="sl-g" data-g="files" data-p="4"><i class="rb-vd"></i>${ddBtn('ddFiles', 'import_export', 'File', 'Import / Download')}</div>
-        <div class="sl-g" data-g="setdef" data-p="1">${iconBtn('rbSetDefault', 'lock', 'Set as default')}</div>
+        <div class="sl-g" data-g="setdef" data-p="1">${iconBtn('rbSetDefault', 'lock_outline', 'Set as default')}</div>
       </div>
       <button class="rb-ib hidden" id="slMore" data-tip="More options">${ms('more_horiz', 's20')}</button>
       <i class="rb-vd"></i>
@@ -85,6 +96,7 @@ window.R = (function () {
       <button class="rb-ib" id="slMax" data-tip="${p.topBarHidden ? 'Show top bar' : 'Hide top bar'}" data-tip-pos="left">${ms(p.topBarHidden ? 'expand_more' : 'expand_less', 's24')}</button>
     </div>`;
     bind();
+    evenIcons(el());
     fit();
   }
 
@@ -130,6 +142,7 @@ window.R = (function () {
     $('rbZoomIn').disabled = v.zoom >= ZOOM_MAX; $('rbZoomIn').onclick = () => zoom(10);
     $('rbZoomOut').onclick = () => zoom(-10);
     const cols = el().querySelector('[data-dd="ddCols"]'); if (cols) cols.onclick = () => colsMenu(cols);
+    evenIcons(el().querySelector('.rb-row1'));
   }).observe(document.getElementById('ribbon'), { childList: true });
 
   function setLayout(k) { S.prefs.ribbonLayout = k; S.savePrefs(); searchOpen = false; render(); G.render(); }
@@ -263,10 +276,10 @@ window.R = (function () {
       data: [{ label: `Sort By: ${lbl(SORT_OPTS, v.sortBy)}`, icon: 'sort', onClick: () => sortMenu(a) }, { label: `Group By: ${lbl(GROUP_OPTS, v.groupBy)}`, icon: 'workspaces', onClick: () => groupMenu(a) }, { label: 'Column', icon: 'view_column', onClick: () => colsMenu(a) }, { label: `Level: ${v.level}`, icon: 'format_list_bulleted', onClick: () => levelPop(a) }],
       view: [{ label: 'View modes', icon: 'visibility', onClick: () => viewPop(a) }],
       active: [{ label: 'Active Tasks', icon: 'event_available', on: v.activeToday, onClick: toggleActive }],
-      zoom: [{ label: `Zoom in (${v.zoom}%)`, icon: 'zoom_in', disabled: v.zoom >= ZOOM_MAX, onClick: () => zoom(10) }, { label: 'Zoom out', icon: 'zoom_out', disabled: v.zoom <= 50, onClick: () => zoom(-10) }, { label: 'Fit', icon: 'fit_screen', onClick: () => { v.zoom = 100; changed(); } }],
+      zoom: [{ label: `Zoom out (${v.zoom}%)`, icon: 'zoom_out', disabled: v.zoom <= 50, onClick: () => zoom(-10) }, { label: 'Fit', icon: 'fit_screen', onClick: () => { v.zoom = 100; changed(); } }, { label: `Zoom in (${v.zoom}%)`, icon: 'zoom_in', disabled: v.zoom >= ZOOM_MAX, onClick: () => zoom(10) }],
       refresh: [{ label: 'Refresh', icon: 'sync', onClick: () => refresh() }, { label: `Last updated on: ${fmt(LIM_DATA.LAST_UPDATED)}`, icon: 'info', disabled: true }],
       files: [{ label: 'Import', icon: 'publish', onClick: doImport }, { label: 'Download', icon: 'download', onClick: doDownload }],
-      setdef: [{ label: 'Set as default', icon: 'lock', onClick: setDefault }],
+      setdef: [{ label: 'Set as default', icon: 'lock_outline', onClick: setDefault }],
     };
     const items = [];
     order.filter((g) => hiddenGroups.includes(g)).forEach((g, i) => { if (i) items.push({ sep: true }); items.push(...G_ITEMS[g]); });
@@ -300,7 +313,7 @@ window.R = (function () {
       { label: 'Refresh', k: 'reload sync update', icon: 'sync', run: () => refresh() },
       { label: 'Import', k: 'upload file import', icon: 'publish', run: doImport },
       { label: 'Download', k: 'export csv download', icon: 'download', run: doDownload },
-      { label: 'Set as default', k: 'save default settings', icon: 'lock', run: setDefault },
+      { label: 'Set as default', k: 'save default settings', icon: 'lock_outline', run: setDefault },
       ...LAYOUTS.map(([k, icon, t]) => ({ label: `Ribbon layout: ${t}`, k: 'ribbon layout classic single line toolbar', icon, on: (classic() ? 'classic' : 'single') === k, run: () => setLayout(k) })),
       { label: S.prefs.topBarHidden ? 'Show top bar' : 'Hide top bar', k: 'maximize top bar header space', icon: S.prefs.topBarHidden ? 'expand_more' : 'expand_less', run: toggleTopBar },
     ];
