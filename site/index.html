@@ -104,21 +104,22 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .plan img { width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
 .draw { position: absolute; border: 2px solid #3D7CE0; background: rgba(61,124,224,.35); }
 .draw.circle { border-radius: 50%; }
-/* toolbar · kept as the live app (attachment 04) */
-.tools { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); display: flex; align-items: stretch; gap: 12px; max-width: calc(100% - 32px); }
-.toolbar { height: 56px; background: #fff; border-radius: 6px; box-shadow: var(--pop-shadow); display: flex; align-items: center; gap: 10px; padding: 0 16px 0 12px; white-space: nowrap; }
-.tb-layer { background: #F3F2D9; border: 1px solid #DCDAA8; border-radius: 4px; padding: 6px 10px; font-weight: 700; font-size: 13px; color: var(--t2); }
-.tb-i { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 4px; border: 1px solid var(--border-field); color: var(--t2); }
-.tb-i:hover { background: var(--subtle); }
-.tb-i.on { border: 2px solid var(--olive); }
-.tb-i .ms { font-size: 22px; }
-.clr { width: 20px; height: 20px; border-radius: 50%; background: #6E6E73; }
-.tb-sep { width: 1px; height: 28px; background: var(--border-field); }
-.tb-dd { height: 32px; border: 1px solid var(--border-field); border-radius: 4px; padding: 0 4px 0 10px; display: flex; align-items: center; font-size: 13px; }
-.tb-bl { color: var(--t2); font-size: 13px; }
-.tb-range { width: 104px; accent-color: var(--olive); }
-.tb-px { font-weight: 700; font-size: 13px; width: 30px; }
-.tb-text { width: 48px; background: #fff; border-radius: 6px; box-shadow: var(--pop-shadow); display: grid; place-items: center; color: var(--olive); }
+/* toolbar · Figma Component 164 (13336:6489) */
+.tools { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); max-width: calc(100% - 32px); }
+.toolbar { background: #fff; border: .75px solid #DCDCDD; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,.16); display: flex; align-items: center; gap: 12px; padding: 8px 12px; white-space: nowrap; }
+.tb-layer { background: #F2F2F2; border-radius: 4px; padding: 4px 6px; font-weight: 500; font-size: 12px; line-height: 16px; letter-spacing: .06px; color: #373741; }
+.tb-grp { display: flex; align-items: center; gap: 6px; }
+.tb-i { width: 32px; height: 32px; padding: 5px; display: grid; place-items: center; border-radius: 4px; }
+.tb-i.on { border: 1px solid var(--olive); padding: 4px; }
+.tb-i img { width: 24px; height: 24px; display: block; }
+.tb-i .crop { width: 24px; height: 24px; position: relative; overflow: hidden; }
+.tb-i .crop img { position: absolute; width: 187.5%; height: 208.33%; left: -37.5%; top: -45.83%; max-width: none; }
+.tb-i .clr { width: 20px; height: 20px; border-radius: 50%; background: #4295FF; }
+.tb-sep { width: 1px; height: 24px; background: #DFDFE1; }
+.tb-dd { height: 32px; display: flex; align-items: center; gap: 4px; padding: 5px 4px 5px 8px; border-radius: 4px; font-size: 12px; line-height: 16px; letter-spacing: .2px; color: #373741; }
+.tb-dd img { width: 16px; height: 16px; transform: rotate(-90deg); }
+.tb-border { display: flex; align-items: center; gap: 8px; padding: 0 8px; font-size: 12px; line-height: 16px; letter-spacing: .2px; color: #373741; }
+.tb-border img { width: 56px; height: 16px; display: block; }
 .zoom { position: absolute; right: 16px; bottom: 16px; background: #fff; border-radius: 4px; box-shadow: var(--pop-shadow); display: flex; flex-direction: column; }
 .zoom button { width: 32px; height: 32px; display: grid; place-items: center; color: var(--t2); border-bottom: 1px solid var(--border-row); }
 .hint { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); background: #E9E9EA; border-radius: 4px; padding: 4px 8px; display: flex; align-items: center; gap: 4px; color: var(--t1); white-space: nowrap; }
@@ -126,7 +127,7 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 
 .dock { flex: none; display: flex; flex-direction: column; background: #fff; position: relative; min-height: 0; min-width: 0; }
 .work.bottom .dock { height: var(--dock-h, 42%); border-top: 1px solid var(--border-field); box-shadow: 0 -2px 8px rgba(0,0,0,.08); }
-.work.right .dock { width: var(--dock-w, 420px); border-left: 1px solid var(--border-field); box-shadow: -2px 0 8px rgba(0,0,0,.08); }
+.work.right .dock { width: var(--dock-w, 360px); border-left: 1px solid var(--border-field); box-shadow: -2px 0 8px rgba(0,0,0,.08); }
 .work.bottom .dock.min { height: 44px !important; }
 .grip { position: absolute; z-index: 3; }
 .work.bottom .grip { left: 0; right: 0; top: -4px; height: 8px; cursor: ns-resize; }
@@ -147,7 +148,8 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .fbtn { color: var(--olive); }
 .fbadge { position: absolute; top: -2px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: #54545D; color: #fff; font-size: 10px; font-weight: 500; line-height: 16px; text-align: center; padding: 0 4px; }
 .qclr { width: 28px; height: 28px; }
-.fp-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.d-chips { flex: none; display: flex; gap: 8px; padding: 6px 16px; border-bottom: 1px solid var(--border-field); overflow-x: auto; scrollbar-width: none; }
+.d-chips .chip { flex: none; height: 26px; }
 .chip { height: 28px; padding: 0 10px; border-radius: 14px; border: 1px solid var(--border-field); background: #fff; display: flex; align-items: center; gap: 4px; color: var(--t2); }
 .chip.on { border-color: var(--olive); background: var(--olive-50); color: var(--t1); } .chip.on .ms { color: var(--olive); }
 .d-table { flex: 1; min-height: 0; overflow: auto; }
@@ -211,17 +213,19 @@ th.tlh { padding: 0; }
 
 /* ---------- activity details drawer (as Planning "Activity Details" panel) ---------- */
 .drawer { position: absolute; z-index: 20; width: 340px; background: #fff; display: flex; flex-direction: column; box-shadow: -4px 0 12px rgba(0,0,0,.12); border-left: 1px solid var(--border-field); }
-.work.right .drawer { top: 0; bottom: 0; right: var(--dock-w, 420px); }
+.work.right .drawer { top: 0; bottom: 0; right: var(--dock-w, 360px); }
 .work.bottom .drawer { right: 0; bottom: 0; height: var(--dock-h, 42%); }
 .work.bottom.has-dr .dock { padding-right: 340px; }
 .drawer[hidden] { display: none; }
-.dr-h { height: 56px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--border-field); }
+.dr-h { height: 48px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--border-field); }
 .dr-h h3 { flex: 1; margin: 0; font-weight: 500; font-size: 16px; }
 .dr-b { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 16px 20px; }
 .dr-name { font-size: 16px; line-height: 22px; font-weight: 500; }
 .dr-id { color: var(--t3); margin-top: 2px; }
 .dr-link { margin-top: 12px; padding: 12px; border: 1px solid var(--border-field); border-radius: 6px; display: flex; flex-direction: column; gap: 10px; }
-.dr-link .row { display: flex; align-items: center; gap: 8px; }
+.dr-zones .lbl2 { display: block; font-size: 12px; color: var(--t2); margin-bottom: 6px; }
+.dr-zones .zl2 { display: flex; flex-wrap: wrap; gap: 6px; } .dr-zones .none { color: var(--t3); }
+.dr-link .obtn:disabled { border-color: var(--border-field); color: var(--t4); background: #fff; cursor: default; }
 .dr-note { display: flex; gap: 6px; color: var(--t2); } .dr-note .ms { color: var(--warn); }
 .dr-tl { margin-top: 4px; }
 .dr-tl .tl { height: 28px; border-radius: 4px; background: #FAFAFA; overflow: hidden; }
@@ -310,20 +314,21 @@ th.tlh { padding: 0; }
         <section class="canvas">
           <div class="tools">
             <div class="toolbar">
-              <span class="tb-layer">Base Shape Layer</span><span class="tb-sep"></span>
+              <span class="tb-layer">Base Floor Plan</span>
+              <div class="tb-grp">
+                <button class="tb-i" data-tool="arrow" title="Arrow"><img src="assets/tb/arrow.svg" alt=""></button>
+                <button class="tb-i" data-tool="poly" title="Polygon"><span class="crop"><img src="assets/tb/polygon.png" alt=""></span></button>
+                <button class="tb-i on" data-tool="rect" title="Rectangle"><img src="assets/tb/rect.svg" alt=""></button>
+                <button class="tb-i" data-tool="circle" title="Circle"><img src="assets/tb/circle.svg" alt=""></button>
+              </div>
+              <span class="tb-sep"></span>
               <button class="tb-i" title="Colour"><span class="clr"></span></button>
-              <button class="tb-i" data-tool="arrow" title="Arrow"><span class="ms">arrow_right_alt</span></button>
-              <button class="tb-i" data-tool="poly" title="Polygon"><span class="ms">polyline</span></button>
-              <button class="tb-i on" data-tool="circle" title="Circle"><span class="ms">radio_button_unchecked</span></button>
-              <button class="tb-i" data-tool="rect" title="Rectangle"><span class="ms">crop_square</span></button>
+              <button class="tb-dd">Solid<img src="assets/tb/caret.svg" alt=""></button>
               <span class="tb-sep"></span>
-              <button class="tb-dd">Solid<span class="ms">arrow_drop_down</span></button>
-              <span class="tb-sep"></span>
-              <span class="tb-bl">Border:</span><input class="tb-range" id="border" type="range" min="1" max="12" value="4"><span class="tb-px" id="borderPx">4px</span>
+              <span class="tb-border">Border<img src="assets/tb/slider.svg" alt=""></span>
             </div>
-            <button class="tb-text" title="Add text"><span class="ms s24">format_shapes</span></button>
           </div>
-          <div class="plan"><div class="stage" id="stage"><img src="assets/floorplan.png" alt="Floor plan"><div class="draw circle" id="draw" style="left:55%;top:44%;width:16%;height:12%"></div></div></div>
+          <div class="plan"><div class="stage" id="stage"><img src="assets/floorplan.png" alt="Floor plan"><div class="draw" id="draw" style="left:55%;top:44%;width:16%;height:12%"></div></div></div>
           <div class="hint"><span class="ms s16">info</span>Press “Esc” to cancel drawing</div>
           <div class="zoom"><button><span class="ms">add</span></button><button><span class="ms">remove</span></button><button><span class="ms">fullscreen_exit</span></button><button style="border:0"><span class="ms">fullscreen</span></button></div>
         </section>
@@ -344,6 +349,7 @@ th.tlh { padding: 0; }
             <span class="ms">search</span><input id="q" placeholder="Search"><button class="ibtn qclr" id="qClear" title="Clear search" hidden><span class="ms s18">close</span></button>
             <button class="ibtn fbtn" id="fBtn" title="Filter"><span class="ms">filter_list</span><span class="fbadge" id="fBadge" hidden></span></button>
           </div>
+          <div class="d-chips" id="chips"></div>
           <div class="d-table"><table><colgroup id="cols"></colgroup><thead><tr id="thead"></tr></thead><tbody id="rows"></tbody></table></div>
           <div class="d-foot"><span id="lockNote"></span><span class="sp"></span><button class="tbtn" id="reset">Reset</button><button class="pbtn" id="save">Save</button></div>
         </section>
@@ -393,7 +399,8 @@ const fmt = s => s.split('-').reverse().join('.');
 const days = (a, b) => Math.round((d(b) - d(a)) / 864e5) + 1;
 const uniq = (key) => [...new Set(ACT.flatMap(a => [].concat(a[key]).flatMap(v => String(v).split(', '))))].filter(Boolean).sort();
 const QUICK = [['linked', 'Linked'], ['unlinked', 'Not linked'], ['inzone', 'Within zone dates']];
-const EMPTY = { linked: false, unlinked: false, inzone: false, start: '', end: '', site: '', building: '', floor: '', org: [], discipline: '', zone: '' };
+const quick = { linked: false, unlinked: false, inzone: false };
+const EMPTY = { start: '', end: '', site: '', building: '', floor: '', org: [], discipline: '', zone: '' };
 let F = { ...EMPTY, org: [] }, locked = false, cur = null;
 
 // timeline window: 2026 → end of 2027 (around the zone); bars outside are clipped at the edges
@@ -415,9 +422,9 @@ function scale() {
 function visible(a) {
   const q = $('#q').value.trim().toLowerCase();
   if (q && !(a.name.toLowerCase().includes(q) || String(a.id).includes(q))) return false;
-  if (F.linked && a.link !== 'this') return false;
-  if (F.unlinked && a.link !== 0) return false;
-  if (F.inzone && !inZone(a)) return false;
+  if (quick.linked && a.link !== 'this') return false;
+  if (quick.unlinked && a.link !== 0) return false;
+  if (quick.inzone && !inZone(a)) return false;
   if (F.start && a.end < F.start) return false;
   if (F.end && a.start > F.end) return false;
   if (F.site && a.site !== F.site) return false;
@@ -430,7 +437,7 @@ function visible(a) {
 }
 // columns appear as the panel gets wider; Activity name is always visible
 let tier = '';
-const TIERS = [[900, 'xl'], [560, 'l'], [360, 'm'], [0, 's']];
+const TIERS = [[900, 'xl'], [560, 'l'], [340, 'm'], [0, 's']];
 const has = { dur: () => tier !== 's', lk: () => tier === 'l' || tier === 'xl', xl: () => tier === 'xl' };
 function render() {
   const list = ACT.filter(visible);
@@ -459,7 +466,8 @@ function render() {
   const nb = ACT.filter(blocked).length;
   $('#lockNote').textContent = locked ? (tier === 's' ? `${nb} locked` : `Lock zone duration is on · ${nb} can't be linked`) : '';
   $('#lockNote').title = locked ? `Lock zone duration is on · ${nb} activities can't be linked` : '';
-  const fc = ['linked', 'unlinked', 'inzone', 'start', 'end', 'site', 'building', 'floor', 'discipline', 'zone'].filter(k => F[k]).length + (F.org.length ? 1 : 0);
+  $('#chips').innerHTML = QUICK.map(([k, l]) => `<button class="chip${quick[k] ? ' on' : ''}" data-q="${k}">${l}</button>`).join('');
+  const fc = ['start', 'end', 'site', 'building', 'floor', 'discipline', 'zone'].filter(k => F[k]).length + (F.org.length ? 1 : 0);
   $('#fBadge').hidden = !fc; $('#fBadge').textContent = fc; $('#fBtn').classList.toggle('on', !!fc);
   if (cur) details(cur);
 }
@@ -484,6 +492,13 @@ $('#thead').addEventListener('click', e => { if (!e.target.closest('#allCb')) re
   list.forEach(a => { const i = ACT.indexOf(a); a.link = all ? (ORIG[i] === 'this' ? 0 : ORIG[i]) : 'this'; });
   render();
 });
+$('#chips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  const k = c.dataset.q; quick[k] = !quick[k];
+  if (k === 'linked' && quick.linked) quick.unlinked = false;
+  if (k === 'unlinked' && quick.unlinked) quick.linked = false;
+  render();
+});
 $('#q').addEventListener('input', () => { $('#qClear').hidden = !$('#q').value; render(); });
 $('#qClear').addEventListener('click', () => { $('#q').value = ''; $('#qClear').hidden = true; $('#q').focus(); render(); });
 $('#reset').addEventListener('click', () => { ACT.forEach((a, i) => a.link = ORIG[i]); render(); });
@@ -495,14 +510,15 @@ function details(id) {
   const kv = (k, v) => `<div class="pn-kv"><span>${k}</span><b>${v || '-'}</b></div>`;
   const kvd = (k, s) => kv(k, `<span class="ms s16">event</span>${fmt(s)}`);
   const linked = a.link === 'this', bl = blocked(a);
-  const others = a.zones.length ? a.zones.join(', ') : '';
+  const zoneChips = (linked ? '<span class="lk this"><span class="ms s16">link</span>This zone</span>' : '') + a.zones.map(z => `<span class="lk other">${z}</span>`).join('');
   dr.innerHTML = `<div class="dr-h"><h3>Activity Details</h3><button class="ibtn" id="drClose" title="Close"><span class="ms s24">close</span></button></div>
     <div class="dr-b">
       <div class="dr-name">${p ? p.name + ': ' : ''}${a.name}</div><div class="dr-id">ID ${a.id}</div>
       <div class="dr-link">
-        <div class="row">${lkHtml(a)}<span class="sp"></span>${linked ? '<button class="tbtn" id="drAct">Unlink</button>' : `<button class="pbtn" id="drAct" ${bl ? 'disabled' : ''} style="height:32px;padding:0 16px">Link to this zone</button>`}</div>
-        ${crosses(a) ? `<div class="dr-note"><span class="ms s16">warning_amber</span><span>${bl ? 'Crosses the zone duration. Turn off Lock zone duration to link it.' : 'Crosses the zone duration (02.09.2026 – 31.03.2027).'}</span></div>` : ''}
+        <div class="dr-zones"><span class="lbl2">Linked zones</span><div class="zl2">${zoneChips || '<span class="none">Not linked to any zone</span>'}</div></div>
+        <button class="obtn" id="drAct" ${!linked && bl ? 'disabled' : ''}><span class="ms s16">${linked ? 'link_off' : 'link'}</span>${linked ? 'Unlink from this zone' : 'Link to this zone'}</button>
         <div class="dr-tl">${tlHtml(a)}<div class="lbl"><span>2026</span><span>Zone duration</span><span>2027</span></div></div>
+        ${crosses(a) ? `<div class="dr-note"><span class="ms s16">warning_amber</span><span>${bl ? 'Crosses the zone duration. Turn off Lock zone duration to link it.' : 'Crosses the zone duration (02.09.2026 – 31.03.2027).'}</span></div>` : ''}
       </div>
       <div class="pn-sec">Task-Info</div>
       <div class="pn-2">${kvd('Start Date', a.start)}${kvd('End Date', a.end)}</div>
@@ -511,7 +527,6 @@ function details(id) {
       ${kv('Phase', a.phase)}
       <div class="pn-sec">Location</div>
       ${kv('Site', a.site)}${kv('Building', a.building)}${kv('Floor', a.floors.join(', '))}
-      ${kv('Linked zones', [linked ? 'This zone' : '', others].filter(Boolean).join(', '))}
       <div class="pn-sec">Additional Details</div>
       ${kv('Organization', a.org)}${kv('Discipline', a.discipline)}
     </div>`;
@@ -572,8 +587,6 @@ function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
 function drawFilter() {
   const p = $('#fpop'), thisFloor = draft.site === ZONE.site && draft.building === ZONE.building && draft.floor === ZONE.floor;
   p.innerHTML = `<div class="fp-b">
-      <div class="fp-h">Show</div>
-      <div class="fp-chips">${QUICK.map(([k, l]) => `<button class="chip${draft[k] ? ' on' : ''}" data-q="${k}">${l}</button>`).join('')}</div>
       <div class="fp-h">Duration</div>
       <div class="fp-2"><label class="fp-date"><input type="${draft.start ? 'date' : 'text'}" id="fpStart" value="${draft.start}" placeholder="Start Date" onfocus="this.type='date'"></label><label class="fp-date"><input type="${draft.end ? 'date' : 'text'}" id="fpEnd" value="${draft.end}" placeholder="End Date" onfocus="this.type='date'"></label></div>
       <div class="fp-h">Information</div>
@@ -582,12 +595,6 @@ function drawFilter() {
         return `<div class="fp-row"><span>${l}</span><button class="fp-sel" data-k="${k}"><span class="ell">${v}</span><span class="ms">expand_more</span></button></div>`; }).join('')}
     </div>
     <div class="fp-f"><button class="tbtn" id="fpReset">Reset</button><button class="pbtn" id="fpApply" ${same(draft, F) ? 'disabled' : ''}>Apply</button></div>`;
-  $$('.fp-chips .chip').forEach(c => c.onclick = () => {
-    const k = c.dataset.q; draft[k] = !draft[k];
-    if (k === 'linked' && draft.linked) draft.unlinked = false;
-    if (k === 'unlinked' && draft.unlinked) draft.linked = false;
-    drawFilter();
-  });
   $('#fpStart').onchange = e => { draft.start = e.target.value; drawFilter(); };
   $('#fpEnd').onchange = e => { draft.end = e.target.value; drawFilter(); };
   $('#fpFloor').onclick = () => { Object.assign(draft, { site: ZONE.site, building: ZONE.building, floor: ZONE.floor }); drawFilter(); };
@@ -630,7 +637,6 @@ $('#grip').addEventListener('pointerdown', e => {
 
 // toolbar: shape tool + border width
 $$('.tb-i[data-tool]').forEach(b => b.addEventListener('click', () => { $$('.tb-i[data-tool]').forEach(x => x.classList.toggle('on', x === b)); $('#draw').classList.toggle('circle', b.dataset.tool === 'circle'); }));
-$('#border').addEventListener('input', e => { $('#borderPx').textContent = e.target.value + 'px'; $('#draw').style.borderWidth = Math.max(1, e.target.value / 2) + 'px'; });
 
 // draw a shape on the plan (drag); Esc cancels
 const stage = $('#stage'), draw = $('#draw');
