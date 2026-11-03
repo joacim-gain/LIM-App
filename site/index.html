@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LIM Site · Add Shape</title>
+<link rel="icon" type="image/svg+xml" href="assets/lim-logo.svg">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
@@ -150,6 +151,8 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .qclr { width: 28px; height: 28px; }
 .d-chips { flex: none; display: flex; gap: 8px; padding: 6px 16px; border-bottom: 1px solid var(--border-field); overflow-x: auto; scrollbar-width: none; }
 .d-chips .chip { flex: none; height: 26px; }
+/* bottom dock: chips sit in the search row, before the filter icon */
+.d-chips.inline { padding: 0; border: 0; margin-left: auto; }
 .chip { height: 28px; padding: 0 10px; border-radius: 14px; border: 1px solid var(--border-field); background: #fff; display: flex; align-items: center; gap: 4px; color: var(--t2); }
 .chip.on { border-color: var(--olive); background: var(--olive-50); color: var(--t1); } .chip.on .ms { color: var(--olive); }
 .d-table { flex: 1; min-height: 0; overflow: auto; }
@@ -622,7 +625,12 @@ $$('.sec-h').forEach(b => b.addEventListener('click', () => b.parentElement.clas
 $('#linkBtn').addEventListener('click', () => { const dk = $('#dock'); dk.classList.remove('min'); $('#minBtn .ms').textContent = 'expand_more'; dk.classList.remove('flash'); void dk.offsetWidth; dk.classList.add('flash'); $('#q').focus(); });
 
 // panel: position (right default / bottom dock), collapse, resize
-function setPos(p) { closeFilter(); $('#work').className = 'work ' + p + (cur ? ' has-dr' : ''); $('#posBottom').classList.toggle('on', p === 'bottom'); $('#posRight').classList.toggle('on', p === 'right'); $('#dock').classList.remove('min'); $('#minBtn').style.display = p === 'bottom' ? '' : 'none'; }
+function placeChips() {
+  const bottom = $('#work').classList.contains('bottom'), c = $('#chips');
+  if (bottom) $('.d-search').insertBefore(c, $('#fBtn')); else $('.d-search').after(c);
+  c.classList.toggle('inline', bottom);
+}
+function setPos(p) { closeFilter(); $('#work').className = 'work ' + p + (cur ? ' has-dr' : ''); $('#posBottom').classList.toggle('on', p === 'bottom'); $('#posRight').classList.toggle('on', p === 'right'); $('#dock').classList.remove('min'); $('#minBtn').style.display = p === 'bottom' ? '' : 'none'; placeChips(); }
 $('#posBottom').addEventListener('click', () => setPos('bottom'));
 $('#posRight').addEventListener('click', () => setPos('right'));
 $('#minBtn').addEventListener('click', () => { const m = $('#dock').classList.toggle('min'); $('#minBtn .ms').textContent = m ? 'expand_less' : 'expand_more'; });

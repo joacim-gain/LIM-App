@@ -1,5 +1,5 @@
 /* LIM-App switching between modules — added to every demo page by publish.sh (working folders stay untouched).
-   Side nav: Sites icon → Site demo, Planning icon → latest Planning page. Amberg logo → start page. */
+   Side nav: Sites icon → Site demo, Planning icon → latest Planning page. Amberg logo → start page. LIM logo favicon. */
 (function () {
   const PLANNING = '../planning/single-line.html'; // latest Planning page — update when Planning moves to a newer file
   const SITE = '../site/';
@@ -21,6 +21,10 @@
     document.querySelectorAll('img[alt="Amberg Loglay"]').forEach((l) => { l.style.cursor = 'pointer'; l.title = 'All modules'; });
     document.querySelectorAll('.sn-item').forEach((i) => { if (target(i)) i.style.cursor = 'pointer'; });
   };
+  // LIM logo favicon on every module page
+  document.querySelectorAll('link[rel~="icon"]').forEach((l) => l.remove());
+  const fav = document.createElement('link'); fav.rel = 'icon'; fav.type = 'image/svg+xml'; fav.href = '../lim-logo.svg';
+  document.head.appendChild(fav);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mark); else mark();
   setTimeout(mark, 500);
 })();
