@@ -18,6 +18,7 @@
   --menu-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; height: 100%; }
 body { font: 400 12px/16px Roboto, system-ui, sans-serif; color: var(--t1); background: #fff; -webkit-font-smoothing: antialiased; overflow: hidden; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
@@ -125,7 +126,7 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 
 .dock { flex: none; display: flex; flex-direction: column; background: #fff; position: relative; min-height: 0; min-width: 0; }
 .work.bottom .dock { height: var(--dock-h, 42%); border-top: 1px solid var(--border-field); box-shadow: 0 -2px 8px rgba(0,0,0,.08); }
-.work.right .dock { width: var(--dock-w, 540px); border-left: 1px solid var(--border-field); box-shadow: -2px 0 8px rgba(0,0,0,.08); }
+.work.right .dock { width: var(--dock-w, 420px); border-left: 1px solid var(--border-field); box-shadow: -2px 0 8px rgba(0,0,0,.08); }
 .work.bottom .dock.min { height: 44px !important; }
 .grip { position: absolute; z-index: 3; }
 .work.bottom .grip { left: 0; right: 0; top: -4px; height: 8px; cursor: ns-resize; }
@@ -140,13 +141,13 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .ibtn:hover { background: rgba(38,38,51,.06); } .ibtn.on { color: var(--olive); background: var(--olive-50); }
 .seg { display: flex; border: 1px solid var(--border-field); border-radius: 4px; overflow: hidden; }
 .seg button { width: 32px; height: 28px; display: grid; place-items: center; color: var(--t2); } .seg button.on { background: var(--olive-50); color: var(--olive); }
-.d-search { height: 48px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--border-field); color: var(--t2); }
+.d-search { height: 44px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--border-field); color: var(--t2); }
 .d-search input { border: 0; outline: 0; flex: 1; min-width: 0; font-size: 14px; background: none; }
 .d-search input::placeholder { color: var(--t3); }
 .fbtn { color: var(--olive); }
 .fbadge { position: absolute; top: -2px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: #54545D; color: #fff; font-size: 10px; font-weight: 500; line-height: 16px; text-align: center; padding: 0 4px; }
-.d-chips { flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-bottom: 1px solid var(--border-field); flex-wrap: wrap; }
-.d-chips .meta { color: var(--t3); margin-left: auto; }
+.qclr { width: 28px; height: 28px; }
+.fp-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { height: 28px; padding: 0 10px; border-radius: 14px; border: 1px solid var(--border-field); background: #fff; display: flex; align-items: center; gap: 4px; color: var(--t2); }
 .chip.on { border-color: var(--olive); background: var(--olive-50); color: var(--t1); } .chip.on .ms { color: var(--olive); }
 .d-table { flex: 1; min-height: 0; overflow: auto; }
@@ -155,21 +156,23 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 /* activity list · one clear row per activity; more info in the details drawer */
 table { border-collapse: separate; border-spacing: 0; width: 100%; table-layout: fixed; }
 th { position: sticky; top: 0; z-index: 2; background: #fff; height: 32px; text-align: left; font-weight: 500; font-size: 11px; color: var(--t2); padding: 0 8px; border-bottom: 1px solid var(--border-field); white-space: nowrap; }
-td { height: 52px; padding: 0 8px; border-bottom: 1px solid var(--border-row); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+td { height: 48px; padding: 0 8px; border-bottom: 1px solid var(--border-row); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
 tr.r:hover td { background: #FAFAFA; } tr.r.chk td { background: var(--olive-50); }
 tr.r.cur td { box-shadow: inset 0 1px 0 var(--olive), inset 0 -1px 0 var(--olive); }
 tr.r.cur td:first-child { box-shadow: inset 3px 0 0 var(--olive), inset 0 1px 0 var(--olive), inset 0 -1px 0 var(--olive); }
 tr.r.blocked td { color: var(--t4); }
-.work.right .wide { display: none; }
 .cb { color: var(--t3); vertical-align: middle; } tr.chk .cb { color: var(--olive); } .cb.on { color: var(--olive); }
 tr.blocked .cb { color: #D5D5D8; }
-.nm { font-size: 14px; line-height: 20px; display: flex; align-items: center; gap: 4px; }
+.nm { font-size: 14px; line-height: 20px; min-width: 0; display: flex; align-items: center; gap: 4px; }
 .nm b { font-weight: 500; } .nm .ms { color: var(--t3); }
 .sub .nm, .sub .meta2 { padding-left: 20px; }
 .meta2 { color: var(--t3); line-height: 16px; }
 .num { font-variant-numeric: tabular-nums; }
-.dt { font-variant-numeric: tabular-nums; line-height: 18px; }
-.dt .meta2 { display: flex; align-items: center; gap: 4px; }
+/* Duration · two lines: start, then → end (attachment 01 style) */
+.dt { font-variant-numeric: tabular-nums; font-size: 13px; line-height: 18px; }
+.dt .to { color: var(--t3); display: flex; align-items: center; gap: 4px; }
+th .cnt { color: var(--t3); font-weight: 400; margin-left: 4px; }
+#lockNote { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .warn { color: var(--warn); }
 .stat { display: inline-flex; align-items: center; gap: 6px; } .stat i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .lk { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 11px; font-weight: 500; }
@@ -208,7 +211,7 @@ th.tlh { padding: 0; }
 
 /* ---------- activity details drawer (as Planning "Activity Details" panel) ---------- */
 .drawer { position: absolute; z-index: 20; width: 340px; background: #fff; display: flex; flex-direction: column; box-shadow: -4px 0 12px rgba(0,0,0,.12); border-left: 1px solid var(--border-field); }
-.work.right .drawer { top: 0; bottom: 0; right: var(--dock-w, 540px); }
+.work.right .drawer { top: 0; bottom: 0; right: var(--dock-w, 420px); }
 .work.bottom .drawer { right: 0; bottom: 0; height: var(--dock-h, 42%); }
 .work.bottom.has-dr .dock { padding-right: 340px; }
 .drawer[hidden] { display: none; }
@@ -338,21 +341,10 @@ th.tlh { padding: 0; }
             <button class="ibtn" id="minBtn" title="Collapse" style="display:none"><span class="ms">expand_more</span></button>
           </div>
           <div class="d-search">
-            <span class="ms">search</span><input id="q" placeholder="Search">
+            <span class="ms">search</span><input id="q" placeholder="Search"><button class="ibtn qclr" id="qClear" title="Clear search" hidden><span class="ms s18">close</span></button>
             <button class="ibtn fbtn" id="fBtn" title="Filter"><span class="ms">filter_list</span><span class="fbadge" id="fBadge" hidden></span></button>
           </div>
-          <div class="d-chips">
-            <button class="chip" data-f="linked">Linked</button>
-            <button class="chip" data-f="unlinked">Not linked</button>
-            <button class="chip" data-f="inzone">Within zone dates</button>
-            <span class="meta" id="shown"></span>
-          </div>
-          <div class="d-table"><table><colgroup>
-            <col style="width:40px"><col><col style="width:172px"><col class="wide" style="width:140px"><col class="wide" style="width:120px"><col class="wide" style="width:300px"><col style="width:118px"><col style="width:44px">
-          </colgroup><thead><tr>
-            <th><span class="ms cb" id="allCb">check_box_outline_blank</span></th><th>Activity</th><th>Dates</th>
-            <th class="wide">Organization</th><th class="wide">Status</th><th class="wide tlh"><div class="tl-scale" id="scale"></div></th><th>Linked</th><th></th>
-          </tr></thead><tbody id="rows"></tbody></table></div>
+          <div class="d-table"><table><colgroup id="cols"></colgroup><thead><tr id="thead"></tr></thead><tbody id="rows"></tbody></table></div>
           <div class="d-foot"><span id="lockNote"></span><span class="sp"></span><button class="tbtn" id="reset">Reset</button><button class="pbtn" id="save">Save</button></div>
         </section>
       </div>
@@ -400,8 +392,8 @@ const d = s => new Date(s + 'T00:00:00');
 const fmt = s => s.split('-').reverse().join('.');
 const days = (a, b) => Math.round((d(b) - d(a)) / 864e5) + 1;
 const uniq = (key) => [...new Set(ACT.flatMap(a => [].concat(a[key]).flatMap(v => String(v).split(', '))))].filter(Boolean).sort();
-const quick = { linked: false, unlinked: false, inzone: false };
-const EMPTY = { start: '', end: '', site: '', building: '', floor: '', org: [], discipline: '', zone: '' };
+const QUICK = [['linked', 'Linked'], ['unlinked', 'Not linked'], ['inzone', 'Within zone dates']];
+const EMPTY = { linked: false, unlinked: false, inzone: false, start: '', end: '', site: '', building: '', floor: '', org: [], discipline: '', zone: '' };
 let F = { ...EMPTY, org: [] }, locked = false, cur = null;
 
 // timeline window: 2026 → end of 2027 (around the zone); bars outside are clipped at the edges
@@ -423,9 +415,9 @@ function scale() {
 function visible(a) {
   const q = $('#q').value.trim().toLowerCase();
   if (q && !(a.name.toLowerCase().includes(q) || String(a.id).includes(q))) return false;
-  if (quick.linked && a.link !== 'this') return false;
-  if (quick.unlinked && a.link !== 0) return false;
-  if (quick.inzone && !inZone(a)) return false;
+  if (F.linked && a.link !== 'this') return false;
+  if (F.unlinked && a.link !== 0) return false;
+  if (F.inzone && !inZone(a)) return false;
   if (F.start && a.end < F.start) return false;
   if (F.end && a.start > F.end) return false;
   if (F.site && a.site !== F.site) return false;
@@ -436,32 +428,45 @@ function visible(a) {
   if (F.zone && !a.zones.includes(F.zone)) return false;
   return true;
 }
+// columns appear as the panel gets wider; Activity name is always visible
+let tier = '';
+const TIERS = [[900, 'xl'], [560, 'l'], [360, 'm'], [0, 's']];
+const has = { dur: () => tier !== 's', lk: () => tier === 'l' || tier === 'xl', xl: () => tier === 'xl' };
 function render() {
   const list = ACT.filter(visible);
+  const cols = [[40, `<span class="ms cb" id="allCb">check_box_outline_blank</span>`], [0, `Activity<span class="cnt">${list.length}</span>`]];
+  if (has.dur()) cols.push([112, 'Duration']);
+  if (has.xl()) cols.push([140, 'Organization'], [120, 'Status'], [300, '<div class="tl-scale" id="scale"></div>']);
+  if (has.lk()) cols.push([118, 'Linked']);
+  cols.push([44, '']);
+  $('#cols').innerHTML = cols.map(([w]) => `<col${w ? ` style="width:${w}px"` : ''}>`).join('');
+  $('#thead').innerHTML = cols.map(([w, h]) => `<th${h.includes('tl-scale') ? ' class="tlh"' : ''}>${h}</th>`).join('');
+  if (has.xl()) scale();
   $('#rows').innerHTML = list.map(a => {
     const chk = a.link === 'this', bl = blocked(a), kids = ACT.some(c => c.parent === a.id);
     return `<tr class="r${chk ? ' chk' : ''}${a.parent ? ' sub' : ''}${bl ? ' blocked' : ''}${cur === a.id ? ' cur' : ''}" data-id="${a.id}" title="${bl ? 'Crosses the zone duration. Lock zone duration is on.' : ''}">
       <td><span class="ms cb">${chk ? 'check_box' : 'check_box_outline_blank'}</span></td>
-      <td><div class="nm">${kids ? '<span class="ms s16">expand_more</span>' : ''}<span class="ell">${kids ? '<b>' + a.name + '</b>' : a.name}</span></div>
-        <div class="meta2 ell">${a.id} · ${a.building} · ${a.floors.join(', ')}</div></td>
-      <td class="dt">${fmt(a.start)} – ${fmt(a.end)}<div class="meta2">${days(a.start, a.end)} d${crosses(a) ? '<span class="ms s16 warn" title="Crosses the zone duration">warning_amber</span>' : ''}</div></td>
-      <td class="wide ell">${a.org}</td>
-      <td class="wide"><span class="stat"><i style="background:${STATUS_C[a.status]}"></i>${a.status}</span></td>
-      <td class="wide" style="padding:0">${tlHtml(a)}</td>
-      <td>${lkHtml(a)}</td>
+      <td><div class="nm">${kids ? '<span class="ms s16">expand_more</span>' : ''}<span class="ell">${kids ? '<b>' + a.name + '</b>' : a.name}</span></div></td>
+      ${has.dur() ? `<td class="dt">${fmt(a.start)}<div class="to">→ ${fmt(a.end)}${crosses(a) ? '<span class="ms s16 warn" title="Crosses the zone duration">warning_amber</span>' : ''}</div></td>` : ''}
+      ${has.xl() ? `<td class="ell">${a.org}</td><td><span class="stat"><i style="background:${STATUS_C[a.status]}"></i>${a.status}</span></td><td style="padding:0">${tlHtml(a)}</td>` : ''}
+      ${has.lk() ? `<td>${lkHtml(a)}</td>` : ''}
       <td style="padding:0 4px"><button class="more" title="View details"><span class="ms">chevron_right</span></button></td>
     </tr>`;
-  }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--t3);height:80px;cursor:default">No activities match these filters.</td></tr>';
+  }).join('') || `<tr><td colspan="${cols.length}" style="text-align:center;color:var(--t3);height:80px;cursor:default;white-space:normal">No activities match these filters.</td></tr>`;
   const n = ACT.filter(a => a.link === 'this').length;
   $('#selCount').textContent = $('#linkCount').textContent = n;
-  $('#shown').textContent = `${list.length} of ${ACT.length}`;
   $('#allCb').textContent = list.length && list.every(a => a.link === 'this') ? 'check_box' : 'check_box_outline_blank';
   const nb = ACT.filter(blocked).length;
-  $('#lockNote').textContent = locked ? `Lock zone duration is on · ${nb} activit${nb === 1 ? 'y' : 'ies'} can't be linked` : '';
-  const fc = ['start', 'end', 'site', 'building', 'floor', 'discipline', 'zone'].filter(k => F[k]).length + (F.org.length ? 1 : 0);
+  $('#lockNote').textContent = locked ? (tier === 's' ? `${nb} locked` : `Lock zone duration is on · ${nb} can't be linked`) : '';
+  $('#lockNote').title = locked ? `Lock zone duration is on · ${nb} activities can't be linked` : '';
+  const fc = ['linked', 'unlinked', 'inzone', 'start', 'end', 'site', 'building', 'floor', 'discipline', 'zone'].filter(k => F[k]).length + (F.org.length ? 1 : 0);
   $('#fBadge').hidden = !fc; $('#fBadge').textContent = fc; $('#fBtn').classList.toggle('on', !!fc);
   if (cur) details(cur);
 }
+new ResizeObserver(() => {
+  const t = TIERS.find(([w]) => $('#dock').clientWidth >= w)[1];
+  if (t !== tier) { tier = t; render(); }
+}).observe($('#dock'));
 function toggle(a) {
   const i = ACT.indexOf(a);
   if (a.link === 'this') a.link = ORIG[i] === 'this' ? 0 : ORIG[i];
@@ -474,18 +479,13 @@ $('#rows').addEventListener('click', e => {
   if (e.target.closest('.more')) { cur === a.id ? closeDetails() : (cur = a.id, render()); return; }
   toggle(a);
 });
-$('#allCb').addEventListener('click', () => {
+$('#thead').addEventListener('click', e => { if (!e.target.closest('#allCb')) return;
   const list = ACT.filter(visible).filter(a => !blocked(a)), all = list.every(a => a.link === 'this');
   list.forEach(a => { const i = ACT.indexOf(a); a.link = all ? (ORIG[i] === 'this' ? 0 : ORIG[i]) : 'this'; });
   render();
 });
-$$('.chip').forEach(c => c.addEventListener('click', () => {
-  const f = c.dataset.f; quick[f] = !quick[f];
-  if (f === 'linked' && quick.linked) quick.unlinked = false;
-  if (f === 'unlinked' && quick.unlinked) quick.linked = false;
-  $$('.chip').forEach(x => x.classList.toggle('on', quick[x.dataset.f])); render();
-}));
-$('#q').addEventListener('input', render);
+$('#q').addEventListener('input', () => { $('#qClear').hidden = !$('#q').value; render(); });
+$('#qClear').addEventListener('click', () => { $('#q').value = ''; $('#qClear').hidden = true; $('#q').focus(); render(); });
 $('#reset').addEventListener('click', () => { ACT.forEach((a, i) => a.link = ORIG[i]); render(); });
 $('#lock').addEventListener('click', () => { locked = !locked; $('#lock').classList.toggle('on', locked); render(); });
 
@@ -572,6 +572,8 @@ function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
 function drawFilter() {
   const p = $('#fpop'), thisFloor = draft.site === ZONE.site && draft.building === ZONE.building && draft.floor === ZONE.floor;
   p.innerHTML = `<div class="fp-b">
+      <div class="fp-h">Show</div>
+      <div class="fp-chips">${QUICK.map(([k, l]) => `<button class="chip${draft[k] ? ' on' : ''}" data-q="${k}">${l}</button>`).join('')}</div>
       <div class="fp-h">Duration</div>
       <div class="fp-2"><label class="fp-date"><input type="${draft.start ? 'date' : 'text'}" id="fpStart" value="${draft.start}" placeholder="Start Date" onfocus="this.type='date'"></label><label class="fp-date"><input type="${draft.end ? 'date' : 'text'}" id="fpEnd" value="${draft.end}" placeholder="End Date" onfocus="this.type='date'"></label></div>
       <div class="fp-h">Information</div>
@@ -580,6 +582,12 @@ function drawFilter() {
         return `<div class="fp-row"><span>${l}</span><button class="fp-sel" data-k="${k}"><span class="ell">${v}</span><span class="ms">expand_more</span></button></div>`; }).join('')}
     </div>
     <div class="fp-f"><button class="tbtn" id="fpReset">Reset</button><button class="pbtn" id="fpApply" ${same(draft, F) ? 'disabled' : ''}>Apply</button></div>`;
+  $$('.fp-chips .chip').forEach(c => c.onclick = () => {
+    const k = c.dataset.q; draft[k] = !draft[k];
+    if (k === 'linked' && draft.linked) draft.unlinked = false;
+    if (k === 'unlinked' && draft.unlinked) draft.linked = false;
+    drawFilter();
+  });
   $('#fpStart').onchange = e => { draft.start = e.target.value; drawFilter(); };
   $('#fpEnd').onchange = e => { draft.end = e.target.value; drawFilter(); };
   $('#fpFloor').onclick = () => { Object.assign(draft, { site: ZONE.site, building: ZONE.building, floor: ZONE.floor }); drawFilter(); };
@@ -615,7 +623,7 @@ $('#grip').addEventListener('pointerdown', e => {
   const work = $('#work'), r = work.getBoundingClientRect(), bottom = work.classList.contains('bottom');
   $('#dock').classList.remove('min'); $('#grip').setPointerCapture(e.pointerId);
   const mv = ev => bottom ? work.style.setProperty('--dock-h', Math.max(160, Math.min(r.height - 220, r.bottom - ev.clientY)) + 'px')
-                          : work.style.setProperty('--dock-w', Math.max(420, Math.min(r.width - 360, r.right - ev.clientX)) + 'px');
+                          : work.style.setProperty('--dock-w', Math.max(250, Math.min(r.width - 360, r.right - ev.clientX)) + 'px');
   const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); };
   addEventListener('pointermove', mv); addEventListener('pointerup', up);
 });
@@ -636,7 +644,7 @@ stage.addEventListener('pointerdown', e => {
 });
 addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (menuEl) closeMenu(); else if ($('#fpop')) closeFilter(); else if (cur) closeDetails(); else draw.style.display = 'none'; });
 
-scale(); render();
+render();
 </script>
 <script src="../nav.js"></script>
 </body>
