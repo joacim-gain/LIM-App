@@ -114,13 +114,15 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .work { flex: 1; min-width: 0; display: flex; position: relative; }
 .work.right { flex-direction: row; } .work.bottom { flex-direction: column; }
 .canvas { flex: 1; min-height: 0; min-width: 0; position: relative; background: var(--canvas); overflow: hidden; }
-.plan { position: absolute; inset: 80px 40px 48px; display: grid; place-items: center; }
-.plan .stage { position: relative; height: 100%; aspect-ratio: 702/696; max-width: 100%; }
+.plan { position: absolute; top: 80px; bottom: 48px; left: 0; right: 0; }
+/* floor plan, toolbar and hint are centred in the free space left of the activity panel;
+   once they reach the left edge they stop there and the panel slides over them (layoutCanvas) */
+.plan .stage { position: absolute; top: 0; left: var(--plan-x, 40px); height: 100%; aspect-ratio: 702/696; }
 .plan img { width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
 .draw { position: absolute; border: 2px solid #3D7CE0; background: rgba(61,124,224,.35); }
 .draw.circle { border-radius: 50%; }
 /* toolbar · Figma Component 164 (13336:6489) */
-.tools { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 2; } /* centred like the floor plan; the activity panel and drawer slide over it */
+.tools { position: absolute; top: 16px; left: var(--tb-x, 16px); z-index: 2; }
 .toolbar { background: #fff; border: .75px solid #DCDCDD; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,.16); display: flex; align-items: center; gap: 12px; padding: 8px 12px; white-space: nowrap; }
 .tb-layer { background: #F2F2F2; border-radius: 4px; padding: 4px 6px; font-weight: 500; font-size: 12px; line-height: 16px; letter-spacing: .06px; color: #373741; }
 .tb-grp { display: flex; align-items: center; gap: 6px; }
@@ -137,7 +139,7 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .tb-border img { width: 56px; height: 16px; display: block; }
 .zoom { position: absolute; right: 16px; bottom: 16px; background: #fff; border-radius: 4px; box-shadow: var(--pop-shadow); display: flex; flex-direction: column; }
 .zoom button { width: 32px; height: 32px; display: grid; place-items: center; color: var(--t2); border-bottom: 1px solid var(--border-row); }
-.hint { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); background: #E9E9EA; border-radius: 4px; padding: 4px 8px; display: flex; align-items: center; gap: 4px; color: var(--t1); white-space: nowrap; }
+.hint { position: absolute; left: var(--hint-x, 16px); bottom: 16px; background: #E9E9EA; border-radius: 4px; padding: 4px 8px; display: flex; align-items: center; gap: 4px; color: var(--t1); white-space: nowrap; }
 .hint .ms { color: var(--t2); }
 
 /* the activity panel floats over the canvas: the floor plan and toolbar never move when it opens, resizes or minimizes */
@@ -702,6 +704,15 @@ $('#grip').addEventListener('pointerdown', e => {
   const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); };
   addEventListener('pointermove', mv); addEventListener('pointerup', up);
 });
+
+// centre floor plan, toolbar and hint in the space left of the activity panel; never past the left edge
+function layoutCanvas() {
+  const c = $('.canvas'), free = c.clientWidth - ($('#work').classList.contains('right') ? $('#dock').offsetWidth : 0);
+  [['#stage', '--plan-x', 40], ['.tools', '--tb-x', 16], ['.hint', '--hint-x', 16]]
+    .forEach(([sel, v, min]) => c.style.setProperty(v, Math.max(min, (free - $(sel).offsetWidth) / 2) + 'px'));
+}
+const canvasRO = new ResizeObserver(layoutCanvas);
+canvasRO.observe($('.canvas')); canvasRO.observe($('#dock'));
 
 // toolbar: shape tool + border width
 $$('.tb-i[data-tool]').forEach(b => b.addEventListener('click', () => { $$('.tb-i[data-tool]').forEach(x => x.classList.toggle('on', x === b)); $('#draw').classList.toggle('circle', b.dataset.tool === 'circle'); }));
