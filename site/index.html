@@ -163,10 +163,12 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .fbtn { color: var(--olive); }
 .fbadge { position: absolute; top: -2px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: #54545D; color: #fff; font-size: 10px; font-weight: 500; line-height: 16px; text-align: center; padding: 0 4px; }
 .qclr { width: 28px; height: 28px; }
-.d-chips { flex: none; display: flex; gap: 8px; padding: 6px 16px; border-bottom: 1px solid var(--border-field); overflow-x: auto; scrollbar-width: none; }
-.d-chips .chip { flex: none; height: 26px; }
+/* "Within zone dates" quick filter sits in the search row; below 355px it becomes an icon toggle */
+.d-chips { flex: none; display: flex; }
+.d-chips .chip { flex: none; height: 26px; white-space: nowrap; }
+.d-chips .chip.icon { width: 32px; height: 32px; padding: 0; justify-content: center; border-radius: 4px; border-color: transparent; color: var(--t2); }
+.d-chips .chip.icon.on { border-color: var(--olive); }
 /* bottom dock: chips sit in the search row, before the filter icon */
-.d-chips.inline { padding: 0; border: 0; margin-left: auto; }
 .chip { height: 28px; padding: 0 10px; border-radius: 14px; border: 1px solid var(--border-field); background: #fff; display: flex; align-items: center; gap: 4px; color: var(--t2); }
 .chip.on { border-color: var(--olive); background: var(--olive-50); color: var(--t1); } .chip.on .ms { color: var(--olive); }
 .d-table { flex: 1; min-height: 0; overflow: auto; }
@@ -188,9 +190,10 @@ tr.blocked .cb { color: #D5D5D8; }
 .meta2 { color: var(--t3); line-height: 16px; }
 .num { font-variant-numeric: tabular-nums; }
 /* Duration · two lines: start, then → end (attachment 01 style) */
-.dt { font-variant-numeric: tabular-nums; font-size: 12px; line-height: 16px; }
+.dt { font-variant-numeric: tabular-nums; font-size: 12px; line-height: 16px; padding: 0 6px; }
+.dt.x .to { color: #C46F00; } /* crosses the zone duration (same orange as the warning) */
 .dt .to { display: inline-flex; } .dt .arr { color: var(--t3); margin: 0 4px; }
-.dt .to { color: var(--t3); display: flex; align-items: center; gap: 4px; }
+.dt .to { color: var(--t3); display: flex; align-items: center; gap: 2px; white-space: nowrap; }
 th .cnt { color: var(--t3); font-weight: 400; margin-left: 4px; }
 #lockNote { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .warn { color: var(--warn); }
@@ -386,9 +389,8 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
           </div>
           <div class="d-search">
             <span class="ms">search</span><input id="q" placeholder="Search"><button class="ibtn qclr" id="qClear" title="Clear search" hidden><span class="ms s18">close</span></button>
-            <button class="ibtn fbtn" id="fBtn" title="Filter"><span class="ms">filter_list</span><span class="fbadge" id="fBadge" hidden></span></button>
+            <div class="d-chips" id="chips"></div><button class="ibtn fbtn" id="fBtn" title="Filter"><span class="ms">filter_list</span><span class="fbadge" id="fBadge" hidden></span></button>
           </div>
-          <div class="d-chips" id="chips"></div>
           <div class="d-table"><table><colgroup id="cols"></colgroup><thead><tr id="thead"></tr></thead><tbody id="rows"></tbody></table></div>
           <div class="d-foot"><span id="lockNote"></span><span class="sp"></span><button class="tbtn" id="reset">Reset</button></div>
         </section>
@@ -437,8 +439,8 @@ const d = s => new Date(s + 'T00:00:00');
 const fmt = s => s.split('-').reverse().join('.');
 const days = (a, b) => Math.round((d(b) - d(a)) / 864e5) + 1;
 const uniq = (key) => [...new Set(ACT.flatMap(a => [].concat(a[key]).flatMap(v => String(v).split(', '))))].filter(Boolean).sort();
-const QUICK = [['linked', 'Linked'], ['unlinked', 'Not linked'], ['inzone', 'Within zone dates']];
-const quick = { linked: false, unlinked: false, inzone: false };
+
+const quick = { inzone: false };
 const EMPTY = { start: '', end: '', site: '', building: '', floor: '', org: [], discipline: '', zone: '' };
 let F = { ...EMPTY, org: [] }, locked = false, cur = null;
 
@@ -459,8 +461,6 @@ function scale() {
 function visible(a) {
   const q = $('#q').value.trim().toLowerCase();
   if (q && !(a.name.toLowerCase().includes(q) || String(a.id).includes(q))) return false;
-  if (quick.linked && a.link !== 'this') return false;
-  if (quick.unlinked && a.link !== 0) return false;
   if (quick.inzone && !inZone(a)) return false;
   if (F.start && a.end < F.start) return false;
   if (F.end && a.start > F.end) return false;
@@ -475,13 +475,13 @@ function visible(a) {
 // columns appear as the panel gets wider; the Activity name (one line) is always visible and grows up to 360px
 let tier = '';
 const NAME_MAX = 360;
-const TIERS = [[742, 'l'], [355, 'm'], [0, 's']]; // l = 36 + 360 name + 150 Duration + 36 + room for the timeline
+const TIERS = [[712, 'l'], [355, 'm'], [0, 's']]; // l = 36 + 360 name + 160 Duration + 36 + at least ~120px timeline; the timeline is the column that shrinks
 const has = { dur: () => tier !== 's', tl: () => tier === 'l' };
 const open = { this: true, rest: true }; // group expand/collapse
 function render() {
   const list = ACT.filter(visible);
   const cols = [[36, `<span class="ms cb" id="allCb">check_box_outline_blank</span>`], [has.tl() ? NAME_MAX : 0, `Activity<span class="cnt">${list.length}</span>`]];
-  if (has.dur()) cols.push([150, 'Duration']);
+  if (has.dur()) cols.push([160, 'Duration']);
   if (has.tl()) cols.push([0, '<div class="tl-scale" id="scale"></div>']);
   cols.push([36, '']);
   $('#cols').innerHTML = cols.map(([w]) => `<col${w ? ` style="width:${w}px"` : ''}>`).join('');
@@ -492,7 +492,7 @@ function render() {
     return `<tr class="r${chk ? ' chk' : ''}${a.parent ? ' sub' : ''}${bl ? ' blocked' : ''}${cur === a.id ? ' cur' : ''}" data-id="${a.id}" title="${bl ? 'Crosses the zone duration. Lock zone duration is on.' : ''}">
       <td><span class="ms cb">${chk ? 'check_box' : 'check_box_outline_blank'}</span></td>
       <td><div class="nm" title="${a.name}">${kids ? '<span class="ms s16">expand_more</span>' : ''}<span class="ell">${kids ? '<b>' + a.name + '</b>' : a.name}</span></div></td>
-      ${has.dur() ? `<td class="dt"><span class="to">${fmt(a.start)}<span class="arr">→</span>${fmt(a.end)}${crosses(a) ? '<span class="ms s16 warn" title="Crosses the zone duration">warning_amber</span>' : ''}</span></td>` : ''}
+      ${has.dur() ? `<td class="dt${crosses(a) ? ' x' : ''}"${crosses(a) ? ' title="Crosses the zone duration"' : ''}><span class="to">${fmt(a.start)}<span class="arr">→</span>${fmt(a.end)}</span></td>` : ''}
       ${has.tl() ? `<td style="padding:0">${tlHtml(a)}</td>` : ''}
       <td style="padding:0 2px"><button class="more" title="View details"><span class="ms">chevron_right</span></button></td>
     </tr>`;
@@ -509,7 +509,9 @@ function render() {
   const nb = ACT.filter(blocked).length;
   $('#lockNote').textContent = locked ? (tier === 's' ? `${nb} locked` : `Lock zone duration is on · ${nb} can't be linked`) : '';
   $('#lockNote').title = locked ? `Lock zone duration is on · ${nb} activities can't be linked` : '';
-  $('#chips').innerHTML = QUICK.map(([k, l]) => `<button class="chip${quick[k] ? ' on' : ''}" data-q="${k}">${l}</button>`).join('');
+  $('#chips').innerHTML = tier === 's'
+    ? `<button class="chip icon${quick.inzone ? ' on' : ''}" title="Within zone dates"><span class="ms s18">date_range</span></button>`
+    : `<button class="chip${quick.inzone ? ' on' : ''}" title="Show only activities within the zone dates">Within zone dates</button>`;
   const fc = ['start', 'end', 'site', 'building', 'floor', 'discipline', 'zone'].filter(k => F[k]).length + (F.org.length ? 1 : 0);
   $('#fBadge').hidden = !fc; $('#fBadge').textContent = fc; $('#fBtn').classList.toggle('on', !!fc);
   if (cur) details(cur);
@@ -537,11 +539,8 @@ $('#thead').addEventListener('click', e => { if (!e.target.closest('#allCb')) re
   render();
 });
 $('#chips').addEventListener('click', e => {
-  const c = e.target.closest('.chip'); if (!c) return;
-  const k = c.dataset.q; quick[k] = !quick[k];
-  if (k === 'linked' && quick.linked) quick.unlinked = false;
-  if (k === 'unlinked' && quick.unlinked) quick.linked = false;
-  render();
+  if (!e.target.closest('.chip')) return;
+  quick.inzone = !quick.inzone; render();
 });
 $('#q').addEventListener('input', () => { $('#qClear').hidden = !$('#q').value; render(); });
 $('#qClear').addEventListener('click', () => { $('#q').value = ''; $('#qClear').hidden = true; $('#q').focus(); render(); });
@@ -685,12 +684,7 @@ $$('.sec-h').forEach(b => b.addEventListener('click', () => b.parentElement.clas
 $('#linkBtn').addEventListener('click', () => { const dk = $('#dock'); dk.classList.remove('min'); $('#minBtn .ms').textContent = 'expand_more'; dk.classList.remove('flash'); void dk.offsetWidth; dk.classList.add('flash'); $('#q').focus(); });
 
 // panel: position (right default / bottom dock), collapse, resize
-function placeChips() {
-  const bottom = $('#work').classList.contains('bottom'), c = $('#chips');
-  if (bottom) $('.d-search').insertBefore(c, $('#fBtn')); else $('.d-search').after(c);
-  c.classList.toggle('inline', bottom);
-}
-function setPos(p) { closeFilter(); $('#work').className = 'work ' + p + (cur ? ' has-dr' : ''); $('#posBottom').classList.toggle('on', p === 'bottom'); $('#posRight').classList.toggle('on', p === 'right'); $('#dock').classList.remove('min'); $('#minBtn').style.display = p === 'bottom' ? '' : 'none'; placeChips(); }
+function setPos(p) { closeFilter(); $('#work').className = 'work ' + p + (cur ? ' has-dr' : ''); $('#posBottom').classList.toggle('on', p === 'bottom'); $('#posRight').classList.toggle('on', p === 'right'); $('#dock').classList.remove('min'); $('#minBtn').style.display = p === 'bottom' ? '' : 'none'; }
 $('#posBottom').addEventListener('click', () => setPos('bottom'));
 $('#posRight').addEventListener('click', () => setPos('right'));
 $('#minBtn').addEventListener('click', () => { const m = $('#dock').classList.toggle('min'); $('#minBtn .ms').textContent = m ? 'expand_less' : 'expand_more'; });
@@ -698,7 +692,7 @@ $('#grip').addEventListener('pointerdown', e => {
   const work = $('#work'), r = work.getBoundingClientRect(), bottom = work.classList.contains('bottom');
   $('#dock').classList.remove('min'); $('#grip').setPointerCapture(e.pointerId);
   const mv = ev => bottom ? work.style.setProperty('--dock-h', Math.max(160, Math.min(r.height - 220, r.bottom - ev.clientY)) + 'px')
-                          : work.style.setProperty('--dock-w', Math.max(250, Math.min(r.width - 360, r.right - ev.clientX)) + 'px');
+                          : work.style.setProperty('--dock-w', Math.max(360, Math.min(r.width - 360, r.right - ev.clientX)) + 'px');
   const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); };
   addEventListener('pointermove', mv); addEventListener('pointerup', up);
 });
