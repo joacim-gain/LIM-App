@@ -457,7 +457,9 @@ function visible(a) {
 }
 // columns appear as the panel gets wider; Activity name is always visible
 let tier = '';
-const TIERS = [[900, 'xl'], [560, 'l'], [340, 'm'], [0, 's']];
+// a tier is used only when its fixed columns still leave about 200px for the Activity name
+const ACT_MIN = 160;
+const TIERS = [[1080, 'xl'], [560, 'l'], [340, 'm'], [0, 's']];
 const has = { dur: () => tier !== 's', lk: () => tier === 'l' || tier === 'xl', xl: () => tier === 'xl' };
 function render() {
   const list = ACT.filter(visible);
@@ -467,6 +469,7 @@ function render() {
   if (has.lk()) cols.push([118, 'Linked']);
   cols.push([44, '']);
   $('#cols').innerHTML = cols.map(([w]) => `<col${w ? ` style="width:${w}px"` : ''}>`).join('');
+  $('#cols').parentElement.style.minWidth = cols.reduce((n, [w]) => n + w, 0) + ACT_MIN + 'px'; // Activity name never collapses
   $('#thead').innerHTML = cols.map(([w, h]) => `<th${h.includes('tl-scale') ? ' class="tlh"' : ''}>${h}</th>`).join('');
   if (has.xl()) scale();
   $('#rows').innerHTML = list.map(a => {
@@ -491,8 +494,8 @@ function render() {
   $('#fBadge').hidden = !fc; $('#fBadge').textContent = fc; $('#fBtn').classList.toggle('on', !!fc);
   if (cur) details(cur);
 }
-new ResizeObserver(() => {
-  const t = TIERS.find(([w]) => $('#dock').clientWidth >= w)[1];
+new ResizeObserver(([e]) => {
+  const t = TIERS.find(([w]) => e.contentRect.width >= w)[1]; // content width: excludes the space under the details drawer
   if (t !== tier) { tier = t; render(); }
 }).observe($('#dock'));
 function toggle(a) {
