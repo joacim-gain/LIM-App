@@ -120,7 +120,7 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .draw { position: absolute; border: 2px solid #3D7CE0; background: rgba(61,124,224,.35); }
 .draw.circle { border-radius: 50%; }
 /* toolbar · Figma Component 164 (13336:6489) */
-.tools { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); max-width: calc(100% - 32px); }
+.tools { position: absolute; top: 16px; left: 40px; z-index: 2; } /* stays in place like the floor plan; panels/drawer may overlap it */
 .toolbar { background: #fff; border: .75px solid #DCDCDD; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,.16); display: flex; align-items: center; gap: 12px; padding: 8px 12px; white-space: nowrap; }
 .tb-layer { background: #F2F2F2; border-radius: 4px; padding: 4px 6px; font-weight: 500; font-size: 12px; line-height: 16px; letter-spacing: .06px; color: #373741; }
 .tb-grp { display: flex; align-items: center; gap: 6px; }
@@ -163,11 +163,9 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .fbtn { color: var(--olive); }
 .fbadge { position: absolute; top: -2px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: #54545D; color: #fff; font-size: 10px; font-weight: 500; line-height: 16px; text-align: center; padding: 0 4px; }
 .qclr { width: 28px; height: 28px; }
-/* "Within zone dates" quick filter sits in the search row; below 355px it becomes an icon toggle */
+/* "Within zone dates" quick filter sits in the search row; hidden when the panel is narrower than 360px */
 .d-chips { flex: none; display: flex; }
 .d-chips .chip { flex: none; height: 26px; white-space: nowrap; }
-.d-chips .chip.icon { width: 32px; height: 32px; padding: 0; justify-content: center; border-radius: 4px; border-color: transparent; color: var(--t2); }
-.d-chips .chip.icon.on { border-color: var(--olive); }
 /* bottom dock: chips sit in the search row, before the filter icon */
 .chip { height: 28px; padding: 0 10px; border-radius: 14px; border: 1px solid var(--border-field); background: #fff; display: flex; align-items: center; gap: 4px; color: var(--t2); }
 .chip.on { border-color: var(--olive); background: var(--olive-50); color: var(--t1); } .chip.on .ms { color: var(--olive); }
@@ -474,7 +472,8 @@ function visible(a) {
 // columns appear as the panel gets wider; the Activity name (one line) is always visible and grows up to 360px
 let tier = '';
 const NAME_MAX = 360;
-const TIERS = [[712, 'l'], [355, 'm'], [0, 's']]; // l = 36 + 360 name + 160 Duration + 36 + at least ~120px timeline; the timeline is the column that shrinks
+const TIERS = [[712, 'l'], [350, 'm'], [0, 's']]; // l = 36 + 360 name + 160 Duration + 36 + at least ~120px timeline; the timeline is the column that shrinks
+let wide = true; // panel >= 360px: room for the "Within zone dates" chip
 const has = { dur: () => tier !== 's', tl: () => tier === 'l' };
 const open = { this: true, rest: true }; // group expand/collapse
 function render() {
@@ -508,16 +507,14 @@ function render() {
   const nb = ACT.filter(blocked).length;
   $('#lockNote').textContent = locked ? (tier === 's' ? `${nb} locked` : `Lock zone duration is on · ${nb} can't be linked`) : '';
   $('#lockNote').title = locked ? `Lock zone duration is on · ${nb} activities can't be linked` : '';
-  $('#chips').innerHTML = tier === 's'
-    ? `<button class="chip icon${quick.inzone ? ' on' : ''}" title="Within zone dates"><span class="ms s18">date_range</span></button>`
-    : `<button class="chip${quick.inzone ? ' on' : ''}" title="Show only activities within the zone dates">Within zone dates</button>`;
+  $('#chips').innerHTML = wide ? `<button class="chip${quick.inzone ? ' on' : ''}" title="Show only activities within the zone dates">Within zone dates</button>` : '';
   const fc = ['start', 'end', 'site', 'building', 'floor', 'discipline', 'zone'].filter(k => F[k]).length + (F.org.length ? 1 : 0);
   $('#fBadge').hidden = !fc; $('#fBadge').textContent = fc; $('#fBtn').classList.toggle('on', !!fc);
   if (cur) details(cur);
 }
 new ResizeObserver(([e]) => {
-  const t = TIERS.find(([w]) => e.contentRect.width >= w)[1]; // content width: excludes the space under the details drawer
-  if (t !== tier) { tier = t; render(); }
+  const W = e.contentRect.width, t = TIERS.find(([w]) => W >= w)[1], wd = W >= 359; // content width: excludes the space under the details drawer
+  if (t !== tier || wd !== wide) { tier = t; wide = wd; render(); }
 }).observe($('#dock'));
 function toggle(a) {
   const i = ACT.indexOf(a);
@@ -691,7 +688,7 @@ $('#grip').addEventListener('pointerdown', e => {
   const work = $('#work'), r = work.getBoundingClientRect(), bottom = work.classList.contains('bottom');
   $('#dock').classList.remove('min'); $('#grip').setPointerCapture(e.pointerId);
   const mv = ev => bottom ? work.style.setProperty('--dock-h', Math.max(160, Math.min(r.height - 220, r.bottom - ev.clientY)) + 'px')
-                          : work.style.setProperty('--dock-w', Math.max(360, Math.min(r.width - 360, r.right - ev.clientX)) + 'px');
+                          : work.style.setProperty('--dock-w', Math.max(240, Math.min(r.width - 360, r.right - ev.clientX)) + 'px');
   const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); };
   addEventListener('pointermove', mv); addEventListener('pointerup', up);
 });
