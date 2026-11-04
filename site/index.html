@@ -191,9 +191,8 @@ tr.blocked .cb { color: #D5D5D8; }
 .num { font-variant-numeric: tabular-nums; }
 /* Duration · two lines: start, then → end (attachment 01 style) */
 .dt { font-variant-numeric: tabular-nums; font-size: 12px; line-height: 16px; padding: 0 6px; }
-.dt.x .to { color: #C46F00; } /* crosses the zone duration (same orange as the warning) */
-.dt .to { display: inline-flex; } .dt .arr { color: var(--t3); margin: 0 4px; }
-.dt .to { color: var(--t3); display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+.dt .to { display: inline-flex; } .dt .arr { color: #BEBEC2; margin: 0 2px; }
+.dt .to { color: var(--t1); display: flex; align-items: center; gap: 0; white-space: nowrap; }
 th .cnt { color: var(--t3); font-weight: 400; margin-left: 4px; }
 #lockNote { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .warn { color: var(--warn); }
@@ -492,7 +491,7 @@ function render() {
     return `<tr class="r${chk ? ' chk' : ''}${a.parent ? ' sub' : ''}${bl ? ' blocked' : ''}${cur === a.id ? ' cur' : ''}" data-id="${a.id}" title="${bl ? 'Crosses the zone duration. Lock zone duration is on.' : ''}">
       <td><span class="ms cb">${chk ? 'check_box' : 'check_box_outline_blank'}</span></td>
       <td><div class="nm" title="${a.name}">${kids ? '<span class="ms s16">expand_more</span>' : ''}<span class="ell">${kids ? '<b>' + a.name + '</b>' : a.name}</span></div></td>
-      ${has.dur() ? `<td class="dt${crosses(a) ? ' x' : ''}"${crosses(a) ? ' title="Crosses the zone duration"' : ''}><span class="to">${fmt(a.start)}<span class="arr">→</span>${fmt(a.end)}</span></td>` : ''}
+      ${has.dur() ? `<td class="dt"${crosses(a) ? ' title="Crosses the zone duration"' : ''}><span class="to">${fmt(a.start)}<span class="arr">→</span>${fmt(a.end)}</span></td>` : ''}
       ${has.tl() ? `<td style="padding:0">${tlHtml(a)}</td>` : ''}
       <td style="padding:0 2px"><button class="more" title="View details"><span class="ms">chevron_right</span></button></td>
     </tr>`;
