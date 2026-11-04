@@ -175,15 +175,14 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 /* activity list · one clear row per activity; more info in the details drawer */
 table { border-collapse: separate; border-spacing: 0; width: 100%; table-layout: fixed; }
 th { position: sticky; top: 0; z-index: 2; background: #fff; height: 32px; text-align: left; font-weight: 500; font-size: 11px; color: var(--t2); padding: 0 8px; border-bottom: 1px solid var(--border-field); white-space: nowrap; }
-td { height: 48px; padding: 0 8px; border-bottom: 1px solid var(--border-row); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+td { height: 44px; padding: 0 8px; border-bottom: 1px solid var(--border-row); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
 tr.r:hover td { background: #FAFAFA; } tr.r.chk td { background: var(--olive-50); }
 tr.r.cur td { box-shadow: inset 0 1px 0 var(--olive), inset 0 -1px 0 var(--olive); }
 tr.r.cur td:first-child { box-shadow: inset 3px 0 0 var(--olive), inset 0 1px 0 var(--olive), inset 0 -1px 0 var(--olive); }
 tr.r.blocked td { color: var(--t4); }
 .cb { color: var(--t3); vertical-align: middle; } tr.chk .cb { color: var(--olive); } .cb.on { color: var(--olive); }
 tr.blocked .cb { color: #D5D5D8; }
-.nm { font-size: 14px; line-height: 18px; min-width: 0; display: flex; align-items: center; gap: 4px; white-space: normal; }
-.nm .ell { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; word-break: break-word; }
+.nm { font-size: 14px; line-height: 20px; min-width: 0; max-width: 344px; display: flex; align-items: center; gap: 4px; }
 .nm b { font-weight: 500; } .nm .ms { color: var(--t3); }
 .sub .nm, .sub .meta2 { padding-left: 20px; }
 .meta2 { color: var(--t3); line-height: 16px; }
@@ -200,14 +199,21 @@ th .cnt { color: var(--t3); font-weight: 400; margin-left: 4px; }
 .lk.this { background: var(--olive); color: #fff; } .lk.other { background: #E6E6E8; color: var(--t2); } .lk.none { color: var(--t3); font-weight: 400; padding: 0; }
 .more { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--t3); }
 .more:hover, tr.cur .more { background: rgba(150,147,0,.14); color: var(--olive); }
-.tl { position: relative; height: 52px; }
+.tl { position: relative; height: 44px; }
 .tl .zone { position: absolute; top: 0; bottom: 0; background: rgba(150,147,0,.12); border-left: 1px dashed var(--olive); border-right: 1px dashed var(--olive); }
 .tl .today { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dotted var(--today); }
-.tl .bar { position: absolute; top: 21px; height: 10px; border-radius: 2px; background: var(--bar-track); overflow: hidden; }
+.tl .bar { position: absolute; top: 17px; height: 10px; border-radius: 2px; background: var(--bar-track); overflow: hidden; }
 .tl .bar i { position: absolute; inset: 0 auto 0 0; background: var(--bar-fill); }
 .tl .bar.out { outline: 1px solid var(--warn); }
 th.tlh { padding: 0; }
 .tl-scale { position: relative; height: 32px; } .tl-scale span { position: absolute; top: 9px; font-size: 10px; color: var(--t3); transform: translateX(-50%); }
+/* groups: Linked to this zone, then Other activities (collapsible) */
+tr.grp td { height: 32px; padding: 0 8px; background: #F7F7F7; color: var(--t2); font-size: 11px; font-weight: 500; letter-spacing: .8px; text-transform: uppercase; border-bottom: 1px solid var(--border-field); }
+tr.grp td .ms { vertical-align: -4px; margin-right: 6px; color: var(--t3); text-transform: none; letter-spacing: 0; }
+tr.grp td .n { color: var(--t3); font-weight: 400; margin-left: 6px; letter-spacing: 0; }
+tr.grp.this td { background: var(--olive-50); color: #6E6B00; } tr.grp.this td .ms { color: var(--olive); }
+tr.grp:hover td { filter: brightness(.98); }
+tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--olive); }
 .tl-scale .zl { position: absolute; top: 0; height: 4px; background: var(--olive); }
 .d-foot { height: 56px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-top: 1px solid var(--border-field); color: var(--t2); }
 .flash { animation: fl 1s ease-out; } @keyframes fl { 0% { box-shadow: inset 0 0 0 3px var(--olive); } 100% { box-shadow: none; } }
@@ -444,8 +450,6 @@ const crosses = a => a.start < ZONE.start || a.end > ZONE.end;
 const blocked = a => locked && crosses(a) && a.link !== 'this';
 const tlHtml = a => `<div class="tl"><div class="zone" style="left:${pct(ZONE.start)}%;width:${pct(ZONE.end) - pct(ZONE.start)}%"></div><div class="today" style="left:${pct(today)}%"></div>
   <div class="bar${crosses(a) ? ' out' : ''}" style="left:${pct(a.start)}%;width:${Math.max(.6, pct(a.end) - pct(a.start))}%"><i style="width:${a.progress}%"></i></div></div>`;
-const lkHtml = a => a.link === 'this' ? '<span class="lk this"><span class="ms s16">link</span>This zone</span>'
-  : a.link ? `<span class="lk other">${a.link} other zone${a.link > 1 ? 's' : ''}</span>` : '<span class="lk none">Not linked</span>';
 
 function scale() {
   let h = `<div class="zl" style="left:${pct(ZONE.start)}%;width:${pct(ZONE.end) - pct(ZONE.start)}%"></div>`;
@@ -468,34 +472,37 @@ function visible(a) {
   if (F.zone && !a.zones.includes(F.zone)) return false;
   return true;
 }
-// columns appear as the panel gets wider; Activity name is always visible
+// columns appear as the panel gets wider; the Activity name (one line) is always visible and grows up to 360px
 let tier = '';
-// a tier is used only when its fixed columns still leave room for the Activity name (2 lines, never below ACT_MIN)
-const ACT_MIN = 100;
-const TIERS = [[1100, 'xl'], [560, 'l'], [355, 'm'], [0, 's']];
-const has = { dur: () => tier !== 's', lk: () => tier === 'l' || tier === 'xl', xl: () => tier === 'xl' };
+const NAME_MAX = 360;
+const TIERS = [[742, 'l'], [355, 'm'], [0, 's']]; // l = 36 + 360 name + 150 Duration + 36 + room for the timeline
+const has = { dur: () => tier !== 's', tl: () => tier === 'l' };
+const open = { this: true, rest: true }; // group expand/collapse
 function render() {
   const list = ACT.filter(visible);
-  const cols = [[36, `<span class="ms cb" id="allCb">check_box_outline_blank</span>`], [0, `Activity<span class="cnt">${list.length}</span>`]];
+  const cols = [[36, `<span class="ms cb" id="allCb">check_box_outline_blank</span>`], [has.tl() ? NAME_MAX : 0, `Activity<span class="cnt">${list.length}</span>`]];
   if (has.dur()) cols.push([150, 'Duration']);
-  if (has.xl()) cols.push([140, 'Organization'], [120, 'Status'], [300, '<div class="tl-scale" id="scale"></div>']);
-  if (has.lk()) cols.push([118, 'Linked']);
+  if (has.tl()) cols.push([0, '<div class="tl-scale" id="scale"></div>']);
   cols.push([36, '']);
   $('#cols').innerHTML = cols.map(([w]) => `<col${w ? ` style="width:${w}px"` : ''}>`).join('');
-  $('#cols').parentElement.style.minWidth = cols.reduce((n, [w]) => n + w, 0) + ACT_MIN + 'px'; // Activity name never collapses
   $('#thead').innerHTML = cols.map(([w, h]) => `<th${h.includes('tl-scale') ? ' class="tlh"' : ''}>${h}</th>`).join('');
-  if (has.xl()) scale();
-  $('#rows').innerHTML = list.map(a => {
+  if (has.tl()) scale();
+  const rowHtml = a => {
     const chk = a.link === 'this', bl = blocked(a), kids = ACT.some(c => c.parent === a.id);
     return `<tr class="r${chk ? ' chk' : ''}${a.parent ? ' sub' : ''}${bl ? ' blocked' : ''}${cur === a.id ? ' cur' : ''}" data-id="${a.id}" title="${bl ? 'Crosses the zone duration. Lock zone duration is on.' : ''}">
       <td><span class="ms cb">${chk ? 'check_box' : 'check_box_outline_blank'}</span></td>
       <td><div class="nm" title="${a.name}">${kids ? '<span class="ms s16">expand_more</span>' : ''}<span class="ell">${kids ? '<b>' + a.name + '</b>' : a.name}</span></div></td>
       ${has.dur() ? `<td class="dt"><span class="to">${fmt(a.start)}<span class="arr">→</span>${fmt(a.end)}${crosses(a) ? '<span class="ms s16 warn" title="Crosses the zone duration">warning_amber</span>' : ''}</span></td>` : ''}
-      ${has.xl() ? `<td class="ell">${a.org}</td><td><span class="stat"><i style="background:${STATUS_C[a.status]}"></i>${a.status}</span></td><td style="padding:0">${tlHtml(a)}</td>` : ''}
-      ${has.lk() ? `<td>${lkHtml(a)}</td>` : ''}
+      ${has.tl() ? `<td style="padding:0">${tlHtml(a)}</td>` : ''}
       <td style="padding:0 2px"><button class="more" title="View details"><span class="ms">chevron_right</span></button></td>
     </tr>`;
-  }).join('') || `<tr><td colspan="${cols.length}" style="text-align:center;color:var(--t3);height:80px;cursor:default;white-space:normal">No activities match these filters.</td></tr>`;
+  };
+  const mine = list.filter(a => a.link === 'this'), rest = list.filter(a => a.link !== 'this');
+  const grp = (k, label, items) => `<tr class="grp${k === 'this' ? ' this' : ''}" data-g="${k}"><td colspan="${cols.length}"><span class="ms s18">${open[k] ? 'expand_more' : 'chevron_right'}</span>${label}<span class="n">${items.length}</span></td></tr>`
+    + (open[k] ? items.map(rowHtml).join('') : '');
+  $('#rows').innerHTML = list.length
+    ? (mine.length ? grp('this', 'Linked to this zone', mine) : '') + (rest.length ? grp('rest', 'Other activities', rest) : '')
+    : `<tr><td colspan="${cols.length}" style="text-align:center;color:var(--t3);height:80px;cursor:default;white-space:normal">No activities match these filters.</td></tr>`;
   const n = ACT.filter(a => a.link === 'this').length;
   $('#selCount').textContent = $('#linkCount').textContent = n;
   $('#allCb').textContent = list.length && list.every(a => a.link === 'this') ? 'check_box' : 'check_box_outline_blank';
@@ -518,6 +525,7 @@ function toggle(a) {
   render();
 }
 $('#rows').addEventListener('click', e => {
+  const g = e.target.closest('tr.grp'); if (g) { open[g.dataset.g] = !open[g.dataset.g]; render(); return; }
   const tr = e.target.closest('tr.r'); if (!tr) return;
   const a = ACT.find(x => x.id == tr.dataset.id);
   if (e.target.closest('.more')) { cur === a.id ? closeDetails() : (cur = a.id, render()); return; }
