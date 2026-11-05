@@ -276,11 +276,15 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
 .vchip { background: #EEEEF0; color: var(--t1); border-radius: 4px; padding: 0 6px; font-size: 12px; line-height: 20px; }
 .vchip.site { background: var(--olive-50); color: #6E6B00; }
 .dr-none { color: var(--t3); font-size: 13px; padding: 4px 0; }
-/* Notes: read-only cards (live app note card: author, organization, title, body, time) */
-.dr-ncard { border: 1px solid var(--border-field); border-radius: 4px; padding: 12px 16px 14px; margin-top: 8px; font-size: 14px; line-height: 20px; color: var(--t1); }
-.dr-ncard .who { display: grid; grid-template-columns: 24px 1fr; column-gap: 24px; align-items: center; margin-bottom: 12px; }
-.dr-ncard .who .ms { color: var(--t1); } .dr-ncard .who b { font-weight: 500; display: block; } .dr-ncard .who span { display: block; }
-.dr-ncard .ttl { font-weight: 500; margin-bottom: 6px; } .dr-ncard p { margin: 0 0 6px; word-break: break-word; } .dr-ncard time { display: block; }
+/* Notes: short note (read-only, same look as the live app note field without editing) then the author card */
+.dr-nread { margin-top: 4px; font-size: 13px; line-height: 20px; color: var(--t1); }
+.dr-nread .t { padding: 8px 0; border-bottom: 1px solid var(--border-field); }
+.dr-nread .x { margin-top: 10px; padding: 8px; border: 1px solid var(--border-field); border-radius: 4px; background: #FAFAFA; word-break: break-word; }
+/* author card (live app): person icon | name + organization, then title, body, time */
+.dr-ncard { border: 1px solid var(--border-field); border-radius: 4px; padding: 16px 16px 14px; margin-top: 16px; font-size: 14px; line-height: 20px; color: #3C3C46; }
+.dr-ncard .who { display: grid; grid-template-columns: 20px 1fr; column-gap: 40px; align-items: center; margin-bottom: 14px; }
+.dr-ncard .who .ms { font-size: 20px; color: #3C3C46; } .dr-ncard .who b { font-weight: 500; display: block; line-height: 24px; } .dr-ncard .who span { display: block; line-height: 24px; margin-top: 4px; }
+.dr-ncard .ttl { font-weight: 500; } .dr-ncard p { margin: 16px 0 0; word-break: break-word; } .dr-ncard time { display: block; margin-top: 16px; }
 .pn-sec { margin: 22px 0 2px; font-weight: 500; font-size: 13px; letter-spacing: 1.25px; text-transform: uppercase; color: var(--t3); }
 </style>
 </head>
@@ -552,7 +556,8 @@ $('#reset').addEventListener('click', () => { ACT.forEach((a, i) => a.link = ORI
 $('#lock').addEventListener('click', () => { locked = !locked; $('#lock').classList.toggle('on', locked); render(); });
 
 // ---------- activity details drawer ----------
-// sample note (live app note card)
+// sample short note (read-only) + author card (live app)
+const NOTE = { title: 'Site access', text: 'Deliveries through Gate B only, 07:00–16:00.' };
 const NOTES = [{ by: 'Peas Third Contact', org: 'Ambuja Cement', title: 'Test', text: 'Test Body', at: '23 May 2026, 13:23:31' }];
 function details(id) {
   const a = ACT.find(x => x.id === id), p = a.parent && ACT.find(x => x.id === a.parent), dr = $('#drawer');
@@ -591,7 +596,8 @@ function details(id) {
       <div class="pn-sec">Predecessors</div><div class="dr-none">No dependencies</div>
       <div class="pn-sec">Successors</div><div class="dr-none">No dependencies</div>
       <div class="pn-sec">Notes</div>
-      ${notes.length ? notes.map(n => `<div class="dr-ncard"><div class="who"><span class="ms s24">person</span><div><b>${n.by}</b><span>${n.org}</span></div></div><div class="ttl">${n.title}</div><p>${n.text}</p><time>${n.at}</time></div>`).join('') : '<div class="dr-none">No notes</div>'}
+      <div class="dr-nread"><div class="t">${NOTE.title}</div><div class="x">${NOTE.text}</div></div>
+      ${notes.map(n => `<div class="dr-ncard"><div class="who"><span class="ms">person</span><div><b>${n.by}</b><span>${n.org}</span></div></div><div class="ttl">${n.title}</div><p>${n.text}</p><time>${n.at}</time></div>`).join('')}
     </div>`;
   dr.hidden = false; $('#work').classList.add('has-dr');
   $('#drClose').onclick = closeDetails;
