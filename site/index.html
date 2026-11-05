@@ -276,12 +276,11 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
 .vchip { background: #EEEEF0; color: var(--t1); border-radius: 4px; padding: 0 6px; font-size: 12px; line-height: 20px; }
 .vchip.site { background: var(--olive-50); color: #6E6B00; }
 .dr-none { color: var(--t3); font-size: 13px; padding: 4px 0; }
-.dr-noteitem { padding: 6px 0; border-bottom: 1px solid var(--border-row); } .dr-noteitem b { font-weight: 500; } .dr-noteitem p { margin: 2px 0 0; color: var(--t2); }
-.dr-ntitle { width: 100%; border: 0; border-bottom: 1px solid var(--border-field); outline: 0; padding: 8px 0; font-size: 13px; margin-top: 4px; }
-.dr-ntitle:focus { border-bottom-color: var(--olive); }
-.dr-ntext { width: 100%; margin-top: 10px; min-height: 64px; resize: vertical; border: 1px solid var(--border-field); border-radius: 4px; padding: 8px; outline: 0; font-size: 12px; }
-.dr-ntext:focus { border-color: var(--olive); }
-.dr-ncount { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; color: var(--t3); }
+/* Notes: read-only cards (live app note card: author, organization, title, body, time) */
+.dr-ncard { border: 1px solid var(--border-field); border-radius: 4px; padding: 12px 16px 14px; margin-top: 8px; font-size: 14px; line-height: 20px; color: var(--t1); }
+.dr-ncard .who { display: grid; grid-template-columns: 24px 1fr; column-gap: 24px; align-items: center; margin-bottom: 12px; }
+.dr-ncard .who .ms { color: var(--t1); } .dr-ncard .who b { font-weight: 500; display: block; } .dr-ncard .who span { display: block; }
+.dr-ncard .ttl { font-weight: 500; margin-bottom: 6px; } .dr-ncard p { margin: 0 0 6px; word-break: break-word; } .dr-ncard time { display: block; }
 .pn-sec { margin: 22px 0 2px; font-weight: 500; font-size: 13px; letter-spacing: 1.25px; text-transform: uppercase; color: var(--t3); }
 </style>
 </head>
@@ -553,6 +552,8 @@ $('#reset').addEventListener('click', () => { ACT.forEach((a, i) => a.link = ORI
 $('#lock').addEventListener('click', () => { locked = !locked; $('#lock').classList.toggle('on', locked); render(); });
 
 // ---------- activity details drawer ----------
+// sample note (live app note card)
+const NOTES = [{ by: 'Peas Third Contact', org: 'Ambuja Cement', title: 'Test', text: 'Test Body', at: '23 May 2026, 13:23:31' }];
 function details(id) {
   const a = ACT.find(x => x.id === id), p = a.parent && ACT.find(x => x.id === a.parent), dr = $('#drawer');
   // live app "Activity Details": label | value rows; Site / Building / Floor can hold several values → one chip each
@@ -561,6 +562,7 @@ function details(id) {
   const chips = (list, cls = '') => list.length ? `<span class="vchips">${list.map(x => `<span class="vchip ${cls}">${x}</span>`).join('')}</span>` : '';
   const multi = v => (Array.isArray(v) ? v : String(v || '').split(', ')).filter(Boolean);
   const linked = a.link === 'this', bl = blocked(a);
+  const notes = a.notes || NOTES; // read-only here: notes are written in Planning
   const zoneChips = (linked ? '<span class="lk this"><span class="ms s16">link</span>This zone</span>' : '') + a.zones.map(z => `<span class="lk other">${z}</span>`).join('');
   dr.innerHTML = `<div class="dr-h"><h3>Activity Details</h3><button class="ibtn" id="drClose" title="Close"><span class="ms s24">close</span></button></div>
     <div class="dr-b">
@@ -589,17 +591,11 @@ function details(id) {
       <div class="pn-sec">Predecessors</div><div class="dr-none">No dependencies</div>
       <div class="pn-sec">Successors</div><div class="dr-none">No dependencies</div>
       <div class="pn-sec">Notes</div>
-      ${(a.notes || []).map(n => `<div class="dr-noteitem"><b>${n.title || 'Note'}</b><p>${n.text}</p></div>`).join('')}
-      <input class="dr-ntitle" id="nTitle" placeholder="Title">
-      <textarea class="dr-ntext" id="nText" placeholder="Write here..." maxlength="250"></textarea>
-      <div class="dr-ncount"><span id="nCount">0 / 250</span><button class="pbtn" id="nSave" disabled style="height:32px;padding:0 16px">Save</button></div>
+      ${notes.length ? notes.map(n => `<div class="dr-ncard"><div class="who"><span class="ms s24">person</span><div><b>${n.by}</b><span>${n.org}</span></div></div><div class="ttl">${n.title}</div><p>${n.text}</p><time>${n.at}</time></div>`).join('') : '<div class="dr-none">No notes</div>'}
     </div>`;
   dr.hidden = false; $('#work').classList.add('has-dr');
   $('#drClose').onclick = closeDetails;
   const b = $('#drAct'); if (b) b.onclick = () => toggle(a);
-  const t = $('#nText'), sv = $('#nSave');
-  t.oninput = () => { $('#nCount').textContent = `${t.value.length} / 250`; sv.disabled = !t.value.trim(); };
-  sv.onclick = () => { (a.notes = a.notes || []).push({ title: $('#nTitle').value.trim(), text: t.value.trim() }); details(id); };
 }
 function closeDetails() { cur = null; $('#drawer').hidden = true; $('#work').classList.remove('has-dr'); render(); }
 
