@@ -143,6 +143,14 @@ window.R = (function () {
     $('rbZoomOut').onclick = () => zoom(-10);
     const cols = el().querySelector('[data-dd="ddCols"]'); if (cols) cols.onclick = () => colsMenu(cols);
     evenIcons(el().querySelector('.rb-row1'));
+    const step = el().querySelector('#gLevel .rb-stepper'), maxL = S.maxDepth();
+    if (step) {
+      // compact 1–5 quick picks to the left of the − / + box, in one row under LEVEL
+      const row = document.createElement('div'); row.className = 'sl-lvrow';
+      row.innerHTML = `<div class="sl-lvq">${[1, 2, 3, 4, 5].map(n => `<button data-lv="${n}" class="${v.level === n ? 'on' : ''}" ${n > maxL ? 'disabled' : ''}>${n}</button>`).join('')}</div>`;
+      step.before(row); row.append(step); $('gLevel').classList.add('sl-lvwide');
+      el().querySelectorAll('#gLevel [data-lv]').forEach(b => b.onclick = () => { G.applyLevel(+b.dataset.lv); G.render(); render(); });
+    }
   }).observe(document.getElementById('ribbon'), { childList: true });
 
   function setLayout(k) { S.prefs.ribbonLayout = k; S.savePrefs(); searchOpen = false; render(); G.render(); }
@@ -241,7 +249,9 @@ window.R = (function () {
     const draw = () => {
       const v = V(), maxL = S.maxDepth();
       pop.querySelector('#lvPop').innerHTML = `<div class="rb-lr sl-lr"><span class="ovl">Level</span><button class="rb-lbtn" id="lvAll">${v.level >= maxL ? 'Collapse all' : 'Expand all'}</button></div>
+        <div class="sl-lvq">${[1, 2, 3, 4, 5].map(n => `<button data-lv="${n}" class="${v.level === n ? 'on' : ''}" ${n > maxL ? 'disabled' : ''}>${n}</button>`).join('')}</div>
         <div class="rb-stepper"><button id="lvMinus" data-tip="Level down" ${v.level <= 0 ? 'disabled' : ''}>${ms('remove', 's20')}</button><span>${v.level}</span><button id="lvPlus" data-tip="Level up" ${v.level >= maxL ? 'disabled' : ''}>${ms('add', 's20')}</button></div>`;
+      pop.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { G.applyLevel(+b.dataset.lv); G.render(); draw(); });
       pop.querySelector('#lvMinus').onclick = () => { G.applyLevel(Math.max(0, V().level - 1)); G.render(); draw(); };
       pop.querySelector('#lvPlus').onclick = () => { G.applyLevel(Math.min(S.maxDepth(), V().level + 1)); G.render(); draw(); };
       pop.querySelector('#lvAll').onclick = () => { if (V().level >= S.maxDepth()) G.collapseAll(); else G.expandAll(); G.render(); draw(); };
