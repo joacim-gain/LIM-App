@@ -3,6 +3,8 @@
 .sl-bar .rb-text { height: 32px; }
 .sl-items { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow: hidden; }
 .sl-g { display: flex; align-items: center; gap: 4px; flex: none; }
+.sl-sec { margin-left: auto; padding-left: 16px; }
+.sl-bar .rb-switch { padding: 0 6px; }
 
 /* search · closed = a 32px icon button like Filter next to it; open = the 380px LIM search box */
 .sl-search { width: 32px; height: 32px; flex: none; min-width: 0; padding-left: 6px; gap: 6px; background: none; border-color: transparent; transition: width .18s ease-out, background-color .18s; }
@@ -86,32 +88,42 @@
 .rx-zoom .rb-zc { display: flex; align-items: center; height: 30px; }
 .rx-zoom .rb-ib { height: 30px; }
 .rx-lv .rx-step { height: 28px; }
+.rx .rx-zoom .lbt { font-size: 10px; }
 /* view modes shown directly: two columns of two */
 .rx-vm { display: grid; grid-template-columns: auto auto; column-gap: 16px; row-gap: 6px; padding: 0 6px; align-items: center; }
 .rx-vm .rb-radios { height: 18px; gap: 8px; }
-.rx-viewdd, .rx-filedd { display: none; }
+.rx-viewdd, .rx-lvdd { display: none; }
+.rx-lvfull { display: flex; align-items: center; gap: 2px; }
+.rx-t .ddc { display: none; }
+/* left and right groups; the right one sits at the right end */
+.rx-side { display: flex; align-items: center; gap: 4px; flex: none; }
+.rx-sec { margin-left: auto; padding-left: 16px; }
 /* search: a field on wide screens */
-.rx .sl-search.open, .rx:not(.s-search) .sl-search { width: 240px; height: 32px; padding-left: 8px; background: #fff; border-color: var(--border-bar); cursor: text; }
-.rx:not(.s-search) .sl-search input, .rx:not(.s-search) .sl-search .rb-clear:not(.hidden) { width: auto; flex: 1; opacity: 1; padding: 0; }
-.rx:not(.s-search) .sl-search .rb-clear:not(.hidden) { flex: none; width: 24px; }
-.rx:not(.s-search) .sl-sicon { pointer-events: none; }
+.rx .sl-search.open, .rx:not(.s1) .sl-search { width: 240px; height: 32px; padding-left: 8px; background: #fff; border-color: var(--border-bar); cursor: text; }
+.rx:not(.s1) .sl-search input, .rx:not(.s1) .sl-search .rb-clear:not(.hidden) { width: auto; flex: 1; opacity: 1; padding: 0; }
+.rx:not(.s1) .sl-search .rb-clear:not(.hidden) { flex: none; width: 24px; }
+.rx:not(.s1) .sl-sicon { pointer-events: none; }
 .rx .sl-search.open { width: 280px; }
-.rx.s-search .sl-search:not(.open) { width: auto; height: 48px; padding: 0; border-color: transparent; background: none; }
-.rx.s-search .sl-search:not(.open) .sl-sicon { height: 48px; min-width: 44px; padding: 4px 6px; flex-direction: column; gap: 4px; border-radius: 4px; }
-.rx.s-search .sl-search:not(.open) .sl-sicon:hover { background: rgba(38,38,51,.06); }
+.rx.s1 .sl-search:not(.open) { width: auto; height: 48px; padding: 0; border-color: transparent; background: none; }
+.rx.s1 .sl-search:not(.open) .sl-sicon { height: 48px; min-width: 44px; padding: 4px 6px; flex-direction: column; gap: 4px; border-radius: 4px; }
+.rx.s1 .sl-search:not(.open) .sl-sicon:hover { background: rgba(38,38,51,.06); }
 .rx .sl-search .lbt { display: none; }
-.rx.s-search:not(.s-icons) .sl-search:not(.open) .lbt { display: flex; }
-.rx.s-icons .sl-search:not(.open) .sl-sicon { height: 32px; min-width: 32px; padding: 0 6px; }
+.rx.s1:not(.s3) .sl-search:not(.open) .lbt { display: flex; }
+.rx.s3 .sl-search:not(.open) .sl-sicon { height: 32px; min-width: 32px; padding: 0 6px; }
 .rx .sl-sicon { display: flex; align-items: center; justify-content: center; width: auto; height: auto; }
-/* collapse steps, right to left */
-.rx.s-file .rx-file { display: none; }
-.rx.s-file .rx-filedd { display: flex; }
-.rx.s-view .rx-vm { display: none; }
-.rx.s-view .rx-viewdd { display: flex; }
-.rx.s-icons .rx-t:not(.rx-period) .lbt, .rx.s-icons .rx-small .lbt { display: none; }
-.rx.s-icons .rx-t:not(.rx-period) { min-width: 32px; height: 32px; padding: 0 6px; }
-.rx.s-icons .rx-t.rb-switch .lbt { display: flex; font-size: 10px; }
-.rx.s-icons .rx-t.rb-switch { height: 48px; }
+/* s1 (Figma 1600): Level ▾, right group icon-only with small switch labels */
+.rx.s1 .rx-lvfull { display: none; }
+.rx.s1 .rx-lvdd { display: flex; }
+.rx.s1 .rx-t.rb-switch .lbt { font-size: 10px; }
+/* s2 (Figma 1366): View ▾ */
+.rx.s2 .rx-vm { display: none; }
+.rx.s2 .rx-viewdd { display: flex; }
+/* icon-only tiles: s1 for the right group, s3 (Figma 1100) for the left; Monthly keeps its label */
+.rx.s1 .rx-t.ic1, .rx.s3 .rx-t.ic3 { height: 32px; min-width: 32px; padding: 0 6px; flex-direction: row; gap: 0; }
+.rx.s1 .rx-t.ic1 .lbt, .rx.s3 .rx-t.ic3 .lbt { display: none; }
+.rx.s3 .rx-t.ic3.rx-ddt { padding: 0 2px 0 6px; }
+.rx.s3 .rx-t.ic3 .ddc { display: block; }
+.rx.s3 .rx-t .sl-badge { top: -2px; right: -2px; }
 /* mode switch at the right end */
 .rx-mode { color: var(--olive); flex: none; }
 .rx-mode:hover { background: var(--olive-50); }

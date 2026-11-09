@@ -1,9 +1,11 @@
-/* Ribbon v3 · one ribbon for the LIM planning module, two modes (MS ribbon reference recording)
-   Expanded (64px, default on big screens): sections of icon-with-label controls, divided by lines —
-     Find | Time | Structure | Level | View modes | Display | Actions … mode switch
-     When the row gets too narrow, sections give way from right to left: File ▾, View ▾, search icon,
-     icon-only tiles, and finally the lowest-priority sections move into ⋯.
-   Collapsed (48px, auto below 900px): one line of icons — Search, Filter, Monthly ▾, Today ‹ ›, Sort, Group, Level, ⋯.
+/* Ribbon v3 · one ribbon for the LIM planning module, two modes (Figma "New Planning" › Ribbon v3 › Ribbon)
+   Expanded (64px, default on big screens): icon-with-label tiles divided by lines.
+     Left:  Find | Monthly ‹ › Today | Group Sort Column | Level, Expand all | View modes
+     Right: File ▾ | Active tasks, Zoom, Compact | Set default | Legends, Refresh, Updated
+     When the row gets too narrow: Level ▾ + right side icon-only + search tile, then View ▾,
+     then the left side icon-only with Display and Set default in ⋯. Column stays on the row.
+   Collapsed (48px, auto below 900px): Search, Filter | Monthly ‹ › Today | Group Sort (Column) Level ▾,
+     the right-side tools when they fit, ⋯.
    The chevron at the right end switches modes; a mode chosen there is remembered. */
 window.R = (function () {
   const { esc, ms, fmt } = UI;
@@ -20,7 +22,8 @@ window.R = (function () {
   // collapsed line · dropdown button: label + ▾, or icon + ▾ (label: null)
   const ddBtn = (id, icon, label, tip, on) => `<button class="sl-dd ${label ? '' : 'ic'} ${on ? 'set' : ''}" id="${id}" data-tip="${esc(tip)}">${ms(icon, 's20 sl-ic')}${label ? `<span class="sl-lb">${esc(label)}</span>` : ''}${ms('arrow_drop_down', 's16')}</button>`;
   // expanded · tile: icon with its label underneath (▾ after the label when it opens a menu)
-  const tile = (id, icon, label, tip, o = {}) => `<button class="rx-t ${o.on ? 'set' : ''} ${o.cls || ''}" id="${id}" data-tip="${esc(tip)}" ${o.disabled ? 'disabled' : ''}>${ms(icon, 's20')}<span class="lbt">${esc(label)}${o.dd ? ms('arrow_drop_down', 's16') : ''}</span>${o.badge || ''}</button>`;
+  // icon-only (narrow rows): the label hides and a dropdown tile shows ▾ next to its icon
+  const tile = (id, icon, label, tip, o = {}) => `<button class="rx-t ${o.dd ? 'rx-ddt' : ''} ${o.on ? 'set' : ''} ${o.cls || ''}" id="${id}" data-tip="${esc(tip)}" ${o.disabled ? 'disabled' : ''}>${ms(icon, 's20')}${o.dd ? ms('arrow_drop_down', 's16 ddc') : ''}<span class="lbt">${esc(label)}${o.dd ? ms('arrow_drop_down', 's16') : ''}</span>${o.badge || ''}</button>`;
   const swTile = (id, on, label) => `<button class="rx-t rb-switch ${on ? 'on' : ''}" id="${id}" role="switch" aria-checked="${on}"><i class="sw"><i></i></i><span class="lbt">${label}</span></button>`;
   // Material glyphs fill their box differently (zoom and search look small, refresh and info look right):
   // these sizes give every 20px ribbon icon about the same visible size as refresh / info
@@ -72,44 +75,51 @@ window.R = (function () {
     el().innerHTML = `
     <div class="rx" id="rx">
       <div class="rx-items" id="slItems">
+        <div class="rx-side">
         <div class="rx-g" data-g="find" data-p="12">${searchHtml(open)}
-          ${tile('rbFilter', 'filter_list', 'Filter', filterTip(ch), { cls: 'sl-filter' + (ch.length ? ' on' : ''), badge: badge(ch) })}</div>
+          ${tile('rbFilter', 'filter_list', 'Filter', filterTip(ch), { cls: 'ic3 sl-filter' + (ch.length ? ' on' : ''), badge: badge(ch) })}</div>
         <i class="rx-d"></i>
         <div class="rx-g" data-g="time" data-p="11">
           ${tile('ddPeriod', 'date_range', lbl(T.PERIODS, v.period), `Time Period: ${lbl(T.PERIODS, v.period)}`, { dd: 1, cls: 'rx-period' })}
-          ${tile('rbCal', 'today', 'Today', 'Go to today')}
           <div class="rx-stk"><button class="rb-ib" id="rbPrev" data-tip="${stepL ? `Previous ${stepL}` : 'Previous'}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_left', 's20')}</button>
-            <button class="rb-ib" id="rbNext" data-tip="${stepL ? `Next ${stepL}` : 'Next'}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_right', 's20')}</button></div></div>
+            <button class="rb-ib" id="rbNext" data-tip="${stepL ? `Next ${stepL}` : 'Next'}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_right', 's20')}</button></div>
+          ${tile('rbCal', 'today', 'Today', 'Go to today', { cls: 'ic3' })}</div>
         <i class="rx-d"></i>
         <div class="rx-g" data-g="structure" data-p="9">
-          ${tile('slGroup', 'workspaces', 'Group', `Group By: ${lbl(GROUP_OPTS, v.groupBy)}`, { dd: 1, on: v.groupBy !== 'none' })}
-          ${tile('slSort', 'sort', 'Sort', `Sort By: ${lbl(SORT_OPTS, v.sortBy)}`, { dd: 1, on: v.sortBy !== 'default' })}
-          <span data-g="column" data-p="5" class="rx-sub">${tile('slCols', 'view_column', 'Column', `Column: ${colsLabel()}`, { dd: 1 })}</span></div>
+          ${tile('slGroup', 'workspaces', 'Group', `Group By: ${lbl(GROUP_OPTS, v.groupBy)}`, { dd: 1, cls: 'ic3', on: v.groupBy !== 'none' })}
+          ${tile('slSort', 'sort', 'Sort', `Sort By: ${lbl(SORT_OPTS, v.sortBy)}`, { dd: 1, cls: 'ic3', on: v.sortBy !== 'default' })}
+          ${tile('slCols', 'view_column', 'Column', `Column: ${colsLabel()}`, { dd: 1, cls: 'ic3' })}</div>
         <i class="rx-d"></i>
-        <div class="rx-g" data-g="level" data-p="10">
-          <div class="rx-lv">${stepper(v, maxL)}<span class="lbt">Level</span></div>
+        <div class="rx-g" data-g="level" data-p="5">
+          <div class="rx-lvfull"><div class="rx-lv">${stepper(v, maxL)}<span class="lbt">Level</span></div>
           ${tile('lvAll', all ? 'unfold_less' : 'unfold_more', all ? 'Collapse all' : 'Expand all', all ? 'Collapse all rows' : 'Expand all rows')}</div>
-        <i class="rx-d"></i>
-        <div class="rx-g" data-g="view" data-p="6">
+          ${tile('ddLevel', 'format_list_bulleted', 'Level', `Level: ${v.level}`, { dd: 1, cls: 'ic3 rx-lvdd', on: v.level > 0 })}</div>
+        <i class="rx-d rx-d-view"></i>
+        <div class="rx-g" data-g="view" data-p="4">
           <div class="rx-vm">${check('vDeps', v.showDeps, 'Dependencies')}${check('vProg', v.showProgress, 'Progress %')}
             ${check('vFull', v.fullscreen, 'Full screen')}<div class="rb-radios">${radio('basis', 'time', v.progressBasis === 'time', 'Time', !v.showProgress)}${radio('basis', 'work', v.progressBasis === 'work', 'Work', !v.showProgress)}</div></div>
-          ${tile('ddView', 'visibility', 'View', 'View modes', { dd: 1, cls: 'rx-viewdd' })}</div>
+          ${tile('ddView', 'visibility', 'View', 'View modes', { dd: 1, cls: 'ic3 rx-viewdd' })}</div>
+        </div>
+        <div class="rx-side rx-sec">
+        <div class="rx-g" data-g="file" data-p="3">
+          ${tile('ddFiles', 'import_export', 'File', 'Import / Download', { dd: 1, cls: 'ic3' })}</div>
         <i class="rx-d"></i>
-        <div class="rx-g" data-g="display" data-p="4">
+        <div class="rx-g rx-tuck" data-g="display" data-p="1">
           ${swTile('rbActive', v.activeToday, 'Active tasks')}
           <div class="rx-zoom"><div class="rb-zc">${iconBtn('rbZoomOut', 'zoom_out', `Zoom out (${v.zoom}%)`, v.zoom <= 50)}<button class="sl-fit" id="rbFit" data-tip="Back to the default view">Fit</button>${iconBtn('rbZoomIn', 'zoom_in', `Zoom in (${v.zoom}%)`, v.zoom >= ZOOM_MAX)}</div><span class="lbt">Zoom ${v.zoom}%</span></div>
-          ${tile('rbLegend', 'legend_toggle', 'Legends', 'Legends')}
           ${swTile('rbDensity', S.prefs.density === 'compact', 'Compact')}</div>
         <i class="rx-d"></i>
-        <div class="rx-g" data-g="actions" data-p="2">
-          ${tile('rbRefresh', 'sync', 'Refresh', 'Refresh', { cls: 'rx-small' })}
-          ${tile('rbInfo', 'info', 'Updated', `Last updated on: ${fmt(LIM_DATA.LAST_UPDATED)}`, { cls: 'rx-small' })}
-          ${tile('acImport', 'publish', 'Import', 'Import', { cls: 'rx-file' })}
-          ${tile('acDownload', 'download', 'Download', 'Download', { cls: 'rx-file' })}
-          ${tile('ddFiles', 'import_export', 'File', 'Import / Download', { dd: 1, cls: 'rx-filedd' })}
-          ${tile('rbSetDefault', 'lock_outline', 'Set default', 'Set as default')}</div>
+        <div class="rx-g rx-tuck" data-g="defaults" data-p="1">
+          ${tile('rbSetDefault', 'lock_outline', 'Set default', 'Set as default', { cls: 'ic1' })}</div>
+        <i class="rx-d"></i>
+        <div class="rx-g" data-g="info" data-p="2">
+          ${tile('rbLegend', 'legend_toggle', 'Legends', 'Legends', { cls: 'ic1' })}
+          ${tile('rbRefresh', 'sync', 'Refresh', 'Refresh', { cls: 'ic1' })}
+          ${tile('rbInfo', 'info', 'Updated', `Last updated on: ${fmt(LIM_DATA.LAST_UPDATED)}`, { cls: 'ic1' })}</div>
+        </div>
       </div>
-      <button class="rx-t hidden" id="slMore" data-tip="More options">${ms('more_horiz', 's20')}<span class="lbt">More</span></button>
+      <i class="rx-d rx-d-more hidden"></i>
+      <button class="rx-t ic3 hidden" id="slMore" data-tip="More options">${ms('more_horiz', 's20')}<span class="lbt">More</span></button>
       <button class="rb-ib rx-mode" id="rbMode" data-tip="Collapse the ribbon" data-tip-pos="left">${ms('expand_less', 's24')}</button>
     </div>`;
   }
@@ -125,13 +135,23 @@ window.R = (function () {
       <div class="sl-items" id="slItems">
         <div class="sl-g" data-g="time" data-p="11"><i class="rb-vd"></i>
           ${ddBtn('ddPeriod', 'date_range', lbl(T.PERIODS, v.period), `Time Period: ${lbl(T.PERIODS, v.period)}`)}
-          <button class="rb-text" id="rbCal">Today</button>
           <button class="rb-ib" id="rbPrev" data-tip="${stepL ? `Previous ${stepL}` : 'Previous'}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_left', 's20')}</button>
-          <button class="rb-ib" id="rbNext" data-tip="${stepL ? `Next ${stepL}` : 'Next'}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_right', 's20')}</button></div>
+          <button class="rb-ib" id="rbNext" data-tip="${stepL ? `Next ${stepL}` : 'Next'}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_right', 's20')}</button>
+          <button class="rb-text" id="rbCal">Today</button></div>
         <div class="sl-g" data-g="structure" data-p="9"><i class="rb-vd"></i>
+          ${ddBtn('slGroup', 'workspaces', null, `Group By: ${lbl(GROUP_OPTS, v.groupBy)}`, v.groupBy !== 'none')}
           ${ddBtn('slSort', 'sort', null, `Sort By: ${lbl(SORT_OPTS, v.sortBy)}`, v.sortBy !== 'default')}
-          ${ddBtn('slGroup', 'workspaces', null, `Group By: ${lbl(GROUP_OPTS, v.groupBy)}`, v.groupBy !== 'none')}</div>
-        <div class="sl-g" data-g="level" data-p="10"><i class="rb-vd"></i>${stepper(v, maxL)}</div>
+          <span class="sl-g" data-g="column" data-min="1344">${ddBtn('slCols', 'view_column', null, `Column: ${colsLabel()}`)}</span>
+          ${ddBtn('ddLevel', 'format_list_bulleted', null, `Level: ${v.level}`, v.level > 0)}</div>
+        <div class="sl-g sl-sec" data-g="secondary">
+          ${ddBtn('ddFiles', 'import_export', null, 'Import / Download')}<i class="rb-vd"></i>
+          ${switchHtml(v.activeToday, 'rbActive', 'Active tasks')}
+          <div class="rb-zc">${iconBtn('rbZoomOut', 'zoom_out', `Zoom out (${v.zoom}%)`, v.zoom <= 50)}<button class="sl-fit" id="rbFit" data-tip="Back to the default view">Fit</button>${iconBtn('rbZoomIn', 'zoom_in', `Zoom in (${v.zoom}%)`, v.zoom >= ZOOM_MAX)}</div>
+          ${iconBtn('rbFull', 'settings_overscan', v.fullscreen ? 'Exit full screen' : 'Full screen')}
+          ${switchHtml(S.prefs.density === 'compact', 'rbDensity', 'Compact')}<i class="rb-vd"></i>
+          <button class="rb-text" id="rbLegendT">Legends</button><i class="rb-vd"></i>
+          ${iconBtn('rbSetDefault', 'lock_outline', 'Set as default')}<i class="rb-vd"></i>
+          ${iconBtn('rbLegend', 'legend_toggle', 'Legends')}${iconBtn('rbRefresh', 'sync', 'Refresh')}${iconBtn('rbInfo', 'info', `Last updated on: ${fmt(LIM_DATA.LAST_UPDATED)}`)}</div>
       </div>
       <button class="rb-ib" id="slMore" data-tip="More options">${ms('more_horiz', 's20')}</button>
       <i class="rb-vd"></i>
@@ -143,32 +163,60 @@ window.R = (function () {
 
   // ---------- fitting ----------
   // groups that are in ⋯ right now (collapsed: everything outside the compact line)
-  const COLLAPSED_MORE = ['column', 'view', 'levelall', 'display', 'actions'];
+  // Figma "Ribbon" component set: Expanded 1920 → 1600 (s1) → 1366 (s2) → 1100 (s3); Collapsed 1366 / 850
   let hiddenGroups = [];
-  const STEPS = ['s-file', 's-view', 's-search', 's-icons'];   // expanded, applied one after another, right to left
+  const SECONDARY = ['file', 'display', 'defaults', 'info'];
+  // s1: Level becomes Level ▾, the right-hand group goes icon-only, search becomes a tile
+  // s2: view modes become View ▾
+  // s3: left group icon-only (Monthly keeps its label), Display and Set default move into ⋯
+  const STEPS = ['s1', 's2', 's3'];
+  // a divider shows only between two visible groups
+  const tidy = (side) => {
+    let seen = false, last = null;
+    [...side.children].forEach((c) => {
+      if (c.classList.contains('rx-d')) { c.classList.add('hidden'); if (seen && !c.classList.contains('rx-d-gone')) last = c; return; }
+      if (!c.classList.contains('hidden')) { if (last) last.classList.remove('hidden'); last = null; seen = true; }
+    });
+  };
   function fit() {
     const box = $('slItems'); if (!box) return;
     const more = $('slMore');
     const over = () => box.scrollWidth > box.clientWidth + 1;
     if (shownMode === 'collapsed') {
-      const groups = [...box.querySelectorAll('.sl-g')].sort((a, b) => a.dataset.p - b.dataset.p);
-      groups.forEach((g) => g.classList.remove('hidden'));
-      hiddenGroups = COLLAPSED_MORE.slice();
-      for (const g of groups) { if (!over()) break; g.classList.add('hidden'); hiddenGroups.push(g.dataset.g); }
+      // view modes have no place on the line, so ⋯ always stays
+      const sec = box.querySelector('.sl-sec'), col = box.querySelector('[data-g="column"]');
+      sec.classList.remove('hidden'); col.classList.remove('hidden');
+      hiddenGroups = ['view'];
+      if (window.innerWidth < +col.dataset.min) { col.classList.add('hidden'); hiddenGroups.push('column'); }
+      if (over()) { sec.classList.add('hidden'); hiddenGroups.push(...SECONDARY); }
+      if (over() && !col.classList.contains('hidden')) { col.classList.add('hidden'); hiddenGroups.push('column'); }
       return;
     }
     const rx = $('rx');
     STEPS.forEach((s) => rx.classList.remove(s));
-    const groups = [...box.querySelectorAll('[data-g]')].sort((a, b) => a.dataset.p - b.dataset.p);
+    const groups = [...box.querySelectorAll('[data-g]')];
     groups.forEach((g) => g.classList.remove('hidden'));
-    box.querySelectorAll('.rx-d').forEach((d) => d.classList.remove('hidden'));
+    box.querySelector('.rx-d-view').classList.remove('rx-d-gone');
     hiddenGroups = []; more.classList.add('hidden');
-    for (const s of STEPS) { if (!over()) break; rx.classList.add(s); }
-    for (const g of groups) {
+    const sides = box.querySelectorAll('.rx-side');
+    const dMore = rx.querySelector('.rx-d-more');
+    const done = () => { sides.forEach(tidy); dMore.classList.toggle('hidden', more.classList.contains('hidden')); };
+    done();
+    for (const s of STEPS) {
+      if (!over()) break;
+      rx.classList.add(s);
+      if (s === 's3') {
+        box.querySelectorAll('.rx-tuck').forEach((g) => { g.classList.add('hidden'); hiddenGroups.push(g.dataset.g); });
+        box.querySelector('.rx-d-view').classList.add('rx-d-gone');   // Level ▾ and View ▾ sit together
+        more.classList.remove('hidden'); done();
+      }
+    }
+    // still too wide: the lowest-priority groups move into ⋯
+    const rest = groups.filter((g) => !g.classList.contains('hidden')).sort((a, b) => a.dataset.p - b.dataset.p);
+    for (const g of rest) {
       if (!over()) break;
       g.classList.add('hidden'); hiddenGroups.push(g.dataset.g);
-      const d = g.previousElementSibling; if (d && d.classList.contains('rx-d')) d.classList.add('hidden');
-      more.classList.remove('hidden');   // ⋯ takes room too, so it shows before the next measurement
+      more.classList.remove('hidden'); done();
     }
   }
   window.addEventListener('resize', () => { if (!el().firstElementChild) return; if (mode() !== shownMode) { closeSuggest(); UI.closeFloat && UI.closeFloat(); render(); } else fit(); });
@@ -212,6 +260,7 @@ window.R = (function () {
     on('lvIn', 'onkeydown', (e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'ArrowUp') { e.preventDefault(); setLevel(V().level + 1); } if (e.key === 'ArrowDown') { e.preventDefault(); setLevel(V().level - 1); } });
     on('lvIn', 'onfocus', (e) => e.target.select());
     on('lvAll', 'onclick', () => toggleAll());
+    on('ddLevel', 'onclick', (e) => levelPop(e.currentTarget));
     // view modes (inline checkboxes, or View ▾)
     on('vDeps', 'onclick', () => toggleView('showDeps'));
     on('vFull', 'onclick', () => toggleView('fullscreen'));
@@ -224,11 +273,11 @@ window.R = (function () {
     on('rbZoomIn', 'onclick', () => zoom(10));
     on('rbFit', 'onclick', () => { v.zoom = 100; changed(); });
     on('rbLegend', 'onclick', (e) => legendPop(e.currentTarget));
+    on('rbLegendT', 'onclick', (e) => legendPop(e.currentTarget));
+    on('rbFull', 'onclick', () => toggleView('fullscreen'));
     on('rbDensity', 'onclick', () => toggleDensity());
     // actions
     on('rbRefresh', 'onclick', (e) => refresh(e.currentTarget.querySelector('.ms')));
-    on('acImport', 'onclick', () => doImport());
-    on('acDownload', 'onclick', () => doDownload());
     on('ddFiles', 'onclick', (e) => UI.menu(e.currentTarget, [{ label: 'Import', icon: 'publish', onClick: doImport }, { label: 'Download', icon: 'download', onClick: doDownload }], { width: 180 }));
     on('rbSetDefault', 'onclick', () => setDefault());
     on('slMore', 'onclick', (e) => moreMenu(e.currentTarget));
@@ -316,20 +365,21 @@ window.R = (function () {
   // ⋯ lists the controls of the sections that didn't fit, in ribbon order
   function moreMenu(a) {
     const v = V(), stepL = T.STEP_LABEL[v.period], all = v.level >= S.maxDepth();
-    const order = ['find', 'time', 'structure', 'column', 'level', 'levelall', 'view', 'display', 'actions'];
+    const order = ['find', 'time', 'structure', 'column', 'level', 'view', 'file', 'display', 'defaults', 'info'];
     const G_ITEMS = {
       find: [{ label: 'Search', icon: 'search', onClick: () => { searchOpen = true; render(); $('rbQ').focus(); } }, { label: 'Filter', icon: 'filter_list', onClick: () => filterPop(a) }],
       time: [{ label: `Time Period: ${lbl(T.PERIODS, v.period)}`, icon: 'date_range', onClick: () => periodMenu(a) }, { label: 'Today', icon: 'today', onClick: goToday }, { label: stepL ? `Previous ${stepL}` : 'Previous', icon: 'keyboard_arrow_left', disabled: !stepL, onClick: () => go(T.step(v.period, v.anchor, -1)) }, { label: stepL ? `Next ${stepL}` : 'Next', icon: 'keyboard_arrow_right', disabled: !stepL, onClick: () => go(T.step(v.period, v.anchor, 1)) }],
-      structure: [{ label: `Group By: ${lbl(GROUP_OPTS, v.groupBy)}`, icon: 'workspaces', onClick: () => groupMenu(a) }, { label: `Sort By: ${lbl(SORT_OPTS, v.sortBy)}`, icon: 'sort', onClick: () => sortMenu(a) }],
+      structure: [{ label: `Group By: ${lbl(GROUP_OPTS, v.groupBy)}`, icon: 'workspaces', onClick: () => groupMenu(a) }, { label: `Sort By: ${lbl(SORT_OPTS, v.sortBy)}`, icon: 'sort', onClick: () => sortMenu(a) }, { label: 'Column', icon: 'view_column', onClick: () => colsMenu(a) }],
       column: [{ label: 'Column', icon: 'view_column', onClick: () => colsMenu(a) }],
-      level: [{ label: `Level: ${v.level}`, icon: 'format_list_bulleted', onClick: () => levelPop(a) }],
-      levelall: [{ label: all ? 'Collapse all' : 'Expand all', icon: all ? 'unfold_less' : 'unfold_more', onClick: toggleAll }],
+      level: [{ label: `Level: ${v.level}`, icon: 'format_list_bulleted', onClick: () => levelPop(a) }, { label: all ? 'Collapse all' : 'Expand all', icon: all ? 'unfold_less' : 'unfold_more', onClick: toggleAll }],
       view: [{ label: 'View modes', icon: 'visibility', onClick: () => viewPop(a) }],
-      display: [{ label: 'Active tasks', icon: 'event_available', on: v.activeToday, onClick: toggleActive }, { label: `Zoom out (${v.zoom}%)`, icon: 'zoom_out', disabled: v.zoom <= 50, onClick: () => zoom(-10) }, { label: 'Fit', icon: 'fit_screen', onClick: () => { v.zoom = 100; changed(); } }, { label: `Zoom in (${v.zoom}%)`, icon: 'zoom_in', disabled: v.zoom >= ZOOM_MAX, onClick: () => zoom(10) }, { label: 'Legends', icon: 'legend_toggle', onClick: () => legendPop(a) }, { label: 'Compact', icon: 'density_small', on: S.prefs.density === 'compact', onClick: toggleDensity }],
-      actions: [{ label: 'Refresh', icon: 'sync', onClick: () => refresh() }, { label: `Last updated on: ${fmt(LIM_DATA.LAST_UPDATED)}`, icon: 'info', disabled: true }, { label: 'Import', icon: 'publish', onClick: doImport }, { label: 'Download', icon: 'download', onClick: doDownload }, { label: 'Set as default', icon: 'lock_outline', onClick: setDefault }],
+      file: [{ label: 'Import', icon: 'publish', onClick: doImport }, { label: 'Download', icon: 'download', onClick: doDownload }],
+      display: [{ label: 'Active tasks', icon: 'event_available', on: v.activeToday, onClick: toggleActive }, { label: `Zoom out (${v.zoom}%)`, icon: 'zoom_out', disabled: v.zoom <= 50, onClick: () => zoom(-10) }, { label: 'Fit', icon: 'fit_screen', onClick: () => { v.zoom = 100; changed(); } }, { label: `Zoom in (${v.zoom}%)`, icon: 'zoom_in', disabled: v.zoom >= ZOOM_MAX, onClick: () => zoom(10) }, { label: 'Compact', icon: 'density_small', on: S.prefs.density === 'compact', onClick: toggleDensity }],
+      defaults: [{ label: 'Set as default', icon: 'lock_outline', onClick: setDefault }],
+      info: [{ label: 'Legends', icon: 'legend_toggle', onClick: () => legendPop(a) }, { label: 'Refresh', icon: 'sync', onClick: () => refresh() }, { label: `Last updated on: ${fmt(LIM_DATA.LAST_UPDATED)}`, icon: 'info', disabled: true }],
     };
-    // in Expanded, "level" hides with its Expand all tile
-    const hidden = hiddenGroups.includes('level') ? [...hiddenGroups, 'levelall'] : hiddenGroups;
+    // Column has its own entry when only Column moved here; with the whole structure group it is listed there
+    const hidden = hiddenGroups.includes('structure') ? hiddenGroups.filter((g) => g !== 'column') : hiddenGroups;
     const items = [];
     order.filter((g) => hidden.includes(g)).forEach((g, i) => { if (i) items.push({ sep: true }); items.push(...G_ITEMS[g]); });
     // a pop-up chosen here opens in place of the menu, anchored to ⋯
@@ -349,7 +399,7 @@ window.R = (function () {
       { label: 'Sort By…', k: 'sort order start end date', icon: 'sort', run: () => sortMenu(anchor('slSort')) },
       { label: 'Group By…', k: 'group discipline zone organization phase site floor', icon: 'workspaces', run: () => groupMenu(anchor('slGroup')) },
       { label: 'Column…', k: 'columns show hide organization floor site', icon: 'view_column', run: () => colsMenu(anchor('slCols')) },
-      { label: 'Level…', k: 'level depth tree', icon: 'format_list_bulleted', run: () => (anchor('lvIn') === $('lvIn') ? $('lvIn').focus() : levelPop(anchor('lvIn'))) },
+      { label: 'Level…', k: 'level depth tree', icon: 'format_list_bulleted', run: () => ($('lvIn') && $('lvIn').offsetParent ? $('lvIn').focus() : levelPop(anchor('ddLevel'))) },
       { label: v.level >= S.maxDepth() ? 'Collapse all' : 'Expand all', k: 'expand collapse all rows tree', icon: v.level >= S.maxDepth() ? 'unfold_less' : 'unfold_more', run: toggleAll },
       { label: 'Dependencies', k: 'view mode links arrows show dependencies', icon: 'account_tree', on: v.showDeps, run: () => toggleView('showDeps') },
       { label: 'Full screen', k: 'view mode full screen show fullscreen', icon: 'fullscreen', on: v.fullscreen, run: () => toggleView('fullscreen') },
