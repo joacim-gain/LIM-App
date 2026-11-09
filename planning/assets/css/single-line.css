@@ -1,4 +1,4 @@
-/* Single-line ribbon (prototype v2) · LIM ribbon row 1 style (#F2F2F2, 1×16 lines, 32px icon buttons) in a 48px row */
+/* Ribbon v3 · Collapsed = one 48px line in the LIM ribbon row 1 style (#F2F2F2, 1×16 lines, 32px icon buttons) */
 .sl-bar { height: 48px; display: flex; align-items: center; gap: 4px; padding: 8px 16px; background: var(--subtle); border-bottom: 1px solid var(--border-bar); }
 .sl-bar .rb-text { height: 32px; }
 .sl-items { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow: hidden; }
@@ -8,6 +8,7 @@
 .sl-search { width: 32px; height: 32px; flex: none; min-width: 0; padding-left: 6px; gap: 6px; background: none; border-color: transparent; transition: width .18s ease-out, background-color .18s; }
 .sl-search:not(.open):hover { background: rgba(38,38,51,.06); }
 .sl-search.open { width: 380px; height: 32px; padding-left: 8px; background: #fff; border-color: var(--border-bar); }
+.sl-search .lbt { display: none; }
 .sl-search:not(.open) input, .sl-search:not(.open) .rb-clear { width: 0; min-width: 0; flex: 0 0 0; padding: 0; overflow: hidden; opacity: 0; }
 .sl-search:not(.open) { cursor: pointer; }
 .sl-search .rb-clear { margin-right: 8px; }
@@ -35,32 +36,10 @@
 .sl-fit { height: 32px; padding: 0 6px; border-radius: 4px; font-size: 12px; line-height: 16px; letter-spacing: .25px; color: var(--t2); }
 .sl-fit:hover { background: rgba(38,38,51,.06); }
 
-/* hide the top bar (maximize) */
-#slMax { color: var(--olive); }
-#slMax:hover { background: var(--olive-50); }
-.app.topbar-hidden .appbar { display: none; }
-
 /* pop-ups */
 .sl-pop { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
 .sl-lr { justify-content: space-between; height: 20px; }
 .sl-pop .rb-stepper { width: 168px; }
-/* Level · 1–5 quick picks above the − / + box, same 32px height and border */
-.sl-lvq { width: 168px; display: flex; gap: 4px; }
-.sl-lvq button { flex: 1; height: 32px; border: 1px solid var(--border-field); border-radius: 4px; background: #fff; font-size: 12px; letter-spacing: .2px; color: var(--t1); }
-.sl-lvq button:hover:not(:disabled) { background: var(--subtle); }
-.sl-lvq button.on { border-color: var(--olive); background: var(--olive-50); color: var(--olive); font-weight: 500; }
-.sl-lvq button:disabled { color: var(--t3); cursor: default; }
-/* Classic · compact picks beside a narrower − / + box; the group grows by 80px only (208px) */
-#gLevel.sl-lvwide { width: 208px; }
-.sl-lvrow { display: flex; gap: 6px; }
-.sl-lvrow .sl-lvq { width: auto; gap: 2px; }
-.sl-lvrow .sl-lvq button { flex: none; width: 22px; }
-.sl-lvrow .rb-stepper { width: 84px; }
-.sl-vcol { display: flex; flex-direction: column; gap: 6px; }
-.sl-hdiv { height: 1px; background: var(--border-field); margin: 4px 0; }
-.menu .mi.mhead { height: 28px; font-size: 10px; line-height: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t2); cursor: default; }
-.menu .mi.mhead:hover { background: none; }
-
 /* search suggestions · LIM menu */
 .sl-sug { padding: 4px 0; }
 .sl-sh { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; font-size: 12px; color: var(--t2); }
@@ -72,11 +51,67 @@
 /* Column menu · checkboxes on the left */
 .menu.sl-cols .mi .ms.ck { color: var(--olive); }
 
-/* Classic layout · row 1 is 48px, like the single line */
-.ribbon:not(.sl) .rb-row1 { height: 48px; padding-top: 6px; padding-bottom: 6px; }
-
-/* Single line layout icon · only the top bar of view_agenda, centred */
-.ms.sl-one { clip-path: inset(0 0 52% 0); transform: translateY(24%); }
-
 /* menu icons sit in a 24px slot, so evened-out icon sizes keep the labels aligned */
 .menu .mi > .ms:first-child { width: 24px; text-align: center; }
+
+/* Level · − / input / + (the number can be typed) */
+.rx-step { width: 84px; height: 32px; }
+.rx-step input { width: 28px; height: 20px; border: 0; padding: 0; background: none; text-align: center; font: inherit; font-size: 12px; letter-spacing: .2px; color: var(--t1); }
+.rx-step input:focus { outline: none; background: var(--subtle); border-radius: 2px; }
+.rb-stepper button:disabled { opacity: .38; }
+.sl-bar .rx-step { margin-left: 4px; }
+
+/* Expanded · 64px, sections of icon-with-label tiles divided by lines (MS ribbon pattern, LIM style) */
+.rx { height: 64px; display: flex; align-items: center; gap: 4px; padding: 8px 12px 8px 16px; background: var(--subtle); border-bottom: 1px solid var(--border-bar); }
+.rx-items { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow: hidden; }
+.rx-g, .rx-sub { display: flex; align-items: center; gap: 2px; flex: none; }
+.rx-d { width: 1px; height: 40px; background: var(--border-bar); flex: none; margin: 0 6px; }
+.rx .lbt { display: flex; align-items: center; font-size: 12px; line-height: 14px; letter-spacing: .2px; color: var(--t2); white-space: nowrap; }
+.rx .lbt .ms { margin-right: -4px; }
+.rx-t { position: relative; height: 48px; min-width: 44px; padding: 4px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 4px; color: var(--t2); flex: none; }
+.rx-t:hover:not(:disabled) { background: rgba(38,38,51,.06); }
+.rx-t:disabled { opacity: .38; }
+.rx-t.set, .rx-t.set .lbt { color: var(--olive); }
+.rx-t.sl-filter.on { color: var(--olive); background: var(--olive-50); }
+.rx-t.sl-filter.on .lbt { color: var(--olive); }
+.rx-t .sl-badge { top: 2px; right: 6px; }
+.rx-period { min-width: 88px; }
+/* switches as tiles: switch on top, label under it */
+.rx-t.rb-switch { height: 48px; padding: 4px 6px; flex-direction: column; gap: 4px; }
+/* small stacked buttons (‹ ›), like Excel's small buttons */
+.rx-stk { display: flex; flex-direction: column; }
+.rx-stk .rb-ib { width: 28px; height: 24px; }
+/* level and zoom: control on top, label under it */
+.rx-lv, .rx-zoom { height: 48px; padding: 0 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: none; }
+.rx-zoom .rb-zc { display: flex; align-items: center; height: 30px; }
+.rx-zoom .rb-ib { height: 30px; }
+.rx-lv .rx-step { height: 28px; }
+/* view modes shown directly: two columns of two */
+.rx-vm { display: grid; grid-template-columns: auto auto; column-gap: 16px; row-gap: 6px; padding: 0 6px; align-items: center; }
+.rx-vm .rb-radios { height: 18px; gap: 8px; }
+.rx-viewdd, .rx-filedd { display: none; }
+/* search: a field on wide screens */
+.rx .sl-search.open, .rx:not(.s-search) .sl-search { width: 240px; height: 32px; padding-left: 8px; background: #fff; border-color: var(--border-bar); cursor: text; }
+.rx:not(.s-search) .sl-search input, .rx:not(.s-search) .sl-search .rb-clear:not(.hidden) { width: auto; flex: 1; opacity: 1; padding: 0; }
+.rx:not(.s-search) .sl-search .rb-clear:not(.hidden) { flex: none; width: 24px; }
+.rx:not(.s-search) .sl-sicon { pointer-events: none; }
+.rx .sl-search.open { width: 280px; }
+.rx.s-search .sl-search:not(.open) { width: auto; height: 48px; padding: 0; border-color: transparent; background: none; }
+.rx.s-search .sl-search:not(.open) .sl-sicon { height: 48px; min-width: 44px; padding: 4px 6px; flex-direction: column; gap: 4px; border-radius: 4px; }
+.rx.s-search .sl-search:not(.open) .sl-sicon:hover { background: rgba(38,38,51,.06); }
+.rx .sl-search .lbt { display: none; }
+.rx.s-search:not(.s-icons) .sl-search:not(.open) .lbt { display: flex; }
+.rx.s-icons .sl-search:not(.open) .sl-sicon { height: 32px; min-width: 32px; padding: 0 6px; }
+.rx .sl-sicon { display: flex; align-items: center; justify-content: center; width: auto; height: auto; }
+/* collapse steps, right to left */
+.rx.s-file .rx-file { display: none; }
+.rx.s-file .rx-filedd { display: flex; }
+.rx.s-view .rx-vm { display: none; }
+.rx.s-view .rx-viewdd { display: flex; }
+.rx.s-icons .rx-t:not(.rx-period) .lbt, .rx.s-icons .rx-small .lbt { display: none; }
+.rx.s-icons .rx-t:not(.rx-period) { min-width: 32px; height: 32px; padding: 0 6px; }
+.rx.s-icons .rx-t.rb-switch .lbt { display: flex; font-size: 10px; }
+.rx.s-icons .rx-t.rb-switch { height: 48px; }
+/* mode switch at the right end */
+.rx-mode { color: var(--olive); flex: none; }
+.rx-mode:hover { background: var(--olive-50); }

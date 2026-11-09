@@ -1,0 +1,82 @@
+/* Single-line ribbon (prototype v2) · LIM ribbon row 1 style (#F2F2F2, 1×16 lines, 32px icon buttons) in a 48px row */
+.sl-bar { height: 48px; display: flex; align-items: center; gap: 4px; padding: 8px 16px; background: var(--subtle); border-bottom: 1px solid var(--border-bar); }
+.sl-bar .rb-text { height: 32px; }
+.sl-items { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow: hidden; }
+.sl-g { display: flex; align-items: center; gap: 4px; flex: none; }
+
+/* search · closed = a 32px icon button like Filter next to it; open = the 380px LIM search box */
+.sl-search { width: 32px; height: 32px; flex: none; min-width: 0; padding-left: 6px; gap: 6px; background: none; border-color: transparent; transition: width .18s ease-out, background-color .18s; }
+.sl-search:not(.open):hover { background: rgba(38,38,51,.06); }
+.sl-search.open { width: 380px; height: 32px; padding-left: 8px; background: #fff; border-color: var(--border-bar); }
+.sl-search:not(.open) input, .sl-search:not(.open) .rb-clear { width: 0; min-width: 0; flex: 0 0 0; padding: 0; overflow: hidden; opacity: 0; }
+.sl-search:not(.open) { cursor: pointer; }
+.sl-search .rb-clear { margin-right: 8px; }
+.sl-sicon { width: 20px; height: 20px; flex: none; display: grid; place-items: center; color: var(--t2); }
+
+/* filter · same 32px icon button; olive with a count when filters are applied */
+.sl-filter { position: relative; }
+.sl-filter.on { color: var(--olive); background: var(--olive-50); }
+.sl-badge { position: absolute; top: 3px; right: 2px; min-width: 14px; height: 14px; padding: 0 3px; border-radius: 7px; background: var(--olive); color: #fff; font-size: 9px; font-weight: 500; line-height: 14px; font-style: normal; text-align: center; }
+
+/* dropdown buttons · short label + ▾ (Google style); the icon replaces the label when the row is too narrow */
+.sl-dd { height: 32px; display: flex; align-items: center; gap: 2px; padding: 0 2px 0 8px; border-radius: 4px; color: var(--t2); flex: none; font-size: 14px; line-height: 16px; letter-spacing: .1px; white-space: nowrap; }
+.sl-dd .sl-ic { display: none; }
+.sl-dd.ic, .sl-bar.icons .sl-dd { padding-left: 6px; }
+.sl-dd.ic .sl-ic { display: block; }
+.sl-bar.icons .sl-dd .sl-ic { display: block; }
+.sl-bar.icons .sl-dd .sl-lb { display: none; }
+.sl-dd:hover, .sl-dd.on { background: rgba(38,38,51,.06); }
+.sl-dd.set { color: var(--olive); }          /* a non-default value is set */
+#ddPeriod.sl-dd { width: 112px; }   /* fixed: shows up to "Project Dur…" */
+#ddPeriod .sl-lb { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; color: var(--t1); }
+.sl-bar.icons #ddPeriod.sl-dd { width: auto; }
+
+/* − Fit + · "Fit" goes back to the default view (LIM project recording) */
+.sl-fit { height: 32px; padding: 0 6px; border-radius: 4px; font-size: 12px; line-height: 16px; letter-spacing: .25px; color: var(--t2); }
+.sl-fit:hover { background: rgba(38,38,51,.06); }
+
+/* hide the top bar (maximize) */
+#slMax { color: var(--olive); }
+#slMax:hover { background: var(--olive-50); }
+.app.topbar-hidden .appbar { display: none; }
+
+/* pop-ups */
+.sl-pop { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
+.sl-lr { justify-content: space-between; height: 20px; }
+.sl-pop .rb-stepper { width: 168px; }
+/* Level · 1–5 quick picks above the − / + box, same 32px height and border */
+.sl-lvq { width: 168px; display: flex; gap: 4px; }
+.sl-lvq button { flex: 1; height: 32px; border: 1px solid var(--border-field); border-radius: 4px; background: #fff; font-size: 12px; letter-spacing: .2px; color: var(--t1); }
+.sl-lvq button:hover:not(:disabled) { background: var(--subtle); }
+.sl-lvq button.on { border-color: var(--olive); background: var(--olive-50); color: var(--olive); font-weight: 500; }
+.sl-lvq button:disabled { color: var(--t3); cursor: default; }
+/* Classic · compact picks beside a narrower − / + box; the group grows by 80px only (208px) */
+#gLevel.sl-lvwide { width: 208px; }
+.sl-lvrow { display: flex; gap: 6px; }
+.sl-lvrow .sl-lvq { width: auto; gap: 2px; }
+.sl-lvrow .sl-lvq button { flex: none; width: 22px; }
+.sl-lvrow .rb-stepper { width: 84px; }
+.sl-vcol { display: flex; flex-direction: column; gap: 6px; }
+.sl-hdiv { height: 1px; background: var(--border-field); margin: 4px 0; }
+.menu .mi.mhead { height: 28px; font-size: 10px; line-height: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t2); cursor: default; }
+.menu .mi.mhead:hover { background: none; }
+
+/* search suggestions · LIM menu */
+.sl-sug { padding: 4px 0; }
+.sl-sh { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; font-size: 12px; color: var(--t2); }
+.sl-sh .ms { color: var(--t3); }
+.sl-k { font-size: 10px; color: var(--t3); }
+.sl-st { padding: 4px 12px; }
+.menu .mi.hi { background: var(--subtle); }
+
+/* Column menu · checkboxes on the left */
+.menu.sl-cols .mi .ms.ck { color: var(--olive); }
+
+/* Classic layout · row 1 is 48px, like the single line */
+.ribbon:not(.sl) .rb-row1 { height: 48px; padding-top: 6px; padding-bottom: 6px; }
+
+/* Single line layout icon · only the top bar of view_agenda, centred */
+.ms.sl-one { clip-path: inset(0 0 52% 0); transform: translateY(24%); }
+
+/* menu icons sit in a 24px slot, so evened-out icon sizes keep the labels aligned */
+.menu .mi > .ms:first-child { width: 24px; text-align: center; }
