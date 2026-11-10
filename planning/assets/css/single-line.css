@@ -127,3 +127,7 @@
 /* mode switch at the right end */
 .rx-mode { color: var(--olive); flex: none; }
 .rx-mode:hover { background: var(--olive-50); }
+/* Filter · Start Date and End Date side by side, each with its own label */
+.fp-dur { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+.fp-dur .fp-date { width: 100%; }
+.fp-dur + .ovl { margin-top: 20px; }

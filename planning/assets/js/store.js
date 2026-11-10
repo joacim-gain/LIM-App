@@ -30,7 +30,7 @@ window.S = (function () {
     zoom: 100,
     activeToday: false,
     search: '',
-    filters: { from: '', to: '', activeToday: false, udf1: '', udf2: '', udf3: '' },
+    filters: { from: '', to: '', activeToday: false, udf1: '', udf2: '', udf3: '', org: '', discipline: '', site: '', floor: '' },
     selected: null,
   };
 

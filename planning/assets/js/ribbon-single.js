@@ -40,8 +40,7 @@ window.R = (function () {
   function chips() {
     const f = V().filters, out = [];
     if (f.from || f.to) out.push(['dur', `${f.from ? fmt(f.from) : '…'} – ${f.to ? fmt(f.to) : '…'}`]);
-    if (f.activeToday) out.push(['activeToday', 'Active Today']);
-    ['udf1', 'udf2', 'udf3'].forEach((k) => { if (f[k]) out.push([k, f[k]]); });
+    [['org', 'Organization'], ['discipline', 'Discipline'], ['site', 'Site'], ['floor', 'Floor']].forEach(([k, l]) => { if (f[k]) out.push([k, `${l}: ${f[k]}`]); });
     return out;
   }
 
@@ -406,7 +405,7 @@ window.R = (function () {
       { label: 'Zoom in', k: 'zoom bigger', icon: 'zoom_in', run: () => zoom(10) },
       { label: 'Zoom out', k: 'zoom smaller', icon: 'zoom_out', run: () => zoom(-10) },
       { label: 'Fit', k: 'zoom fit reset default view screen', icon: 'fit_screen', run: () => { v.zoom = 100; changed(); } },
-      { label: 'Filter…', k: 'filter duration udf', icon: 'filter_list', run: () => filterPop(anchor('rbFilter')) },
+      { label: 'Filter…', k: 'filter start end date duration organization discipline site floor', icon: 'filter_list', run: () => filterPop(anchor('rbFilter')) },
       { label: 'Legends', k: 'legend colours colors', icon: 'legend_toggle', run: () => legendPop(anchor('rbLegend')) },
       { label: 'Compact', k: 'density rows compact comfortable', icon: 'density_small', on: S.prefs.density === 'compact', run: toggleDensity },
       { label: 'Refresh', k: 'reload sync update', icon: 'sync', run: () => refresh() },
@@ -444,23 +443,22 @@ window.R = (function () {
     if (e.key === 'Enter') { if (sugIdx >= 0) { e.preventDefault(); runSug(sugIdx); } else closeSuggest(); }
   }
 
-  // Filter popover · LIM Figma "Filter" (Duration + Active Today, UDF fields, Reset / Apply)
+  // Filter popover · LIM filter: Start / End date, Organization, Discipline, Site, Floor, Reset / Apply
+  const FILTER_FIELDS = [['org', 'Organization'], ['discipline', 'Discipline'], ['site', 'Site'], ['floor', 'Floor']];
+  const EMPTY_FILTERS = () => ({ from: '', to: '', activeToday: false, udf1: '', udf2: '', udf3: '', org: '', discipline: '', site: '', floor: '' });
   function filterPop(anchor) {
-    const f = Object.assign({}, V().filters);
+    const f = Object.assign(EMPTY_FILTERS(), V().filters);
     const pop = UI.float(anchor, `<div class="fp">
-      <div class="ovl">Duration</div>
-      <div class="fp-dur"><label class="fp-date"><input type="date" id="fFrom" value="${f.from}"></label><label class="fp-date"><input type="date" id="fTo" value="${f.to}"></label>
-        <button class="rb-switch ${f.activeToday ? 'on' : ''}" id="fActive" role="switch"><i class="sw"><i></i></i><span>Active Today</span></button></div>
-      <div class="ovl">UDF_Gliederungsnummer</div><input class="fp-in" id="fU1" placeholder="type..." value="${esc(f.udf1)}">
-      <div class="ovl">UDF_Logistik_Kategorie</div><input class="fp-in" id="fU2" placeholder="type..." value="${esc(f.udf2)}">
-      <div class="ovl">UDF_Gliederungsebene</div><input class="fp-in" id="fU3" placeholder="type..." value="${esc(f.udf3)}">
+      <div class="fp-dur"><div><div class="ovl">Start Date</div><label class="fp-date"><input type="date" id="fFrom" value="${f.from}" aria-label="Start Date"></label></div>
+        <div><div class="ovl">End Date</div><label class="fp-date"><input type="date" id="fTo" value="${f.to}" aria-label="End Date"></label></div></div>
+      ${FILTER_FIELDS.map(([k, l]) => `<div class="ovl">${l}</div><input class="fp-in" id="f_${k}" placeholder="type..." value="${esc(f[k])}" aria-label="${l}">`).join('')}
       <div class="fp-f"><button class="btn text" id="fReset">Reset</button><button class="btn contained" id="fApply">Apply</button></div>
     </div>`, { cls: 'popover fp-pop' });
     if (!pop) return;
-    pop.querySelector('#fActive').onclick = (e) => { f.activeToday = !f.activeToday; e.currentTarget.classList.toggle('on', f.activeToday); };
-    pop.querySelector('#fReset').onclick = () => { V().filters = { from: '', to: '', activeToday: false, udf1: '', udf2: '', udf3: '' }; UI.closeFloat(); changed(); };
+    pop.querySelector('#fReset').onclick = () => { V().filters = EMPTY_FILTERS(); UI.closeFloat(); changed(); };
     pop.querySelector('#fApply').onclick = () => {
-      Object.assign(f, { from: pop.querySelector('#fFrom').value, to: pop.querySelector('#fTo').value, udf1: pop.querySelector('#fU1').value.trim(), udf2: pop.querySelector('#fU2').value.trim(), udf3: pop.querySelector('#fU3').value.trim() });
+      Object.assign(f, { from: pop.querySelector('#fFrom').value, to: pop.querySelector('#fTo').value, activeToday: false, udf1: '', udf2: '', udf3: '' });
+      FILTER_FIELDS.forEach(([k]) => { f[k] = pop.querySelector('#f_' + k).value.trim(); });
       V().filters = f; UI.closeFloat(); changed();
     };
   }

@@ -44,9 +44,15 @@ window.G = (function () {
     if (f.from && a.end < f.from) return false;
     if (f.to && a.start > f.to) return false;
     for (const k of ['udf1', 'udf2', 'udf3']) if (f[k] && !allText(a).includes(f[k].toLowerCase())) return false;
+    // v3 filter · one field each (Organization, Discipline, Site, Floor); a typed part of the value is enough
+    const has = (val, q) => String(val || '').toLowerCase().includes(q.toLowerCase());
+    if (f.org && !has(a.org, f.org)) return false;
+    if (f.discipline && !has(a.discipline, f.discipline)) return false;
+    if (f.site && !has(a.site, f.site)) return false;
+    if (f.floor && !a.floors.some((x) => has(x, f.floor))) return false;
     return true;
   }
-  const filtering = () => { const v = V(), f = v.filters; return !!(v.search || v.activeToday || f.activeToday || f.from || f.to || f.udf1 || f.udf2 || f.udf3); };
+  const filtering = () => { const v = V(), f = v.filters; return !!(v.search || v.activeToday || f.activeToday || f.from || f.to || f.udf1 || f.udf2 || f.udf3 || f.org || f.discipline || f.site || f.floor); };
   function sortList(list) {
     const k = V().sortBy; if (k === 'default') return list;
     const key = k === 'start' ? 'start' : 'end';
