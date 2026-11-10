@@ -174,7 +174,9 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .qclr { width: 28px; height: 28px; }
 /* single-line ribbon (Figma "Ribbon", Mode=Collapsed): groups drop from the end when the panel is narrow; the rest move to More */
 .rib { height: 48px; gap: 4px; padding: 0 12px; background: #F2F2F2; overflow: hidden; }
-.rib .ibtn { color: var(--t2); flex: none; } .rib .fbtn.on { color: var(--olive); background: var(--olive-50); }
+.rib .ibtn { color: var(--t2); flex: none; }
+.rb-search .fbtn { width: 24px; height: 24px; color: var(--olive); } .rb-search .fbtn.on { background: var(--olive-50); }
+.rb-search .qclr { width: 24px; height: 24px; }
 .rb-search { flex: 1 1 320px; max-width: 320px; min-width: 120px; height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 2px 0 8px; background: #fff; border: 1px solid var(--border-field); border-radius: 4px; color: var(--t2); }
 .rb-search:focus-within { border-color: var(--olive); }
 .rb-div { width: 1px; height: 16px; background: var(--border-field); flex: none; }
@@ -186,6 +188,13 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .rb-txt { height: 32px; padding: 0 8px; border-radius: 4px; font-size: 12px; font-weight: 500; letter-spacing: 1.25px; text-transform: uppercase; color: var(--olive); }
 .rb-fit { height: 32px; padding: 0 4px; font-size: 12px; color: var(--t2); }
 .rb-sw { height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 8px; border-radius: 4px; font-size: 12px; color: var(--t2); white-space: nowrap; }
+.menu.rmore { width: 240px; min-width: 240px; padding: 4px 0; box-shadow: var(--pop-shadow); max-height: none; }
+.menu.rmore .mi { min-height: 32px; height: 32px; gap: 8px; padding: 0 12px; font-size: 14px; line-height: 16px; letter-spacing: 0; }
+.menu.rmore .mi > .ms:first-child { width: 24px; text-align: center; color: var(--t2); }
+.menu.rmore .mi .grow { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menu.rmore .mi.on { color: var(--olive); } .menu.rmore .mi.on::after { content: none; } .menu.rmore .mi .chk { color: var(--olive); }
+.menu.rmore .mi:disabled { cursor: default; background: none; }
+.menu.rmore .msep { height: 1px; background: var(--border-row); margin: 4px 0; }
 .rb-more { margin-left: auto; } .rb-more[hidden] { display: none; }
 .chip { height: 28px; padding: 0 10px; border-radius: 14px; border: 1px solid var(--border-field); background: #fff; display: flex; align-items: center; gap: 4px; color: var(--t2); }
 .chip.on { border-color: var(--olive); background: var(--olive-50); color: var(--t1); } .chip.on .ms { color: var(--olive); }
@@ -526,17 +535,16 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
             <button class="ibtn" id="minBtn" title="Minimize"><span class="ms">chevron_right</span></button>
           </div>
           <div class="d-search rib" id="rib">
-            <label class="rb-search"><span class="ms">search</span><input id="q" placeholder="Search activities"><button class="ibtn qclr" id="qClear" title="Clear search" hidden><span class="ms s18">close</span></button></label>
-            <i class="rb-div"></i><button class="ibtn fbtn" id="fBtn" title="Filter"><span class="ms">filter_list</span><span class="fbadge" id="fBadge" hidden></span></button>
-            <div class="rb-g"><i class="rb-div"></i><button class="rb-dd" title="Time period">Monthly<span class="ms">arrow_drop_down</span></button><button class="ibtn" title="Previous month"><span class="ms">chevron_left</span></button><button class="ibtn" title="Next month"><span class="ms">chevron_right</span></button><button class="rb-txt">Today</button></div>
-            <div class="rb-g"><i class="rb-div"></i><button class="rb-tile" title="Group"><span class="ms">group_work</span><span class="ms">arrow_drop_down</span></button><button class="rb-tile" title="Sort"><span class="ms">sort</span><span class="ms">arrow_drop_down</span></button></div>
-            <div class="rb-g"><i class="rb-div"></i><button class="rb-tile" title="Level"><span class="ms">format_list_bulleted</span><span class="ms">arrow_drop_down</span></button><button class="rb-tile" title="View"><span class="ms">visibility</span><span class="ms">arrow_drop_down</span></button></div>
-            <div class="rb-g"><i class="rb-div"></i><button class="rb-tile" title="Import / export"><span class="ms">import_export</span><span class="ms">arrow_drop_down</span></button></div>
-            <div class="rb-g"><i class="rb-div"></i><button class="rb-sw" title="Active tasks"><span class="sw"></span>Active Tasks</button></div>
-            <div class="rb-g"><button class="ibtn" title="Zoom out"><span class="ms">zoom_out</span></button><button class="rb-fit">Fit</button><button class="ibtn" title="Zoom in"><span class="ms">zoom_in</span></button><button class="ibtn" title="Fit screen"><span class="ms">fit_screen</span></button></div>
-            <div class="rb-g"><button class="rb-sw on" title="Compact"><span class="sw"></span>Compact</button></div>
-            <div class="rb-g"><i class="rb-div"></i><button class="ibtn" title="Set default"><span class="ms">lock_outline</span></button></div>
-            <div class="rb-g"><i class="rb-div"></i><button class="ibtn" title="Legends"><span class="ms">legend_toggle</span></button><button class="ibtn" title="Refresh"><span class="ms">sync</span></button><button class="ibtn" title="Updated"><span class="ms">info_outline</span></button></div>
+            <label class="rb-search"><span class="ms">search</span><input id="q" placeholder="Search activities"><button class="ibtn qclr" id="qClear" title="Clear search" hidden><span class="ms s18">close</span></button><button class="ibtn fbtn" id="fBtn" title="Filter"><span class="ms">filter_list</span><span class="fbadge" id="fBadge" hidden></span></button></label>
+            <div class="rb-g" data-sec="time"><i class="rb-div"></i><button class="rb-dd" title="Time period">Monthly<span class="ms">arrow_drop_down</span></button><button class="ibtn" title="Previous month"><span class="ms">chevron_left</span></button><button class="ibtn" title="Next month"><span class="ms">chevron_right</span></button><button class="rb-txt">Today</button></div>
+            <div class="rb-g" data-sec="sortgroup"><i class="rb-div"></i><button class="rb-tile" title="Group"><span class="ms">group_work</span><span class="ms">arrow_drop_down</span></button><button class="rb-tile" title="Sort"><span class="ms">sort</span><span class="ms">arrow_drop_down</span></button></div>
+            <div class="rb-g" data-sec="levelview"><i class="rb-div"></i><button class="rb-tile" title="Level"><span class="ms">format_list_bulleted</span><span class="ms">arrow_drop_down</span></button><button class="rb-tile" title="View"><span class="ms">visibility</span><span class="ms">arrow_drop_down</span></button></div>
+            <div class="rb-g" data-sec="file"><i class="rb-div"></i><button class="rb-tile" title="Import / export"><span class="ms">import_export</span><span class="ms">arrow_drop_down</span></button></div>
+            <div class="rb-g" data-sec="display"><i class="rb-div"></i><button class="rb-sw" id="rbActive" title="Active tasks"><span class="sw"></span>Active Tasks</button></div>
+            <div class="rb-g" data-sec="display"><button class="ibtn" title="Zoom out"><span class="ms">zoom_out</span></button><button class="rb-fit">Fit</button><button class="ibtn" title="Zoom in"><span class="ms">zoom_in</span></button><button class="ibtn" title="Fit screen"><span class="ms">fit_screen</span></button></div>
+            <div class="rb-g" data-sec="display"><button class="rb-sw on" id="rbCompact" title="Compact"><span class="sw"></span>Compact</button></div>
+            <div class="rb-g" data-sec="defaults"><i class="rb-div"></i><button class="ibtn" title="Set default"><span class="ms">lock_outline</span></button></div>
+            <div class="rb-g" data-sec="info"><i class="rb-div"></i><button class="ibtn" title="Legends"><span class="ms">legend_toggle</span></button><button class="ibtn" title="Refresh"><span class="ms">sync</span></button><button class="ibtn" title="Updated"><span class="ms">info_outline</span></button></div>
             <button class="ibtn rb-more" id="ribMore" title="More"><span class="ms">more_horiz</span></button>
           </div>
           <div class="d-table"><table><colgroup id="cols"></colgroup><thead><tr id="thead"></tr></thead><tbody id="rows"></tbody></table></div>
@@ -694,6 +702,43 @@ function fitRib() {
 }
 new ResizeObserver(fitRib).observe($('#rib'));
 $('#rib').addEventListener('click', e => { const t = e.target.closest('.rb-sw'); if (t) t.classList.toggle('on'); });
+// More lists the ribbon tools that didn't fit, in ribbon order, one section per divider (Figma New Planning "Pop-up · More")
+let rbZoom = 100;
+const LAST_UPDATED = '27.10.2026';
+function ribItems(g) {
+  const on = id => $(id).classList.contains('on');
+  switch (g.querySelector('[title]').title) {
+    case 'Time period': return [['date_range', 'Time period: Monthly'], ['today', 'Today']];
+    case 'Group': return [['group_work', 'Group by'], ['sort', 'Sort by']];
+    case 'Level': return [['format_list_bulleted', 'Level'], ['visibility', 'View modes']];
+    case 'Import / export': return [['publish', 'Import'], ['download', 'Download']];
+    case 'Active tasks': return [['event_available', 'Active tasks', { on: on('#rbActive'), act: () => $('#rbActive').classList.toggle('on') }]];
+    case 'Zoom out': return [['zoom_out', `Zoom out (${rbZoom}%)`, { off: rbZoom <= 50, act: () => rbZoom -= 10 }], ['settings_overscan', 'Fit', { act: () => rbZoom = 100 }],
+      ['zoom_in', `Zoom in (${rbZoom}%)`, { off: rbZoom >= 200, act: () => rbZoom += 10 }], ['fit_screen', 'Fit screen']];
+    case 'Compact': return [['format_line_spacing', 'Compact', { on: on('#rbCompact'), act: () => $('#rbCompact').classList.toggle('on') }]];
+    case 'Set default': return [['lock_outline', 'Set as default']];
+    case 'Legends': return [['legend_toggle', 'Legends'], ['sync', 'Refresh'], ['info', `Last updated on: ${LAST_UPDATED}`, { off: true }]];
+  }
+  return [];
+}
+function ribMore(anchor) {
+  if (menuAnchor === anchor) return closeMenu();
+  closeMenu(); closeFilter();
+  const items = []; let sec = null;
+  $$('#rib .rb-g').filter(g => g.hidden).forEach(g => {
+    if (sec && g.dataset.sec !== sec) items.push(null);
+    sec = g.dataset.sec; items.push(...ribItems(g));
+  });
+  const m = document.createElement('div'); m.className = 'menu rmore';
+  m.innerHTML = items.map((it, i) => it ? `<button class="mi${it[2] && it[2].on ? ' on' : ''}" data-i="${i}"${it[2] && it[2].off ? ' disabled' : ''}><span class="ms">${it[0]}</span><span class="grow">${it[1]}</span>${it[2] && it[2].on ? '<span class="ms chk">check</span>' : ''}</button>` : '<div class="msep"></div>').join('');
+  m.addEventListener('click', e => { const b = e.target.closest('.mi'); if (!b || b.disabled) return; e.stopPropagation(); const o = items[+b.dataset.i][2]; closeMenu(); if (o && o.act) o.act(); });
+  document.body.appendChild(m);
+  const r = anchor.getBoundingClientRect();
+  m.style.top = (r.bottom + 4) + 'px'; m.style.left = Math.max(8, r.right - m.offsetWidth) + 'px';
+  if (m.getBoundingClientRect().bottom > innerHeight - 8) { m.style.maxHeight = (innerHeight - r.bottom - 12) + 'px'; m.style.overflowY = 'auto'; }
+  anchor.classList.add('open'); menuEl = m; menuAnchor = anchor;
+}
+$('#ribMore').addEventListener('click', e => ribMore(e.currentTarget));
 $('#q').addEventListener('input', () => { $('#qClear').hidden = !$('#q').value; render(); });
 $('#qClear').addEventListener('click', () => { $('#q').value = ''; $('#qClear').hidden = true; $('#q').focus(); render(); });
 $('#reset').addEventListener('click', () => { ACT.forEach((a, i) => a.link = ORIG[i]); render(); });
