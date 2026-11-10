@@ -26,6 +26,8 @@ window.P = (function () {
 
   // ---------- Activity Details (read view, live app sections) ----------
   function details(id) {
+    // the v3 page brings its own drawer (assets/js/details-v3.js)
+    if (window.DETAILS_V3) return window.DETAILS_V3(id, { open, el, editActivity });
     const a = S.byId(id); if (!a) return;
     const parent = a.parent ? S.byId(a.parent) : null;
     const html = `

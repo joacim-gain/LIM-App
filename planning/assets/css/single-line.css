@@ -141,3 +141,43 @@
 .rx-basis { padding-left: 22px; }
 .rx-pk:disabled { opacity: .4; cursor: default; }
 .rx-pk:disabled:hover { background: none; }
+
+/* Activity Details drawer (v3) · Figma "Activity Details · Planning" (340px) */
+.panel { width: 340px; }
+.panel-open .fab { right: 376px; }
+.panel-open #toasts { right: 432px; }
+.panel .pn-h { height: 48px; gap: 4px; padding: 0 8px 0 16px; }
+.panel .pn-h h3 { color: var(--t1); }
+.panel .pn-h .rb-ib .ms { font-size: 24px; }
+.panel.dr3 .pn-b { padding: 12px 16px 20px; }
+.dr-name { font-size: 15px; line-height: 21px; font-weight: 500; color: var(--t1); word-break: break-word; }
+.dr-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; color: var(--t3); font-size: 12px; line-height: 16px; }
+.dr-link { margin-top: 12px; padding: 12px; border: 1px solid var(--border-field); border-radius: 6px; display: flex; flex-direction: column; gap: 10px; }
+.dr-zones .lbl2 { display: block; font-size: 12px; color: var(--t2); margin-bottom: 6px; }
+.dr-zones .none { color: var(--t3); font-size: 13px; }
+.dr-sec { margin: 22px 0 2px; font-weight: 500; font-size: 13px; letter-spacing: 1.25px; text-transform: uppercase; color: var(--t3); }
+.dv { display: grid; grid-template-columns: 124px 1fr; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--border-row); align-items: start; }
+.dv > span { color: var(--t2); font-size: 12px; line-height: 20px; }
+.dv > b { font-weight: 400; font-size: 13px; line-height: 20px; color: var(--t1); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; word-break: break-word; }
+.dv > b .ms { color: var(--t2); }
+.dv .arr { color: var(--t3); margin: 0 2px; }
+.dv .nowrap { white-space: nowrap; }
+.vchips { display: flex; flex-wrap: wrap; gap: 4px; }
+.vchip { background: #EEEEF0; color: var(--t1); border-radius: 4px; padding: 0 6px; font-size: 12px; line-height: 20px; }
+.vchip.site { background: var(--olive-50); color: #6E6B00; }
+.stat { display: inline-flex; align-items: center; gap: 6px; }
+.stat i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dr-none { color: var(--t3); font-size: 13px; line-height: 20px; padding: 4px 0; }
+.dr-deps { display: flex; flex-direction: column; padding: 2px 0; }
+.dr-dep { text-align: left; font-size: 13px; line-height: 20px; padding: 4px 0; color: var(--t1); border-bottom: 1px solid var(--border-row); }
+.dr-dep:hover { color: var(--olive); }
+.dr-nread { margin-top: 4px; padding: 8px; border: 1px solid var(--border-field); border-radius: 4px; background: #FAFAFA; font-size: 13px; line-height: 20px; color: var(--t1); word-break: break-word; }
+.dr-ncard { margin-top: 16px; padding: 8px 12px 12px; border: 1px solid var(--border-field); border-radius: 4px; }
+.dr-ncard .who { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+.dr-ncard .av { width: 40px; height: 40px; border-radius: 50%; background: #EEEEF0; color: var(--t3); display: grid; place-items: center; flex: none; }
+.dr-ncard .who b { display: block; font-weight: 500; font-size: 14px; line-height: 16px; color: var(--t1); }
+.dr-ncard .who span { display: block; margin-top: 2px; font-size: 12px; line-height: 16px; color: var(--t2); }
+.dr-ncard .more { padding-left: 52px; display: flex; flex-direction: column; gap: 2px; font-size: 12px; line-height: 16px; color: var(--t2); }
+.dr-ncard .more time { margin-top: 8px; }
+/* open search box (filter inside): no divider before Time either; side by side (tile + Filter) keeps both dividers */
+.rx-g[data-g="find"]:not(.is-fold) ~ .rx-g[data-g="filter"] + .rx-d { display: none; }
