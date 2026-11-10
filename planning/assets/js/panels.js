@@ -113,7 +113,7 @@ window.P = (function () {
       if (v('#fEnd') < v('#fStart')) { err.textContent = 'End Date must be on or after Start Date.'; err.classList.remove('hidden'); return; }
       onSave({ name: v('#fName'), start: v('#fStart'), end: v('#fEnd'), org: v('#fOrg') || 'Not Available', phase: v('#fPhase'), discipline: v('#fDisc') });
     };
-    setTimeout(() => el().querySelector('#fName').focus(), 30);
+    setTimeout(() => { const f = el().querySelector('#fName'); if (f) f.focus(); }, 30);
   }
   function addActivity(parentId) {
     const p = parentId ? S.byId(parentId) : null;

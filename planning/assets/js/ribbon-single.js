@@ -37,10 +37,20 @@ window.R = (function () {
   const check = (id, on, label) => `<button class="rb-check ${on ? 'on' : ''}" id="${id}" role="checkbox" aria-checked="${on}"><i class="cb">${on ? ms('check', 's16') : ''}</i><span>${label}</span></button>`;
   const radio = (name, val, on, label, disabled) => `<button class="rb-radio ${on ? 'on' : ''}" data-radio="${name}" data-val="${val}" ${disabled ? 'disabled' : ''}><i class="rd"></i><span>${label}</span></button>`;
   let searchOpen = false;
-  // the current view is the saved default (after "Set as default")
+  // a choice differs from the saved default → its tile is olive (Sort, Group, Column, Level)
+  const D = () => S.prefs.defaults;
+  const changedFrom = {
+    sort: () => V().sortBy !== D().sortBy,
+    group: () => V().groupBy !== D().groupBy,
+    cols: () => V().columns.join() !== (D().columns || []).join(),
+    level: () => V().level !== D().level,
+  };
+  // Set default is active right after it is pressed, until the view changes; after a refresh it is grey again
+  let savedNow = false;
   const isDefault = () => {
-    const v = V(), d = S.prefs.defaults;
-    return !!S.prefs.customDefaults && v.period === d.period && v.groupBy === d.groupBy && v.sortBy === d.sortBy && v.level === d.level && v.columns.join() === (d.columns || []).join();
+    const v = V(), d = D();
+    if (savedNow && !(v.period === d.period && !changedFrom.sort() && !changedFrom.group() && !changedFrom.cols() && !changedFrom.level())) savedNow = false;
+    return savedNow;
   };
 
   function chips() {
@@ -84,17 +94,17 @@ window.R = (function () {
         <i class="rx-d"></i>
         ${sec('sort', 3, 1, 2,
           `${lead('sort', tp('Sort', 'Choose the order of the activities'))}${picks('sort', [['default', 'Default'], ['start', 'Start'], ['end', 'End']], v.sortBy, 3, (k) => tp(`Sort by ${lbl(SORT_OPTS, k)}`, k === 'default' ? 'Keeps the plan order' : k === 'start' ? 'Earliest start first' : 'Earliest end first'))}`,
-          tile('sort', 'sort', 'Sort', tp(`Sort by ${lbl(SORT_OPTS, v.sortBy)}`, 'Choose the order of the activities'), { dd: 1, on: v.sortBy !== 'default' }))}
+          tile('sort', 'sort', 'Sort', tp(`Sort by ${lbl(SORT_OPTS, v.sortBy)}`, 'Choose the order of the activities'), { dd: 1, on: changedFrom.sort() }))}
         <i class="rx-d"></i>
         ${sec('group', 3, 1, 2,
           `${lead('workspaces', tp('Group', 'Groups the activities by one field'))}${picks('group', GROUP_OPTS, v.groupBy, 4, (k, l) => tp(k === 'none' ? 'No grouping' : `Group by ${l}`, k === 'none' ? 'Shows the plan without groups' : `Puts activities with the same ${l.toLowerCase()} together`))}`,
-          tile('group', 'workspaces', 'Group', tp(`Group by ${lbl(GROUP_OPTS, v.groupBy)}`, 'Groups the activities by one field'), { dd: 1, on: v.groupBy !== 'none' }))}
+          tile('group', 'workspaces', 'Group', tp(`Group by ${lbl(GROUP_OPTS, v.groupBy)}`, 'Groups the activities by one field'), { dd: 1, on: changedFrom.group() }))}
         <i class="rx-d"></i>
-        ${sec('column', 2, null, 1, tile('cols', 'view_column', 'Column', tp('Column', `Choose the columns in the table · ${colsLabel()}`), { dd: 1 }))}
+        ${sec('column', 2, null, 1, tile('cols', 'view_column', 'Column', tp('Column', `Choose the columns in the table · ${colsLabel()}`), { dd: 1, on: changedFrom.cols() }))}
         <i class="rx-d"></i>
         ${sec('level', 3, 1, 2,
           `<div class="rx-lv">${stepper(v, maxL)}<span class="lbt">Level</span></div>${tile('lvAll', all ? 'unfold_less' : 'unfold_more', all ? 'Collapse all' : 'Expand all', all ? tp('Collapse all', 'Closes every level of the structure') : tp('Expand all', 'Opens every level of the structure'))}`,
-          tile('level', 'format_list_bulleted', 'Level', tp(`Level ${v.level}`, 'Choose how many levels of the structure are open'), { dd: 1, on: v.level > 0 }))}
+          tile('level', 'format_list_bulleted', 'Level', tp(`Level ${v.level}`, 'Choose how many levels of the structure are open'), { dd: 1, on: changedFrom.level() }))}
         <i class="rx-d"></i>
         ${sec('view', 3, 1, 2,
           `<div class="rx-vm">${check('vDeps', v.showDeps, 'Dependencies')}${check('vProg', v.showProgress, 'Progress %')}
@@ -247,7 +257,7 @@ window.R = (function () {
   const setDefault = () => {
     const v = V();
     Object.assign(S.prefs.defaults, { period: v.period, groupBy: v.groupBy, sortBy: v.sortBy, columns: v.columns.slice(), level: v.level }); S.prefs.customDefaults = true;
-    S.savePrefs(); render(); UI.toast('Current settings saved as default');
+    S.savePrefs(); savedNow = true; render(); UI.toast('Current settings saved as default');
   };
   const doDownload = () => {
     const blob = new Blob(['﻿' + G.toCSV()], { type: 'text/csv;charset=utf-8' });
