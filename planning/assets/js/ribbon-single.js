@@ -149,7 +149,6 @@ window.R = (function () {
           <div class="rb-zc">${iconBtn('rbZoomOut', 'zoom_out', `Zoom out (${v.zoom}%)`, v.zoom <= 50)}<button class="sl-fit" id="rbFit" data-tip="Back to the default view">Fit</button>${iconBtn('rbZoomIn', 'zoom_in', `Zoom in (${v.zoom}%)`, v.zoom >= ZOOM_MAX)}</div>
           ${iconBtn('rbFull', 'settings_overscan', v.fullscreen ? 'Exit full screen' : 'Full screen')}
           ${switchHtml(S.prefs.density === 'compact', 'rbDensity', 'Compact')}<i class="rb-vd"></i>
-          <button class="rb-text" id="rbLegendT">Legends</button><i class="rb-vd"></i>
           ${iconBtn('rbSetDefault', 'lock_outline', 'Set as default')}<i class="rb-vd"></i>
           ${iconBtn('rbLegend', 'legend_toggle', 'Legends')}${iconBtn('rbRefresh', 'sync', 'Refresh')}${iconBtn('rbInfo', 'info', `Last updated on: ${fmt(LIM_DATA.LAST_UPDATED)}`)}</div>
       </div>
@@ -273,7 +272,6 @@ window.R = (function () {
     on('rbZoomIn', 'onclick', () => zoom(10));
     on('rbFit', 'onclick', () => { v.zoom = 100; changed(); });
     on('rbLegend', 'onclick', (e) => legendPop(e.currentTarget));
-    on('rbLegendT', 'onclick', (e) => legendPop(e.currentTarget));
     on('rbFull', 'onclick', () => toggleView('fullscreen'));
     on('rbDensity', 'onclick', () => toggleDensity());
     // actions
