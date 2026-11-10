@@ -172,10 +172,21 @@ textarea.inp { height: 56px; padding: 6px 8px; resize: none; }
 .fbtn { color: var(--olive); }
 .fbadge { position: absolute; top: -2px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: #54545D; color: #fff; font-size: 10px; font-weight: 500; line-height: 16px; text-align: center; padding: 0 4px; }
 .qclr { width: 28px; height: 28px; }
-/* "Within zone dates" quick filter sits in the search row; hidden when the panel is narrower than 320px */
-.d-chips { flex: none; display: flex; }
-.d-chips .chip { flex: none; height: 26px; white-space: nowrap; }
-/* bottom dock: chips sit in the search row, before the filter icon */
+/* single-line ribbon (Figma "Ribbon", Mode=Collapsed): groups drop from the end when the panel is narrow; the rest move to More */
+.rib { height: 48px; gap: 4px; padding: 0 12px; background: #F2F2F2; overflow: hidden; }
+.rib .ibtn { color: var(--t2); flex: none; } .rib .fbtn.on { color: var(--olive); background: var(--olive-50); }
+.rb-search { flex: 1 1 320px; max-width: 320px; min-width: 120px; height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 2px 0 8px; background: #fff; border: 1px solid var(--border-field); border-radius: 4px; color: var(--t2); }
+.rb-search:focus-within { border-color: var(--olive); }
+.rb-div { width: 1px; height: 16px; background: var(--border-field); flex: none; }
+.rb-g { display: flex; align-items: center; gap: 4px; flex: none; } .rb-g[hidden] { display: none; }
+.rb-dd { min-width: 112px; height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0 2px 0 8px; border-radius: 4px; font-size: 14px; color: var(--t1); }
+.rb-tile { height: 32px; display: flex; align-items: center; padding: 0 2px 0 6px; border-radius: 4px; color: var(--t2); } .rb-tile .ms:first-child { font-size: 22px; }
+.rb-dd:hover, .rb-tile:hover, .rb-txt:hover, .rb-sw:hover { background: rgba(38,38,51,.06); }
+.rb-dd .ms, .rb-tile .ms + .ms { font-size: 16px; color: var(--t2); }
+.rb-txt { height: 32px; padding: 0 8px; border-radius: 4px; font-size: 12px; font-weight: 500; letter-spacing: 1.25px; text-transform: uppercase; color: var(--olive); }
+.rb-fit { height: 32px; padding: 0 4px; font-size: 12px; color: var(--t2); }
+.rb-sw { height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 8px; border-radius: 4px; font-size: 12px; color: var(--t2); white-space: nowrap; }
+.rb-more { margin-left: auto; } .rb-more[hidden] { display: none; }
 .chip { height: 28px; padding: 0 10px; border-radius: 14px; border: 1px solid var(--border-field); background: #fff; display: flex; align-items: center; gap: 4px; color: var(--t2); }
 .chip.on { border-color: var(--olive); background: var(--olive-50); color: var(--t1); } .chip.on .ms { color: var(--olive); }
 .d-table { flex: 1; min-height: 0; overflow: auto; }
@@ -278,13 +289,13 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
 .dr-none { color: var(--t3); font-size: 13px; padding: 4px 0; }
 /* Notes: short note (read-only, same look as the live app note field without editing) then the author card */
 .dr-nread { margin-top: 4px; font-size: 13px; line-height: 20px; color: var(--t1); }
-.dr-nread .t { padding: 8px 0; border-bottom: 1px solid var(--border-field); }
-.dr-nread .x { margin-top: 10px; padding: 8px; border: 1px solid var(--border-field); border-radius: 4px; background: #FAFAFA; word-break: break-word; }
+.dr-nread .x { padding: 8px; border: 1px solid var(--border-field); border-radius: 4px; background: #FAFAFA; word-break: break-word; }
 /* author card (live app): person icon | name + organization, then title, body, time */
-.dr-ncard { border: 1px solid var(--border-field); border-radius: 4px; padding: 16px 16px 14px; margin-top: 16px; font-size: 14px; line-height: 20px; color: #3C3C46; }
-.dr-ncard .who { display: grid; grid-template-columns: 20px 1fr; column-gap: 40px; align-items: center; margin-bottom: 14px; }
-.dr-ncard .who .ms { font-size: 20px; color: #3C3C46; } .dr-ncard .who b { font-weight: 500; display: block; line-height: 24px; } .dr-ncard .who span { display: block; line-height: 24px; margin-top: 4px; }
-.dr-ncard .ttl { font-weight: 500; } .dr-ncard p { margin: 16px 0 0; word-break: break-word; } .dr-ncard time { display: block; margin-top: 16px; }
+.dr-ncard { border: 1px solid var(--border-field); border-radius: 4px; padding: 8px 12px 12px; margin-top: 16px; font-size: 12px; line-height: 16px; color: var(--t2); }
+.dr-ncard .who { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+.dr-ncard .av { width: 40px; height: 40px; border-radius: 50%; background: #EFEFF0; display: grid; place-items: center; color: #B0B0B5; flex: none; } .dr-ncard .av .ms { font-size: 24px; }
+.dr-ncard .who b { display: block; font-size: 14px; font-weight: 500; color: var(--t1); margin-bottom: 2px; }
+.dr-ncard .ct, .dr-ncard time { display: block; padding-left: 52px; } .dr-ncard .ct span { display: block; margin-bottom: 2px; } .dr-ncard time { margin-top: 8px; }
 .pn-sec { margin: 22px 0 2px; font-weight: 500; font-size: 13px; letter-spacing: 1.25px; text-transform: uppercase; color: var(--t3); }
 </style>
 </head>
@@ -396,9 +407,19 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
             <div class="seg" title="Panel position"><button id="posRight" class="on" title="Panel on the right"><span class="ms s16">view_week</span></button><button id="posBottom" title="Dock at the bottom"><span class="ms s16">vertical_split</span></button></div>
             <button class="ibtn" id="minBtn" title="Minimize"><span class="ms">chevron_right</span></button>
           </div>
-          <div class="d-search">
-            <span class="ms">search</span><input id="q" placeholder="Search"><button class="ibtn qclr" id="qClear" title="Clear search" hidden><span class="ms s18">close</span></button>
-            <div class="d-chips" id="chips"></div><button class="ibtn fbtn" id="fBtn" title="Filter"><span class="ms">filter_list</span><span class="fbadge" id="fBadge" hidden></span></button>
+          <div class="d-search rib" id="rib">
+            <label class="rb-search"><span class="ms">search</span><input id="q" placeholder="Search activities"><button class="ibtn qclr" id="qClear" title="Clear search" hidden><span class="ms s18">close</span></button></label>
+            <i class="rb-div"></i><button class="ibtn fbtn" id="fBtn" title="Filter"><span class="ms">filter_list</span><span class="fbadge" id="fBadge" hidden></span></button>
+            <div class="rb-g"><i class="rb-div"></i><button class="rb-dd" title="Time period">Monthly<span class="ms">arrow_drop_down</span></button><button class="ibtn" title="Previous month"><span class="ms">chevron_left</span></button><button class="ibtn" title="Next month"><span class="ms">chevron_right</span></button><button class="rb-txt">Today</button></div>
+            <div class="rb-g"><i class="rb-div"></i><button class="rb-tile" title="Group"><span class="ms">group_work</span><span class="ms">arrow_drop_down</span></button><button class="rb-tile" title="Sort"><span class="ms">sort</span><span class="ms">arrow_drop_down</span></button></div>
+            <div class="rb-g"><i class="rb-div"></i><button class="rb-tile" title="Level"><span class="ms">format_list_bulleted</span><span class="ms">arrow_drop_down</span></button><button class="rb-tile" title="View"><span class="ms">visibility</span><span class="ms">arrow_drop_down</span></button></div>
+            <div class="rb-g"><i class="rb-div"></i><button class="rb-tile" title="Import / export"><span class="ms">import_export</span><span class="ms">arrow_drop_down</span></button></div>
+            <div class="rb-g"><i class="rb-div"></i><button class="rb-sw" title="Active tasks"><span class="sw"></span>Active Tasks</button></div>
+            <div class="rb-g"><button class="ibtn" title="Zoom out"><span class="ms">zoom_out</span></button><button class="rb-fit">Fit</button><button class="ibtn" title="Zoom in"><span class="ms">zoom_in</span></button><button class="ibtn" title="Fit screen"><span class="ms">fit_screen</span></button></div>
+            <div class="rb-g"><button class="rb-sw on" title="Compact"><span class="sw"></span>Compact</button></div>
+            <div class="rb-g"><i class="rb-div"></i><button class="ibtn" title="Set default"><span class="ms">lock_outline</span></button></div>
+            <div class="rb-g"><i class="rb-div"></i><button class="ibtn" title="Legends"><span class="ms">legend_toggle</span></button><button class="ibtn" title="Refresh"><span class="ms">sync</span></button><button class="ibtn" title="Updated"><span class="ms">info_outline</span></button></div>
+            <button class="ibtn rb-more" id="ribMore" title="More"><span class="ms">more_horiz</span></button>
           </div>
           <div class="d-table"><table><colgroup id="cols"></colgroup><thead><tr id="thead"></tr></thead><tbody id="rows"></tbody></table></div>
           <div class="d-foot"><span id="lockNote"></span><span class="sp"></span><button class="tbtn" id="reset">Reset</button></div>
@@ -485,7 +506,7 @@ function visible(a) {
 let tier = '';
 const NAME_MAX = 360;
 const TIERS = [[712, 'l'], [350, 'm'], [0, 's']]; // l = 36 + 360 name + 160 Duration + 36 + at least ~120px timeline; the timeline is the column that shrinks
-let wide = true; // panel >= 320px: room for the "Within zone dates" chip
+let wide = true; // panel >= 320px
 const has = { dur: () => tier !== 's', tl: () => tier === 'l' };
 const open = { this: true, rest: true }; // group expand/collapse
 function render() {
@@ -519,7 +540,6 @@ function render() {
   const nb = ACT.filter(blocked).length;
   $('#lockNote').textContent = locked ? (tier === 's' ? `${nb} locked` : `Lock zone duration is on · ${nb} can't be linked`) : '';
   $('#lockNote').title = locked ? `Lock zone duration is on · ${nb} activities can't be linked` : '';
-  $('#chips').innerHTML = wide ? `<button class="chip${quick.inzone ? ' on' : ''}" title="Show only activities within the zone dates">Within zone dates</button>` : '';
   const fc = ['start', 'end', 'site', 'building', 'floor', 'discipline', 'zone'].filter(k => F[k]).length + (F.org.length ? 1 : 0);
   $('#fBadge').hidden = !fc; $('#fBadge').textContent = fc; $('#fBtn').classList.toggle('on', !!fc);
   if (cur) details(cur);
@@ -546,10 +566,15 @@ $('#thead').addEventListener('click', e => { if (!e.target.closest('#allCb')) re
   list.forEach(a => { const i = ACT.indexOf(a); a.link = all ? (ORIG[i] === 'this' ? 0 : ORIG[i]) : 'this'; });
   render();
 });
-$('#chips').addEventListener('click', e => {
-  if (!e.target.closest('.chip')) return;
-  quick.inzone = !quick.inzone; render();
-});
+// ribbon: show as many groups as fit (search keeps 320px while any group shows); the rest go to More
+function fitRib() {
+  const rib = $('#rib'), gs = [...rib.querySelectorAll('.rb-g')], more = $('#ribMore'), srch = rib.querySelector('.rb-search');
+  gs.forEach(g => g.hidden = false); more.hidden = true; srch.style.flex = 'none'; srch.style.width = '320px';
+  if (rib.scrollWidth > rib.clientWidth) { more.hidden = false; for (let i = gs.length - 1; i >= 0 && rib.scrollWidth > rib.clientWidth; i--) gs[i].hidden = true; }
+  srch.style.flex = srch.style.width = '';
+}
+new ResizeObserver(fitRib).observe($('#rib'));
+$('#rib').addEventListener('click', e => { const t = e.target.closest('.rb-sw'); if (t) t.classList.toggle('on'); });
 $('#q').addEventListener('input', () => { $('#qClear').hidden = !$('#q').value; render(); });
 $('#qClear').addEventListener('click', () => { $('#q').value = ''; $('#qClear').hidden = true; $('#q').focus(); render(); });
 $('#reset').addEventListener('click', () => { ACT.forEach((a, i) => a.link = ORIG[i]); render(); });
@@ -558,7 +583,7 @@ $('#lock').addEventListener('click', () => { locked = !locked; $('#lock').classL
 // ---------- activity details drawer ----------
 // sample short note (read-only) + author card (live app)
 const NOTE = { title: 'Site access', text: 'Deliveries through Gate B only, 07:00–16:00.' };
-const NOTES = [{ by: 'Peas Third Contact', org: 'Ambuja Cement', title: 'Test', text: 'Test Body', at: '23 May 2026, 13:23:31' }];
+const NOTES = [{ by: 'Peter Parker', org: 'Ambuja cement', mail: 'peter@mail.com', phone: '+ 88 0 00 89 98 89', at: '23 May 2026, 13:23:31' }];
 function details(id) {
   const a = ACT.find(x => x.id === id), p = a.parent && ACT.find(x => x.id === a.parent), dr = $('#drawer');
   // live app "Activity Details": label | value rows; Site / Building / Floor can hold several values → one chip each
@@ -596,8 +621,8 @@ function details(id) {
       <div class="pn-sec">Predecessors</div><div class="dr-none">No dependencies</div>
       <div class="pn-sec">Successors</div><div class="dr-none">No dependencies</div>
       <div class="pn-sec">Notes</div>
-      <div class="dr-nread"><div class="t">${NOTE.title}</div><div class="x">${NOTE.text}</div></div>
-      ${notes.map(n => `<div class="dr-ncard"><div class="who"><span class="ms">person</span><div><b>${n.by}</b><span>${n.org}</span></div></div><div class="ttl">${n.title}</div><p>${n.text}</p><time>${n.at}</time></div>`).join('')}
+      <div class="dr-nread"><div class="x">${NOTE.text}</div></div>
+      ${notes.map(n => `<div class="dr-ncard"><div class="who"><span class="av"><span class="ms">person</span></span><div><b>${n.by}</b>${n.org}</div></div><div class="ct"><span>${n.mail}</span><span>${n.phone}</span></div><time>${n.at}</time></div>`).join('')}
     </div>`;
   dr.hidden = false; $('#work').classList.add('has-dr');
   $('#drClose').onclick = closeDetails;
