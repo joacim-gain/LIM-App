@@ -20,6 +20,8 @@ window.G = (function () {
     phase: { label: 'Phase', get: (a) => a.phase }, site: { label: 'Site', get: (a) => a.site }, floor: { label: 'Floor', get: (a) => a.floors[0] },
   };
   const CAT_TINT = { criticalDate: 'rgba(245,191,94,.24)', volNormal: 'rgba(68,223,183,.32)', volCritical: 'rgba(216,32,52,.16)', other: 'rgba(180,134,240,.32)' };
+  // bar colours per row category (legend colours: done part, remaining part) · used by the v3 page
+  const CAT_BAR = { criticalDate: ['#E3A93D', '#F5CF8B'], volNormal: ['#06A77D', '#7FD9BE'], volCritical: ['#D82034', '#EE8F99'], other: ['#9C6ADE', '#CDB2F2'] };
   const CAT_EDGE = { criticalDate: '#F5BF5E', volNormal: '#06A77D', volCritical: '#D82034', other: '#B486F0' };
   const W_EXP = 28, W_NAME = 120, W_COL = 80;
   const rowH = () => (S.prefs.density === 'compact' ? 36 : 48);
@@ -132,8 +134,9 @@ window.G = (function () {
       // keep the % label on the visible part of bars that run past the period edges
       const vis1 = Math.max(x1, 0), vis2 = Math.min(x1 + bw, W);
       const lblX = vis2 > vis1 ? (((vis1 + vis2) / 2 - x1) / bw) * 100 : 50;
-      return `<div class="g-row ${sel ? 'sel' : ''}" data-id="${a.id}" style="height:${RH}px">
-        <div class="g-left" style="width:${LW}px;${tint ? `--tint:${tint}` : ''}">
+      const bar = CAT_BAR[a.cat];
+      return `<div class="g-row ${sel ? 'sel' : ''}" data-id="${a.id}" style="height:${RH}px;${tint ? `--tint:${tint};` : ''}${bar ? `--cat-f:${bar[0]};--cat-t:${bar[1]};` : ''}">
+        <div class="g-left" style="width:${LW}px">
           <span class="g-exp-cell" style="width:${W_EXP}px">${r.hasKids ? `<button class="g-exp" data-exp="${a.id}">${ms(v.expanded.has(a.id) || (filtering() && r.hasKids) ? 'keyboard_arrow_down' : 'keyboard_arrow_right', 's16')}</button>` : `<span class="g-exp ph">${ms('keyboard_arrow_down', 's16')}</span>`}</span>
           <span class="g-name ell" style="width:${W_NAME}px;padding-left:${8 + r.depth * 12}px" data-tip="${esc(a.name)}">${hl(a.name, q)}</span>
           ${v.columns.map((c) => `<span class="g-cell ell" style="width:${W_COL}px" data-tip="${esc(COLS[c].get(a))}">${hl(COLS[c].get(a), q)}</span>`).join('')}

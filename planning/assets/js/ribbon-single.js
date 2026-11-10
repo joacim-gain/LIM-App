@@ -141,7 +141,8 @@ window.R = (function () {
           ${ddBtn('slGroup', 'workspaces', null, `Group By: ${lbl(GROUP_OPTS, v.groupBy)}`, v.groupBy !== 'none')}
           ${ddBtn('slSort', 'sort', null, `Sort By: ${lbl(SORT_OPTS, v.sortBy)}`, v.sortBy !== 'default')}
           <span class="sl-g" data-g="column" data-min="1344">${ddBtn('slCols', 'view_column', null, `Column: ${colsLabel()}`)}</span>
-          ${ddBtn('ddLevel', 'format_list_bulleted', null, `Level: ${v.level}`, v.level > 0)}</div>
+          ${ddBtn('ddLevel', 'format_list_bulleted', null, `Level: ${v.level}`, v.level > 0)}
+          <span class="sl-g" data-g="view">${ddBtn('ddView', 'visibility', null, 'View modes')}</span></div>
         <div class="sl-g sl-sec" data-g="secondary">
           ${ddBtn('ddFiles', 'import_export', null, 'Import / Download')}<i class="rb-vd"></i>
           ${switchHtml(v.activeToday, 'rbActive', 'Active tasks')}
@@ -181,13 +182,15 @@ window.R = (function () {
     const more = $('slMore');
     const over = () => box.scrollWidth > box.clientWidth + 1;
     if (shownMode === 'collapsed') {
-      // view modes have no place on the line, so ⋯ always stays
-      const sec = box.querySelector('.sl-sec'), col = box.querySelector('[data-g="column"]');
-      sec.classList.remove('hidden'); col.classList.remove('hidden');
-      hiddenGroups = ['view'];
-      if (window.innerWidth < +col.dataset.min) { col.classList.add('hidden'); hiddenGroups.push('column'); }
-      if (over()) { sec.classList.add('hidden'); hiddenGroups.push(...SECONDARY); }
-      if (over() && !col.classList.contains('hidden')) { col.classList.add('hidden'); hiddenGroups.push('column'); }
+      // ⋯ shows only when something had to move into it
+      const sec = box.querySelector('.sl-sec'), col = box.querySelector('[data-g="column"]'), view = box.querySelector('[data-g="view"]');
+      [sec, col, view].forEach((g) => g.classList.remove('hidden'));
+      hiddenGroups = []; more.classList.add('hidden');
+      const hide = (g, names) => { g.classList.add('hidden'); hiddenGroups.push(...names); more.classList.remove('hidden'); };
+      if (window.innerWidth < +col.dataset.min) hide(col, ['column']);
+      if (over()) hide(sec, SECONDARY);
+      if (over()) hide(view, ['view']);
+      if (over() && !col.classList.contains('hidden')) hide(col, ['column']);
       return;
     }
     const rx = $('rx');
