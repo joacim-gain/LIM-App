@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LIM Site · Add Shape</title>
+<title>LIM Site · Floor</title>
 <link rel="icon" type="image/svg+xml" href="assets/lim-logo.svg">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -297,10 +297,83 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
 .dr-ncard .who b { display: block; font-size: 14px; font-weight: 500; color: var(--t1); margin-bottom: 2px; }
 .dr-ncard .ct, .dr-ncard time { display: block; padding-left: 52px; } .dr-ncard .ct span { display: block; margin-bottom: 2px; } .dr-ncard time { margin-top: 8px; }
 .pn-sec { margin: 22px 0 2px; font-weight: 500; font-size: 13px; letter-spacing: 1.25px; text-transform: uppercase; color: var(--t3); }
+
+/* ---------- views: Floor (landing) → Site details (read-only) → Edit (Add / Edit Zone) ---------- */
+/* Figma New Site: "Floor" 14238:46485 and "Site details" 14183:25736 */
+.app[data-view="floor"] .form, .app[data-view="site"] .form { display: none; }
+.app[data-view="edit"] .fl-panel, .app[data-view="edit"] .backbar, .app[data-view="edit"] .rail, .app[data-view="site"] .rail { display: none; }
+.app[data-view="floor"] .dock, .app[data-view="floor"] .zoom { display: none; }
+.app:not([data-view="edit"]) .tools, .app:not([data-view="edit"]) .hint, .app:not([data-view="edit"]) .draw { display: none; }
+.app:not([data-view="edit"]) .plan { top: 48px; }
+.app[data-view="edit"] .zhit { display: none; }
+.app[data-view="site"] .d-head, .app[data-view="site"] #lockNote { display: none; }
+.app[data-view="edit"] .z-head, .app[data-view="edit"] .z-tabs, .app[data-view="edit"] .z-details, .app[data-view="edit"] #siteSave { display: none; }
+.app[data-view="site"][data-tab="details"] .dock > .rib, .app[data-view="site"][data-tab="details"] .d-table, .app[data-view="site"][data-tab="details"] .d-foot { display: none; }
+.app[data-view="site"][data-tab="activity"] .z-details { display: none; }
+.app[data-view="site"][data-tab="details"] .dock { background: #F9F9F9; }
+
+/* Back bar under the app bar */
+.backbar { height: 40px; flex: none; display: flex; align-items: center; padding: 0 8px; background: #fff; border-bottom: 1px solid var(--border-field); }
+.bb-back { display: flex; align-items: center; height: 32px; padding: 0 12px 0 0; border-radius: 4px; color: var(--olive); font-weight: 500; font-size: 14px; letter-spacing: .1px; }
+.bb-back .ms { width: 32px; text-align: center; font-size: 24px; }
+.bb-back:hover { background: var(--olive-50); }
+
+/* Floor panel (left) */
+.fl-panel { width: 320px; flex: none; position: relative; background: #F2F2F2; box-shadow: 0 2px 6px rgba(0,0,0,.12); z-index: 6; display: flex; flex-direction: column; transition: width .18s; }
+.fl-panel.collapsed { width: 0; } .fl-panel.collapsed > :not(.fl-toggle) { display: none; }
+.fl-toggle { position: absolute; right: -24px; top: 0; width: 24px; height: 48px; background: #fff; box-shadow: 2px 1px 4px rgba(0,0,0,.12); display: grid; place-items: center; color: var(--olive); }
+.fl-head { background: #fff; display: flex; gap: 8px; padding: 12px 8px 12px 16px; }
+.fl-head .txt { flex: 1; min-width: 0; padding: 4px 0; }
+.fl-crumb { font-weight: 500; font-size: 12px; line-height: 14px; letter-spacing: .06px; color: #54545D; display: flex; gap: 4px; } .fl-crumb i { font-style: normal; color: #B0B0B5; }
+.fl-title { margin: 8px 0 4px; font-weight: 500; font-size: 20px; line-height: 23px; letter-spacing: .03px; color: var(--t1); }
+.fl-sub { font-size: 12px; line-height: 14px; color: #54545D; display: flex; gap: 4px; } .fl-sub i { font-style: normal; color: #B0B0B5; }
+.rbtn { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; color: var(--t2); flex: none; } .rbtn:hover { background: rgba(38,38,51,.08); }
+.fl-search { padding: 16px 8px; }
+.fl-search label { height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 8px; border: 1px solid #DCDCDD; border-radius: 4px; background: #fff; color: #818187; }
+.fl-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font-size: 12px; letter-spacing: .03px; color: var(--t1); } .fl-search input::placeholder { color: #818187; }
+.fl-list { flex: 1; min-height: 0; overflow: auto; padding: 16px 0; }
+.fl-sec { padding: 0 8px 12px; }
+.fl-sec b { display: block; font-weight: 700; font-size: 12px; line-height: 16px; letter-spacing: .24px; text-transform: uppercase; color: #7C7B8B; }
+.fl-sec span { display: block; margin-top: 8px; font-weight: 500; font-size: 14px; line-height: 24px; letter-spacing: .01px; color: #7C7B8B; }
+.zrow { width: 100%; height: 48px; display: flex; align-items: center; padding-right: 4px; border-top: 1px solid var(--border-field); border-bottom: 1px solid var(--border-field); margin-top: -1px; text-align: left; }
+.zrow:hover { background: #EAEAEA; } .zrow.cur { background: #D9D8A2; }
+.zrow .blk { width: 48px; height: 48px; flex: none; display: grid; place-items: center; }
+.zrow .num { width: 32px; height: 32px; border-radius: 50%; background: #F9F9ED; display: grid; place-items: center; font-size: 12px; color: var(--t1); }
+.zrow .nm2 { flex: 1; min-width: 0; padding-left: 16px; font-weight: 500; font-size: 12px; line-height: 16px; letter-spacing: .06px; color: #373741; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zrow .rbtn { width: 24px; height: 24px; color: var(--olive); } .zrow .rbtn .ms { font-size: 18px; }
+.zrow.unlink { margin-top: 12px; padding-right: 16px; gap: 12px; } .zrow.unlink .blk { background: #EFEFD8; } .zrow.unlink .nm2 { padding: 0; color: var(--t1); }
+.zrow.unlink .num .ms { font-size: 16px; color: var(--t1); } .zrow.unlink > .ms { color: var(--t2); }
+
+/* zone hit areas over the floor plan (the plan image already shows the zones) */
+.zhit { position: absolute; cursor: pointer; border-radius: 2px; } .zhit.round { border-radius: 50%; }
+.zhit:hover { box-shadow: 0 0 0 2px rgba(150,147,0,.8); }
+
+/* right icon strip on the Floor screen */
+.rail { width: 56px; flex: none; background: #fff; border-left: 1px solid var(--border-field); display: flex; flex-direction: column; z-index: 4; }
+.rail button { width: 56px; height: 56px; display: grid; place-items: center; color: var(--t2); } .rail button:hover { background: var(--olive-50); color: var(--olive); }
+.rail .end { margin-top: auto; margin-bottom: 24px; }
+
+/* Zone panel (Site details): header, Details | Activity tabs */
+.z-head { height: 48px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 16px; background: #fff; border-bottom: 1px solid #DCDCDD; }
+.z-head h3 { flex: 1; min-width: 0; margin: 0; font-weight: 500; font-size: 16px; letter-spacing: .02px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.z-head .ibtn { border-radius: 50%; } .z-head .ibtn .ms { font-size: 22px; }
+.z-tabs { height: 40px; flex: none; display: flex; background: #fff; }
+.z-tabs button { flex: 1; font-weight: 500; font-size: 14px; letter-spacing: .07px; color: #818187; border-bottom: 1px solid #DCDCDD; }
+.z-tabs button.on { color: var(--olive); background: rgba(239,239,216,.5); border-bottom: 2px solid var(--olive); }
+.z-details { flex: 1; min-height: 0; overflow: auto; border-top: 1px solid var(--border-field); }
+.zd-date { display: flex; align-items: center; gap: 4px; padding: 16px 20px 16px 16px; font-size: 16px; line-height: 22px; color: var(--t1); border-bottom: 1px solid var(--border-field); } .zd-date .ms { color: var(--t2); }
+.zd-sec { padding: 12px 16px; border-bottom: 1px solid var(--border-field); }
+.zd-h { font-size: 10px; line-height: 12px; letter-spacing: .15px; text-transform: uppercase; color: #54545D; }
+.zd-thumbs { display: flex; gap: 12px; margin: 16px 0 8px; } .zd-thumbs img { width: 71px; height: 71px; object-fit: cover; border-radius: 4px; display: block; }
+.zd-files a { display: block; font-size: 14px; line-height: 20px; color: var(--t1); text-decoration: underline; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zd-row { display: flex; align-items: center; justify-content: space-between; } .zd-row span:last-child { font-size: 12px; line-height: 16px; letter-spacing: .02px; color: #818187; }
+.zd-note { margin: 8px 16px; display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 16px; border-radius: 6px; font-weight: 700; font-size: 14px; letter-spacing: 1.25px; text-transform: uppercase; color: #7C7900; }
+.zd-note:hover { background: var(--olive-50); }
+.zd-note .ms { text-transform: none; letter-spacing: 0; }
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app" data-view="floor" data-tab="details">
   <aside class="sidenav">
     <div class="sn-logo"><img src="assets/nav/lim-mark.svg" alt="LIM"></div>
     <nav class="sn-items">
@@ -322,13 +395,33 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
         <span class="ab-user"><img src="assets/nav/avatar.png" alt=""></span>
       </div>
     </header>
+    <div class="backbar"><button class="bb-back" id="bbBack"><span class="ms">chevron_left</span>Back</button></div>
     <div class="body">
+      <!-- Floor panel · Figma "Floor" left panel -->
+      <aside class="fl-panel" id="flPanel">
+        <button class="fl-toggle" id="flToggle" title="Collapse panel"><span class="ms s16">chevron_left</span></button>
+        <div class="fl-head">
+          <div class="txt">
+            <div class="fl-crumb">Bergwald Baustelle<i>&gt;</i>Building North</div>
+            <div class="fl-title">Floor 01</div>
+            <div class="fl-sub">Floor<i>|</i>20 Zone</div>
+          </div>
+          <button class="rbtn" title="More"><span class="ms s16">more_vert</span></button>
+        </div>
+        <div class="fl-search"><label><span class="ms">search</span><input id="zq" placeholder="Search zone..."><span class="ms s16" id="zqClear" style="cursor:pointer" hidden>close</span></label></div>
+        <div class="fl-list">
+          <div class="fl-sec"><b>Activities (04)</b><span>Handover</span></div>
+          <div id="zrows"></div>
+          <button class="zrow unlink"><span class="blk"><span class="num"><span class="ms">link_off</span></span></span><span class="nm2">Unlink Activity (03)</span><span class="ms">expand_more</span></button>
+        </div>
+      </aside>
+
       <!-- Add Zone form · Figma 13336:6396 left panel; Back moved beside the title; Details tab merged in as sections -->
       <aside class="form" id="form">
         <button class="f-toggle" id="formToggle" title="Collapse form"><span class="ms s16">chevron_left</span></button>
-        <div class="f-head"><button class="f-back" title="Back"><span class="ms">arrow_back</span></button>Add Zone</div>
+        <div class="f-head"><button class="f-back" id="fBack" title="Back"><span class="ms">arrow_back</span></button><span id="fTitle">Add Zone</span></div>
         <div class="f-body">
-          <div class="fld"><label>Name <span class="req">*</span></label><input class="inp" placeholder="Enter name..."></div>
+          <div class="fld"><label>Name <span class="req">*</span></label><input class="inp" id="zName" placeholder="Enter name..."></div>
           <div class="radios" id="shapeMode"><button class="radio" data-m="single"><span class="ms">radio_button_checked</span>Single Shape</button><button class="radio off" data-m="multi"><span class="ms">radio_button_unchecked</span>Multi Shape</button></div>
           <div class="grid2">
             <div class="fld"><label>Type <span class="req">*</span></label><button class="inp ph" data-dd="type" data-ph="Select type"><span class="ell">Select type</span><span class="ms">expand_more</span></button></div>
@@ -369,7 +462,7 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
           </div>
         </div>
         <div class="f-lock" id="lock"><span class="sw"></span><div><b>Lock zone duration</b><p>Enabling this will restrict linking activities that cross the zone duration.</p></div></div>
-        <div class="f-foot"><button class="tbtn">Cancel</button><button class="pbtn">Save</button></div>
+        <div class="f-foot"><button class="tbtn" id="fCancel">Cancel</button><button class="pbtn" id="fSave">Save</button></div>
       </aside>
 
       <div class="work right" id="work">
@@ -390,10 +483,24 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
               <span class="tb-border">Border<img src="assets/tb/slider.svg" alt=""></span>
             </div>
           </div>
-          <div class="plan"><div class="stage" id="stage"><img src="assets/floorplan.png" alt="Floor plan"><div class="draw" id="draw" style="left:55%;top:44%;width:16%;height:12%"></div></div></div>
+          <div class="plan"><div class="stage" id="stage"><img src="assets/floorplan.png" alt="Floor plan">
+            <button class="zhit round" data-z="kitchen" title="Kitchen 01" style="left:17.8%;top:30.6%;width:14.7%;height:15%"></button>
+            <button class="zhit" data-z="grand" title="Grand Hall" style="left:29.6%;top:54.6%;width:21.7%;height:6.5%"></button>
+            <button class="zhit" data-z="hall2" title="Hall 2" style="left:62.4%;top:62.4%;width:19.7%;height:6.9%"></button><div class="draw" id="draw" style="left:55%;top:44%;width:16%;height:12%"></div></div></div>
           <div class="hint"><span class="ms s16">info</span>Press “Esc” to cancel drawing</div>
           <div class="zoom"><button><span class="ms">add</span></button><button><span class="ms">remove</span></button><button><span class="ms">fullscreen_exit</span></button><button style="border:0"><span class="ms">fullscreen</span></button></div>
         </section>
+
+        <!-- right icon strip · Floor screen; Drawing tools opens the edit view -->
+        <nav class="rail">
+          <button title="Details"><span class="ms">chrome_reader_mode</span></button>
+          <button id="railDraw" title="Drawing tools"><span class="ms">format_shapes</span></button>
+          <button title="Layers"><span class="ms">layers</span></button>
+          <button title="Timeline"><span class="ms">access_time</span></button>
+          <button title="Split view"><span class="ms">horizontal_split</span></button>
+          <button title="Activities"><span class="ms">assignment</span></button>
+          <button class="end" title="Info"><span class="ms">info</span></button>
+        </nav>
 
         <!-- Activity details drawer · opens next to the list (Planning "Activity Details" panel) -->
         <aside class="drawer" id="drawer" hidden></aside>
@@ -401,6 +508,17 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
         <!-- Activity panel · right by default, can switch to bottom dock -->
         <section class="dock" id="dock">
           <div class="grip" id="grip"></div>
+          <div class="z-head"><h3 id="zTitle">Zone</h3><button class="ibtn" id="zEdit" title="Edit zone"><span class="ms">edit</span></button><button class="ibtn" id="zClose" title="Close"><span class="ms">close</span></button></div>
+          <div class="z-tabs" id="zTabs"><button class="on" data-tab="details">Details</button><button data-tab="activity">Activity</button></div>
+          <div class="z-details">
+            <div class="zd-date"><span class="ms">today</span><span id="zdDate"></span></div>
+            <div class="zd-sec"><div class="zd-h">Images &amp; Documents</div>
+              <div class="zd-thumbs"><img src="assets/zone/photo1.jpg" alt=""><img src="assets/zone/photo2.jpg" alt=""></div>
+              <div class="zd-files"><a href="#" onclick="return false">k6_performance_testing_guide.pdf</a><a href="#" onclick="return false">Instructions.pdf</a><a href="#" onclick="return false">k6_performance_testing_guide.pdf</a><a href="#" onclick="return false">Instructions.pdf</a></div>
+            </div>
+            <div class="zd-sec zd-row"><span class="zd-h">Responsible</span><span>N/A</span></div>
+            <button class="zd-note"><span class="ms">note_add</span>Take a Note</button>
+          </div>
           <div class="d-head">
             <span class="d-title">Link Activity <span class="badge" id="selCount">0</span></span>
             <span class="sp"></span>
@@ -422,7 +540,7 @@ tr.chk .tl .bar { background: #C9C77A; } tr.chk .tl .bar i { background: var(--o
             <button class="ibtn rb-more" id="ribMore" title="More"><span class="ms">more_horiz</span></button>
           </div>
           <div class="d-table"><table><colgroup id="cols"></colgroup><thead><tr id="thead"></tr></thead><tbody id="rows"></tbody></table></div>
-          <div class="d-foot"><span id="lockNote"></span><span class="sp"></span><button class="tbtn" id="reset">Reset</button></div>
+          <div class="d-foot"><span id="lockNote"></span><span class="sp"></span><button class="tbtn" id="reset">Reset</button><button class="pbtn" id="siteSave" disabled>Save</button></div>
         </section>
       </div>
     </div>
@@ -534,6 +652,7 @@ function render() {
   $('#rows').innerHTML = list.length
     ? (mine.length ? grp('this', 'Linked to this zone', mine) : '') + (rest.length ? grp('rest', 'Other activities', rest) : '')
     : `<tr><td colspan="${cols.length}" style="text-align:center;color:var(--t3);height:80px;cursor:default;white-space:normal">No activities match these filters.</td></tr>`;
+  $('#siteSave').disabled = ACT.every((a, i) => a.link === ORIG[i]);
   const n = ACT.filter(a => a.link === 'this').length;
   $('#selCount').textContent = $('#linkCount').textContent = n;
   $('#allCb').textContent = list.length && list.every(a => a.link === 'this') ? 'check_box' : 'check_box_outline_blank';
@@ -578,6 +697,8 @@ $('#rib').addEventListener('click', e => { const t = e.target.closest('.rb-sw');
 $('#q').addEventListener('input', () => { $('#qClear').hidden = !$('#q').value; render(); });
 $('#qClear').addEventListener('click', () => { $('#q').value = ''; $('#qClear').hidden = true; $('#q').focus(); render(); });
 $('#reset').addEventListener('click', () => { ACT.forEach((a, i) => a.link = ORIG[i]); render(); });
+// read-only Activity tab: Save keeps the current links (Reset then returns to them)
+$('#siteSave').addEventListener('click', () => { ACT.forEach((a, i) => ORIG[i] = a.link); render(); });
 $('#lock').addEventListener('click', () => { locked = !locked; $('#lock').classList.toggle('on', locked); render(); });
 
 // ---------- activity details drawer ----------
@@ -769,6 +890,7 @@ $('#shapeMode').addEventListener('click', e => {
 // draw a shape on the plan (drag); Esc cancels
 const stage = $('#stage'), draw = $('#draw');
 stage.addEventListener('pointerdown', e => {
+  if (view !== 'edit') return;
   const r = stage.getBoundingClientRect(), x0 = (e.clientX - r.left) / r.width * 100, y0 = (e.clientY - r.top) / r.height * 100;
   if (multi && draw.style.display !== 'none') { const keep = draw.cloneNode(); keep.removeAttribute('id'); keep.classList.add('extra'); stage.appendChild(keep); }
   stage.setPointerCapture(e.pointerId); draw.style.display = '';
@@ -777,9 +899,51 @@ stage.addEventListener('pointerdown', e => {
   const up = () => { stage.removeEventListener('pointermove', mv); stage.removeEventListener('pointerup', up); };
   stage.addEventListener('pointermove', mv); stage.addEventListener('pointerup', up);
 });
-addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (menuEl) closeMenu(); else if ($('#fpop')) closeFilter(); else if (cur) closeDetails(); else draw.style.display = 'none'; });
+addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (menuEl) closeMenu(); else if ($('#fpop')) closeFilter(); else if (cur) closeDetails(); else if (view === 'edit') draw.style.display = 'none'; });
+
+// ---------- views: Floor → Site details (read-only, Details | Activity) → Edit ----------
+const FZONES = [
+  { id: 'grand', name: 'Grand Hall', color: '#6D7278' },
+  { id: 'kitchen', name: 'Kitchen 01', color: '#E66165' },
+  { id: 'hall2', name: 'Hall 2', color: '#C4C4C4' },
+];
+let view = 'floor', zoneId = null, editPos = 'right', editW = '';
+function drawZones() {
+  const q = $('#zq').value.trim().toLowerCase();
+  $('#zrows').innerHTML = FZONES.filter(z => z.name.toLowerCase().includes(q)).map(z =>
+    `<button class="zrow${view === 'site' && z.id === zoneId ? ' cur' : ''}" data-z="${z.id}"><span class="blk" style="background:${z.color}"><span class="num">1</span></span><span class="nm2">${z.name}</span><span class="rbtn" title="More"><span class="ms">more_vert</span></span></button>`).join('');
+}
+function setTab(t) { $('.app').dataset.tab = t; $$('#zTabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t)); if (t === 'details' && cur) closeDetails(); closeFilter(); }
+function go(v, z) {
+  closeFilter(); closeMenu(); if (cur) closeDetails();
+  const work = $('#work');
+  if (view === 'edit' && v !== 'edit') { editPos = work.classList.contains('bottom') ? 'bottom' : 'right'; editW = work.style.getPropertyValue('--dock-w'); }
+  view = v; $('.app').dataset.view = v;
+  if (v === 'site') {
+    zoneId = z; const zn = FZONES.find(x => x.id === z);
+    $('#zTitle').textContent = zn.name; $('#zdDate').textContent = `${fmt(ZONE.start)} - ${fmt(ZONE.end)}`;
+    setPos('right'); work.style.setProperty('--dock-w', '300px'); setTab('details');
+  } else if (v === 'edit') {
+    const zn = FZONES.find(x => x.id === z);
+    $('#fTitle').textContent = zn ? 'Edit Zone' : 'Add Zone'; $('#zName').value = zn ? zn.name : '';
+    setPos(editPos); work.style.setProperty('--dock-w', editW || '360px');
+  }
+  drawZones(); layoutCanvas();
+}
+$('#zrows').addEventListener('click', e => { const r = e.target.closest('.zrow'); if (r && !e.target.closest('.rbtn')) go('site', r.dataset.z); });
+$$('.zhit').forEach(b => b.addEventListener('click', () => go('site', b.dataset.z)));
+$('#zq').addEventListener('input', () => { $('#zqClear').hidden = !$('#zq').value; drawZones(); });
+$('#zqClear').addEventListener('click', () => { $('#zq').value = ''; $('#zqClear').hidden = true; drawZones(); });
+$('#flToggle').addEventListener('click', () => { const c = $('#flPanel').classList.toggle('collapsed'); $('#flToggle .ms').textContent = c ? 'chevron_right' : 'chevron_left'; });
+$('#zTabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setTab(b.dataset.tab); });
+$('#zClose').addEventListener('click', () => go('floor'));
+$('#zEdit').addEventListener('click', () => go('edit', zoneId));
+$('#railDraw').addEventListener('click', () => go('edit'));
+$('#bbBack').addEventListener('click', () => { if (view === 'site') go('floor'); });
+['#fBack', '#fCancel', '#fSave'].forEach(s => $(s).addEventListener('click', () => go('floor')));
 
 showZone();
+go('floor');
 </script>
 <script src="../nav.js"></script>
 </body>
