@@ -49,8 +49,8 @@ window.R = (function () {
   let shownMode = null;
 
   const searchHtml = (open) => `<div class="rb-search sl-search ${open ? 'open' : ''}" id="slSearch">
-        <button class="sl-sicon" id="rbSearchBtn" data-tip="${open ? '' : 'Search activities and tools'}" tabindex="${open ? -1 : 0}">${ms('search', 's20')}<span class="lbt">Search</span></button>
-        <input id="rbQ" placeholder="Search activities and tools" value="${esc(V().search)}" autocomplete="off">
+        <button class="sl-sicon" id="rbSearchBtn" data-tip="${open ? '' : 'Search within visible columns'}" tabindex="${open ? -1 : 0}">${ms('search', 's20')}<span class="lbt">Search</span></button>
+        <input id="rbQ" placeholder="Search within visible columns" value="${esc(V().search)}" autocomplete="off">
         <button class="rb-clear ${V().search ? '' : 'hidden'}" id="rbClear" data-tip="Clear search">${ms('close', 's16')}</button>
       </div>`;
   const filterTip = (ch) => (ch.length ? esc('Filter: ' + ch.map((c) => c[1]).join(', ')) : 'Filter');
@@ -220,12 +220,12 @@ window.R = (function () {
       more.classList.remove('hidden'); done();
     }
   }
-  window.addEventListener('resize', () => { if (!el().firstElementChild) return; if (mode() !== shownMode) { closeSuggest(); UI.closeFloat && UI.closeFloat(); render(); } else fit(); });
+  window.addEventListener('resize', () => { if (!el().firstElementChild) return; if (mode() !== shownMode) { UI.closeFloat && UI.closeFloat(); render(); } else fit(); });
   // icon names are wide text until the Material Icons font has loaded, so measure again then
   document.fonts && document.fonts.ready.then(() => { if (el().firstElementChild) fit(); });
 
   // the chevron switches modes; the choice is remembered
-  const toggleMode = () => { S.prefs.ribbonMode = expanded() ? 'collapsed' : 'expanded'; S.savePrefs(); searchOpen = false; closeSuggest(); render(); G.render(); };
+  const toggleMode = () => { S.prefs.ribbonMode = expanded() ? 'collapsed' : 'expanded'; S.savePrefs(); searchOpen = false; render(); G.render(); };
 
   function bind() {
     const v = V();
@@ -233,17 +233,16 @@ window.R = (function () {
     // search
     const q = $('rbQ'), box = $('slSearch');
     $('rbSearchBtn').onclick = () => { searchOpen = true; box.classList.add('open'); q.focus(); };
-    q.onfocus = () => { searchOpen = true; if (!box.classList.contains('open')) { box.classList.add('open'); fit(); } suggest(); };
-    q.oninput = () => { v.search = q.value; G.render(); $('rbClear').classList.toggle('hidden', !q.value); suggest(); };
+    q.onfocus = () => { searchOpen = true; if (!box.classList.contains('open')) { box.classList.add('open'); fit(); } };
+    q.oninput = () => { v.search = q.value; G.render(); $('rbClear').classList.toggle('hidden', !q.value); };
     q.onkeydown = (e) => keys(e);
     // the box widens / narrows with a short transition: measure the row again when it ends
-    box.addEventListener('transitionend', (e) => { if (e.propertyName !== 'width') return; fit(); if (sugEl) suggest(); });
+    box.addEventListener('transitionend', (e) => { if (e.propertyName !== 'width') return; fit(); });
     q.onblur = () => setTimeout(() => {
       if (document.activeElement === q) return;
-      closeSuggest();
       if (!v.search && searchOpen) { searchOpen = false; box.classList.remove('open'); fit(); }
     }, 120);
-    $('rbClear').onclick = () => { v.search = ''; searchOpen = false; closeSuggest(); changed(); };
+    $('rbClear').onclick = () => { v.search = ''; searchOpen = false; changed(); };
     on('rbFilter', 'onclick', (e) => filterPop(e.currentTarget));
     // timeline
     on('rbPrev', 'onclick', () => go(T.step(v.period, v.anchor, -1)));
@@ -386,64 +385,10 @@ window.R = (function () {
     UI.menu(a, items, { width: 240, align: 'right' });
   }
 
-  // ---------- search: activities are filtered as you type; matching tools are listed under the field ----------
-  // a control that is on screen, or ⋯ when it has moved there
-  const anchor = (id) => ($(id) && $(id).offsetParent ? $(id) : $('slMore'));
-  const COMMANDS = () => {
-    const v = V();
-    return [
-      ...T.PERIODS.map(([k, l]) => ({ label: `Time Period: ${l}`, k: 'time period view', icon: 'date_range', on: v.period === k, run: () => setPeriod(k) })),
-      { label: 'Today', k: 'go to today date now', icon: 'today', run: goToday },
-      { label: 'Previous period', k: 'back previous earlier', icon: 'keyboard_arrow_left', run: () => go(T.step(v.period, v.anchor, -1)) },
-      { label: 'Next period', k: 'forward next later', icon: 'keyboard_arrow_right', run: () => go(T.step(v.period, v.anchor, 1)) },
-      { label: 'Sort By…', k: 'sort order start end date', icon: 'sort', run: () => sortMenu(anchor('slSort')) },
-      { label: 'Group By…', k: 'group discipline zone organization phase site floor', icon: 'workspaces', run: () => groupMenu(anchor('slGroup')) },
-      { label: 'Column…', k: 'columns show hide organization floor site', icon: 'view_column', run: () => colsMenu(anchor('slCols')) },
-      { label: 'Level…', k: 'level depth tree', icon: 'format_list_bulleted', run: () => ($('lvIn') && $('lvIn').offsetParent ? $('lvIn').focus() : levelPop(anchor('ddLevel'))) },
-      { label: v.level >= S.maxDepth() ? 'Collapse all' : 'Expand all', k: 'expand collapse all rows tree', icon: v.level >= S.maxDepth() ? 'unfold_less' : 'unfold_more', run: toggleAll },
-      { label: 'Dependencies', k: 'view mode links arrows show dependencies', icon: 'account_tree', on: v.showDeps, run: () => toggleView('showDeps') },
-      { label: 'Full screen', k: 'view mode full screen show fullscreen', icon: 'fullscreen', on: v.fullscreen, run: () => toggleView('fullscreen') },
-      { label: 'Progress %', k: 'view mode percent show progress percentage', icon: 'percent', on: v.showProgress, run: () => toggleView('showProgress') },
-      { label: 'Active tasks', k: 'active today filter', icon: 'event_available', on: v.activeToday, run: toggleActive },
-      { label: 'Zoom in', k: 'zoom bigger', icon: 'zoom_in', run: () => zoom(10) },
-      { label: 'Zoom out', k: 'zoom smaller', icon: 'zoom_out', run: () => zoom(-10) },
-      { label: 'Fit', k: 'zoom fit reset default view screen', icon: 'fit_screen', run: () => { v.zoom = 100; changed(); } },
-      { label: 'Filter…', k: 'filter start end date duration organization discipline site floor', icon: 'filter_list', run: () => filterPop(anchor('rbFilter')) },
-      { label: 'Legends', k: 'legend colours colors', icon: 'legend_toggle', run: () => legendPop(anchor('rbLegend')) },
-      { label: 'Compact', k: 'density rows compact comfortable', icon: 'density_small', on: S.prefs.density === 'compact', run: toggleDensity },
-      { label: 'Refresh', k: 'reload sync update', icon: 'sync', run: () => refresh() },
-      { label: 'Import', k: 'upload file import', icon: 'publish', run: doImport },
-      { label: 'Download', k: 'export csv download', icon: 'download', run: doDownload },
-      { label: 'Set as default', k: 'save default settings', icon: 'lock_outline', run: setDefault },
-      { label: expanded() ? 'Collapse the ribbon' : 'Expand the ribbon', k: 'ribbon mode collapse expand compact toolbar', icon: expanded() ? 'expand_less' : 'expand_more', run: toggleMode },
-    ];
-  };
-  let sugEl = null, sugItems = [], sugIdx = -1;
-  function suggest() {
-    const q = V().search.trim().toLowerCase();
-    if (!q) return closeSuggest();
-    sugItems = COMMANDS().filter((c) => (c.label + ' ' + c.k).toLowerCase().includes(q)).slice(0, 6);
-    const n = G.counts ? G.counts().shown : null;
-    if (!sugEl) { sugEl = document.createElement('div'); sugEl.className = 'menu sl-sug'; document.getElementById('layer').appendChild(sugEl); }
-    const r = $('slSearch').getBoundingClientRect();
-    Object.assign(sugEl.style, { left: r.left + 'px', top: r.bottom + 4 + 'px', width: '380px' });
-    sugIdx = Math.min(sugIdx, sugItems.length - 1);
-    sugEl.innerHTML = `<div class="sl-sh">${ms('list', 's16')}<span class="grow">${n === null ? 'Activities filtered below' : `${n} ${n === 1 ? 'activity matches' : 'activities match'}`}</span><span class="sl-k">Esc to close</span></div>`
-      + (sugItems.length ? `<div class="msep"></div><div class="sl-st ovl">Tools</div>` + sugItems.map((c, i) => `<button class="mi ${i === sugIdx ? 'hi' : ''} ${c.on ? 'on' : ''}" data-s="${i}">${ms(c.icon)}<span class="grow">${UI.hl(c.label, q)}</span>${c.on ? ms('check', 'chk') : ''}</button>`).join('') : '');
-    sugEl.onmousedown = (e) => e.preventDefault(); // keep focus in the field
-    sugEl.onclick = (e) => { const b = e.target.closest('[data-s]'); if (b) runSug(+b.dataset.s); };
-  }
-  function runSug(i) {
-    const c = sugItems[i]; if (!c) return;
-    V().search = ''; closeSuggest(); $('rbQ').blur(); searchOpen = false; G.render(); render();
-    setTimeout(() => c.run(), 0);
-  }
-  function closeSuggest() { if (sugEl) { sugEl.remove(); sugEl = null; } sugIdx = -1; }
+  // ---------- search: a plain search on the activity name and the visible columns ----------
+  // matching rows are shown in the Gantt as you type (no dropdown); Esc leaves the field
   function keys(e) {
-    if (e.key === 'Escape') { e.stopPropagation(); if (sugEl) return closeSuggest(); $('rbQ').blur(); return; }
-    if (!sugEl || !sugItems.length) return;
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); sugIdx = (sugIdx + (e.key === 'ArrowDown' ? 1 : -1) + sugItems.length + 1) % (sugItems.length + 1) - 1; if (sugIdx < -1) sugIdx = sugItems.length - 1; suggest(); }
-    if (e.key === 'Enter') { if (sugIdx >= 0) { e.preventDefault(); runSug(sugIdx); } else closeSuggest(); }
+    if (e.key === 'Escape' || e.key === 'Enter') { e.stopPropagation(); $('rbQ').blur(); }
   }
 
   // Filter popover · LIM filter: Start / End date, Organization, Discipline, Site, Floor, Reset / Apply
