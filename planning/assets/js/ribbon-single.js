@@ -25,7 +25,7 @@ window.R = (function () {
   const tile = (act, icon, label, tip, o = {}) => `<button class="rx-t ${o.dd ? 'rx-ddt' : ''} ${o.ic === false ? '' : 'ic'} ${o.on ? 'set' : ''} ${o.cls || ''}" data-act="${act}" ${o.id ? `id="${o.id}"` : ''} data-tip="${tip}" ${o.disabled ? 'disabled' : ''}>${ms(icon, 's20')}${o.dd ? ms('arrow_drop_down', 's16 ddc') : ''}<span class="lbt">${esc(label)}${o.dd ? ms('arrow_drop_down', 's16') : ''}</span>${o.badge || ''}</button>`;
   const swTile = (act, on, label, tip) => `<button class="rx-t rb-switch ${on ? 'on' : ''}" data-act="${act}" role="switch" aria-checked="${on}" data-tip="${tip}"><i class="sw"><i></i></i><span class="lbt">${label}</span></button>`;
   // radio picks: the choices shown directly, the current one highlighted
-  const picks = (name, opts, cur, cols, tipFn) => `<div class="rx-picks" role="radiogroup" style="--cols:${cols}">${opts.map(([k, l]) => `<button class="rx-pk ${cur === k ? 'on' : ''}" role="radio" aria-checked="${cur === k}" data-pick="${name}" data-val="${k}" data-tip="${tipFn(k, l)}">${esc(l)}</button>`).join('')}</div>`;
+  const picks = (name, opts, cur, cols, tipFn, disabled) => `<div class="rx-picks" role="radiogroup" style="--cols:${cols}">${opts.map(([k, l]) => `<button class="rx-pk ${cur === k ? 'on' : ''}" role="radio" aria-checked="${cur === k}" data-pick="${name}" data-val="${k}" data-tip="${tipFn(k, l)}" ${disabled ? 'disabled' : ''}>${esc(l)}</button>`).join('')}</div>`;
   const lead = (icon, tip) => `<span class="rx-lead" data-tip="${tip}">${ms(icon, 's20')}</span>`;
   // Material glyphs fill their box differently (zoom and search look small, refresh and info look right):
   // these sizes give every 20px ribbon icon about the same visible size as refresh / info
@@ -37,6 +37,11 @@ window.R = (function () {
   const check = (id, on, label) => `<button class="rb-check ${on ? 'on' : ''}" id="${id}" role="checkbox" aria-checked="${on}"><i class="cb">${on ? ms('check', 's16') : ''}</i><span>${label}</span></button>`;
   const radio = (name, val, on, label, disabled) => `<button class="rb-radio ${on ? 'on' : ''}" data-radio="${name}" data-val="${val}" ${disabled ? 'disabled' : ''}><i class="rd"></i><span>${label}</span></button>`;
   let searchOpen = false;
+  // the current view is the saved default (after "Set as default")
+  const isDefault = () => {
+    const v = V(), d = S.prefs.defaults;
+    return !!S.prefs.customDefaults && v.period === d.period && v.groupBy === d.groupBy && v.sortBy === d.sortBy && v.level === d.level && v.columns.join() === (d.columns || []).join();
+  };
 
   function chips() {
     const f = V().filters, out = [];
@@ -49,7 +54,8 @@ window.R = (function () {
         <button class="sl-sicon" id="rbSearchBtn" data-tip="${open ? '' : tp('Search', 'Finds activities by name and in the visible columns')}" tabindex="${open ? -1 : 0}">${ms('search', 's20')}<span class="lbt">Search</span></button>
         <input id="rbQ" placeholder="Search within visible columns" value="${esc(V().search)}" autocomplete="off">
         <span class="sl-count hidden" id="rbCount"></span>
-        <button class="rb-clear ${V().search ? '' : 'hidden'}" id="rbClear" data-tip="Clear search">${ms('close', 's16')}</button>
+        <button class="rb-clear ${V().search ? '' : 'hidden'}" id="rbClear" data-tip="${tp('Clear search', 'Removes the search and shows all activities')}">${ms('close', 's16')}</button>
+        <button class="sl-fbtn ${chips().length ? 'on' : ''}" data-act="filterBox" data-tip="${filterTip(chips())}">${ms('filter_list', 's20')}${badge(chips())}</button>
       </div>`;
   const filterTip = (ch) => (ch.length ? tp('Filter', ch.map((c) => c[1]).join(', ')) : tp('Filter', 'Narrows the plan by dates, organization, discipline, site or floor'));
   const badge = (ch) => (ch.length ? `<i class="sl-badge">${ch.length}</i>` : '');
@@ -92,7 +98,7 @@ window.R = (function () {
         <i class="rx-d"></i>
         ${sec('view', 3, 1, 2,
           `<div class="rx-vm">${check('vDeps', v.showDeps, 'Dependencies')}${check('vProg', v.showProgress, 'Progress %')}
-            ${check('vFull', v.fullscreen, 'Full screen')}<div class="rb-radios">${radio('basis', 'time', v.progressBasis === 'time', 'Time', !v.showProgress)}${radio('basis', 'work', v.progressBasis === 'work', 'Work', !v.showProgress)}</div></div>`,
+            ${check('vFull', v.fullscreen, 'Full screen')}<div class="rx-basis">${picks('basis', [['time', 'Time'], ['work', 'Work']], v.progressBasis, 2, (k) => tp(k === 'time' ? 'Progress by time' : 'Progress by work', k === 'time' ? 'How much of the planned time has passed' : 'How much of the planned work is done'), !v.showProgress)}</div></div>`,
           tile('view', 'visibility', 'View', tp('View modes', 'Dependencies, full screen and progress %'), { dd: 1 }))}
         <i class="rx-d"></i>
         ${sec('file', 2, null, 1, tile('file', 'import_export', 'File', tp('File', 'Import a plan or download it as CSV'), { dd: 1 }))}
@@ -101,7 +107,7 @@ window.R = (function () {
           `${swTile('active', v.activeToday, 'Active tasks', tp('Active tasks', 'Shows only the activities running today'))}${zoomBox}${swTile('density', S.prefs.density === 'compact', 'Compact', tp('Compact', 'Smaller rows, so more activities fit on screen'))}`,
           tile('display', 'tune', 'Display', tp('Display', 'Active tasks, zoom and row size'), { dd: 1 }))}
         <i class="rx-d"></i>
-        ${sec('defaults', 2, null, 1, tile('setDefault', 'lock_outline', 'Set default', tp('Set as default', 'Saves the current settings as your default view')))}
+        ${sec('defaults', 2, null, 1, tile('setDefault', 'lock_outline', 'Set default', isDefault() ? tp('This view is your default', 'Change the view to save a new default') : tp('Set as default', 'Saves the current settings as your default view'), { cls: isDefault() ? 'act' : '' }))}
         <i class="rx-d"></i>
         ${sec('info', 2, null, 1, `${tile('legend', 'legend_toggle', 'Legends', tp('Legends', 'Explains the row and bar colours'))}${tile('refresh', 'sync', 'Refresh', tp('Refresh', 'Reloads the planning data'))}${tile('info', 'info', 'Updated', tp('Last updated', fmt(LIM_DATA.LAST_UPDATED)))}`)}
       </div>
@@ -187,13 +193,13 @@ window.R = (function () {
     on('vDeps', () => toggleView('showDeps'));
     on('vFull', () => toggleView('fullscreen'));
     on('vProg', () => toggleView('showProgress'));
-    el().querySelectorAll('.rx-vm [data-radio]').forEach((b) => b.onclick = () => { V().progressBasis = b.dataset.val; changed(); });
     // radio picks
     el().querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => {
       const k = b.dataset.val, p = b.dataset.pick;
       if (p === 'period') { if (k !== v.period) setPeriod(k); return; }
       if (p === 'sort') v.sortBy = k;
       if (p === 'group') { v.groupBy = k; v.collapsedGroups = new Set(); }
+      if (p === 'basis') v.progressBasis = k;
       changed();
     });
     // everything else
@@ -201,6 +207,7 @@ window.R = (function () {
   }
   const ACT = {
     filter: (b) => filterPop(b),
+    filterBox: () => filterPop($('slSearch'), true),
     prev: () => go(T.step(V().period, V().anchor, -1)),
     next: () => go(T.step(V().period, V().anchor, 1)),
     today: () => goToday(),
@@ -240,7 +247,7 @@ window.R = (function () {
   const setDefault = () => {
     const v = V();
     Object.assign(S.prefs.defaults, { period: v.period, groupBy: v.groupBy, sortBy: v.sortBy, columns: v.columns.slice(), level: v.level }); S.prefs.customDefaults = true;
-    S.savePrefs(); UI.toast('Current settings saved as default');
+    S.savePrefs(); render(); UI.toast('Current settings saved as default');
   };
   const doDownload = () => {
     const blob = new Blob(['﻿' + G.toCSV()], { type: 'text/csv;charset=utf-8' });
@@ -338,7 +345,7 @@ window.R = (function () {
       view: [{ label: 'View modes', icon: 'visibility', onClick: () => viewPop(a) }],
       file: [{ label: 'Import', icon: 'publish', onClick: doImport }, { label: 'Download', icon: 'download', onClick: doDownload }],
       display: [{ label: 'Active tasks', icon: 'event_available', on: v.activeToday, onClick: toggleActive }, { label: `Zoom out (${v.zoom}%)`, icon: 'zoom_out', disabled: v.zoom <= 50, onClick: () => zoom(-10) }, { label: 'Fit', icon: 'fit_screen', onClick: () => { v.zoom = 100; changed(); } }, { label: `Zoom in (${v.zoom}%)`, icon: 'zoom_in', disabled: v.zoom >= ZOOM_MAX, onClick: () => zoom(10) }, { label: 'Compact', icon: 'density_small', on: S.prefs.density === 'compact', onClick: toggleDensity }],
-      defaults: [{ label: 'Set as default', icon: 'lock_outline', onClick: setDefault }],
+      defaults: [{ label: isDefault() ? 'This view is your default' : 'Set as default', icon: 'lock_outline', on: isDefault(), onClick: setDefault }],
       info: [{ label: 'Legends', icon: 'legend_toggle', onClick: () => legendPop(a) }, { label: 'Refresh', icon: 'sync', onClick: () => refresh() }, { label: `Last updated on: ${fmt(LIM_DATA.LAST_UPDATED)}`, icon: 'info', disabled: true }],
     };
     const items = [];
@@ -355,15 +362,17 @@ window.R = (function () {
   // Filter popover · LIM filter: Start / End date, Organization, Discipline, Site, Floor, Reset / Apply
   const FILTER_FIELDS = [['org', 'Organization'], ['discipline', 'Discipline'], ['site', 'Site'], ['floor', 'Floor']];
   const EMPTY_FILTERS = () => ({ from: '', to: '', activeToday: false, udf1: '', udf2: '', udf3: '', org: '', discipline: '', site: '', floor: '' });
-  function filterPop(anchor) {
+  function filterPop(anchor, box) {
     const f = Object.assign(EMPTY_FILTERS(), V().filters);
     const pop = UI.float(anchor, `<div class="fp">
       <div class="fp-dur"><div><div class="ovl">Start Date</div><label class="fp-date"><input type="date" id="fFrom" value="${f.from}" aria-label="Start Date"></label></div>
         <div><div class="ovl">End Date</div><label class="fp-date"><input type="date" id="fTo" value="${f.to}" aria-label="End Date"></label></div></div>
       ${FILTER_FIELDS.map(([k, l]) => `<div class="ovl">${l}</div><input class="fp-in" id="f_${k}" placeholder="type..." value="${esc(f[k])}" aria-label="${l}">`).join('')}
       <div class="fp-f"><button class="btn text" id="fReset">Reset</button><button class="btn contained" id="fApply">Apply</button></div>
-    </div>`, { cls: 'popover fp-pop' });
+    </div>`, { cls: 'popover fp-pop' + (box ? ' box' : '') });
     if (!pop) return;
+    // from the search box: same left edge and width as the box
+    if (box) { const r = anchor.getBoundingClientRect(); pop.style.width = r.width + 'px'; pop.style.left = r.left + 'px'; pop.style.top = r.bottom + 4 + 'px'; }
     pop.querySelector('#fReset').onclick = () => { V().filters = EMPTY_FILTERS(); UI.closeFloat(); changed(); };
     pop.querySelector('#fApply').onclick = () => {
       Object.assign(f, { from: pop.querySelector('#fFrom').value, to: pop.querySelector('#fTo').value, activeToday: false, udf1: '', udf2: '', udf3: '' });

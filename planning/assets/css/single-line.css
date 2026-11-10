@@ -18,7 +18,7 @@
 .rx-items { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 4px; overflow: hidden; }
 .rx-g, .rx-g > .v-open, .rx-g > .v-fold { display: flex; align-items: center; gap: 2px; flex: none; }
 .rx-g:not(.is-fold) > .v-fold, .rx-g.is-fold > .v-open { display: none; }
-.rx-d { width: 1px; height: 40px; background: var(--border-bar); flex: none; margin: 0 4px; }
+.rx-d { width: 1px; height: 40px; background: var(--border-bar); flex: none; margin: 0; }
 .rx .lbt { display: flex; align-items: center; font-size: 12px; line-height: 14px; letter-spacing: .2px; color: var(--t2); white-space: nowrap; }
 .rx .lbt .ms { margin-right: -4px; }
 
@@ -66,11 +66,11 @@
 .rx-vm { display: grid; grid-template-columns: auto auto; column-gap: 16px; row-gap: 6px; padding: 0 6px; align-items: center; }
 .rx-vm .rb-radios { height: 18px; gap: 8px; }
 
-/* search: a field that takes the spare room (240–360px) → a tile → an icon */
+/* search: a field that takes the spare room (320–360px) → a tile → an icon */
 .sl-search { flex: none; min-width: 0; gap: 6px; transition: width .18s ease-out, background-color .18s; }
 .sl-sicon { display: flex; align-items: center; justify-content: center; color: var(--t2); flex: none; }
 .sl-search .rb-clear { margin-right: 8px; }
-.rx-g[data-g="find"]:not(.is-fold) { flex: 1 1 240px; min-width: 240px; max-width: 360px; }
+.rx-g[data-g="find"]:not(.is-fold) { flex: 1 1 320px; min-width: 320px; max-width: 360px; }
 .rx-g[data-g="find"]:not(.is-fold) .sl-search, .sl-search.open { width: 100%; height: 32px; padding-left: 8px; background: #fff; border: 1px solid var(--border-bar); cursor: text; }
 .sl-search.open { width: 280px; }
 .rx-g[data-g="find"]:not(.is-fold) .sl-sicon { pointer-events: none; }
@@ -120,3 +120,24 @@
 .g-row.sel .g-track { box-shadow: inset 0 0 0 999px rgba(38,38,51,.08); }
 .g-row[style*="--cat-f"] .g-bar { background: var(--cat-t); }
 .g-row[style*="--cat-f"] .g-fill { background: var(--cat-f); }
+
+/* Search + Filter in one box when search is a field (LIM reference): × clears, the filter button sits at the right */
+.sl-fbtn { position: relative; width: 28px; height: 28px; margin-right: 2px; flex: none; display: grid; place-items: center; border-radius: 4px; color: var(--olive); }
+.sl-fbtn:hover, .sl-fbtn.on { background: var(--olive-50); }
+.sl-fbtn .sl-badge { top: -2px; right: -3px; }
+.rx-g[data-g="find"]:not(.is-fold) .sl-search { padding-right: 0; }
+.rx-g[data-g="find"]:not(.is-fold) .rb-clear { margin-right: 2px; }
+.rx-g[data-g="find"]:not(.is-fold) ~ .rx-g[data-g="filter"] { display: none; }
+.rx-g[data-g="find"].is-fold .sl-fbtn { display: none; }
+.rx-g[data-g="find"].is-fold .sl-search.open .rb-clear { margin-right: 8px; }
+/* the filter pop-up under the search box takes the box width */
+.fp-pop.box .fp { padding: 16px 20px 12px; }
+/* Set default: active while the current view is the saved default */
+.rx-t.act, .rx-t.act .lbt { color: var(--olive); }
+.rx-t.act { background: var(--olive-50); }
+
+/* View modes on the ribbon: Time / Work are picks under Progress % (single choice, like Sort) */
+.rx-vm { row-gap: 4px; }
+.rx-basis { padding-left: 22px; }
+.rx-pk:disabled { opacity: .4; cursor: default; }
+.rx-pk:disabled:hover { background: none; }
