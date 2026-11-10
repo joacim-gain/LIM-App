@@ -1,3 +1,17 @@
+/* Colours from the Amberg Loglay library (v3 page only):
+   Primary/Main #969300 · Primary/50 #EFEFD8 · Secondary/Main #262633 · Secondary/300 #54545D (icons, labels)
+   Secondary/200 #818187 (inactive toggle, checkbox, radio) · Secondary/50 #DFDFE1 (borders, dividers) · Surface/Background #F2F2F2 */
+:root { --olive: #969300; --olive-50: #EFEFD8; --t1: #262633; --t2: #54545D; --t3: #818187; --border-bar: #DFDFE1; --border-field: #DFDFE1; --subtle: #F2F2F2; }
+/* checkbox and radio: unchecked in the inactive-toggle colour */
+.rb-check .cb { border-color: var(--t3); }
+.rb-check.on .cb { border-color: var(--olive); }
+.rb-radio .rd { border-color: var(--t3); }
+.rb-radio.on .rd { border-color: var(--olive); }
+/* the − / + of the Level stepper are icons too */
+.rb-stepper button { color: var(--t2); }
+/* Search and Filter share a section; a divider sits between them only when search is a tile or an icon */
+.rx-g[data-g="find"]:not(.is-fold) + .rx-d-find { display: none; }
+
 /* Ribbon v3 · one 64px row that fills the width (LIM project 2 recording); MS ribbon tiles in the LIM style.
    Sections fold right to left: open → folded (named button ▾) → icon only → ⋯ */
 .rx { height: 64px; display: flex; align-items: center; gap: 4px; padding: 8px 12px 8px 16px; background: var(--subtle); border-bottom: 1px solid var(--border-bar); }

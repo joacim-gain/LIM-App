@@ -69,6 +69,7 @@ window.R = (function () {
     <div class="rx" id="rx">
       <div class="rx-items" id="slItems">
         ${sec('find', 3, 1, 2, searchHtml(open))}
+        <i class="rx-d rx-d-find"></i>
         ${sec('filter', 2, null, 1, tile('filter', 'filter_list', 'Filter', filterTip(ch), { cls: 'sl-filter' + (ch.length ? ' on' : ''), badge: badge(ch) }))}
         <i class="rx-d"></i>
         ${sec('time', 3, 1, 2,
