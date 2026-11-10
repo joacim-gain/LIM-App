@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site Spec</title>
+<link rel="icon" type="image/svg+xml" href="../lim-logo.svg">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="spec.css">
+</head>
+<body>
+<div class="bar"><img src="../lim-logo.svg" alt=""><b>LIM</b>
+  <nav><a href="../">Overview</a><a href="planning.html">Planning spec</a><a href="site.html" aria-current="page">Site spec</a></nav>
+</div>
+<main class="page">
+  <header class="intro">
+    <span class="eyebrow">LIM · Site module · Updated 10 Nov 2026</span>
+    <h1>Site: Floor, zone details and Link Activity</h1>
+    <p class="lead">The viewer starts on a floor, opens a zone to read its details and linked activities, and switches to the edit view to draw a zone and link activities to it. The Link Activity panel is the same component in the read-only Activity tab and in the edit view.</p>
+    <div class="btns" style="margin-top:8px"><a class="btn primary" href="../site/"><span class="ms">open_in_new</span>Open Site demo</a><a class="btn line" href="site.json"><span class="ms">data_object</span>site.json</a></div>
+    <nav class="toc" aria-label="On this page" style="margin-top:8px"><a href="#demo">Live demo</a><a href="#flow">Flow</a><a href="#screens">Screens</a><a href="#panel">Link Activity panel</a><a href="#ribbon">Ribbon</a><a href="#rules">Rules</a><a href="#sizes">Sizes</a><a href="#impl">Implementation</a><a href="#notes">Notes</a><a href="#log">Changes</a></nav>
+  </header>
+
+  <section id="demo" aria-labelledby="demo-h">
+    <h2 id="demo-h">Live demo</h2>
+    <div class="demo">
+      <div class="demo-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">site/ · 1366 × 800</span><a class="btn line" style="height:30px" href="../site/">Open full page</a></div>
+      <div class="demo-stage" data-scale="height"><iframe src="../site/" title="Site demo" width="1366" height="800" loading="lazy"></iframe></div>
+      <p class="demo-note">The demo works inside this frame. Try: click a zone → Activity tab → widen the panel → open ⋯ and the filter.</p>
+    </div>
+  </section>
+
+  <section id="flow" aria-labelledby="flow-h">
+    <h2 id="flow-h">Flow</h2>
+    <div class="flow">
+      <div class="step"><span class="n">1</span><b>Floor</b><span>Zone list on the left, floor plan, icon strip on the right.</span></div>
+      <div class="step"><span class="n">2</span><b>Site details</b><span>Read-only zone panel with Details and Activity tabs.</span></div>
+      <div class="step"><span class="n">3</span><b>Edit view</b><span>Add Zone or Edit Zone form, drawing toolbar, Link Activity panel.</span></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Where</th><th>User action</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Floor</td><td>Click a zone row, or a zone shape on the plan</td><td>Site details for that zone; the row turns <code>#D9D8A2</code></td></tr>
+          <tr><td>Floor</td><td>Drawing tools icon (<code>format_shapes</code>) in the right strip</td><td>Edit view as <b>Add Zone</b>, empty name</td></tr>
+          <tr><td>Site details</td><td>✕ in the panel header, or Back</td><td>Floor</td></tr>
+          <tr><td>Site details</td><td>Pencil in the panel header</td><td>Edit view as <b>Edit Zone</b>, name filled in</td></tr>
+          <tr><td>Site details</td><td>Another zone row or shape</td><td>Switches the panel to that zone</td></tr>
+          <tr><td>Edit view</td><td>Back arrow, Cancel or Save</td><td>Floor (the prototype doesn't store the zone)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Shape → zone in the prototype: orange circle = Kitchen 01, green = Grand Hall, blue = Hall 2.</p>
+  </section>
+
+  <section id="screens" aria-labelledby="scr-h">
+    <h2 id="scr-h">Screens in Figma</h2>
+    <p>Page <b>New Site</b>, Section 1. Links open the frame in Figma.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Screen</th><th>Size</th><th>Figma</th></tr></thead>
+        <tbody>
+          <tr><td>Floor</td><td>1366 × 800</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14238-46485">14238:46485</a></td></tr>
+          <tr><td>Site details</td><td>1366 × 800</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14183-25736">14183:25736</a></td></tr>
+          <tr><td>Add Zone · 1 Default</td><td>1920 × 1080</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14144-7336">14144:7336</a></td></tr>
+          <tr><td>Add Zone · 2 Wide panel</td><td>1920 × 1080</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14149-576">14149:576</a></td></tr>
+          <tr><td>Add Zone · 3 Activity details</td><td>1920 × 1080</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14150-8343">14150:8343</a></td></tr>
+          <tr><td>Add Zone · 4 Filter</td><td>1920 × 1080</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14150-9162">14150:9162</a></td></tr>
+          <tr><td>Add Zone · 5 Bottom dock</td><td>1920 × 1080</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14150-9837">14150:9837</a></td></tr>
+          <tr><td>Add Zone · 6 Default (1440)</td><td>1440 × 900</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14151-1934">14151:1934</a></td></tr>
+          <tr><td>Activity Details drawer</td><td>340 wide</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14150-8141">14150:8141</a></td></tr>
+          <tr><td>Components · Site</td><td>Activity row, Activity group</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14141-7249">14141:7249</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="panel" aria-labelledby="panel-h">
+    <h2 id="panel-h">Link Activity panel</h2>
+    <p>One panel, two places. In the edit view it has the <b>Link Activity</b> header (position toggle, minimise) and Reset. In Site details it sits under the zone header and the Details | Activity tabs, and adds Save.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Panel width</th><th>Columns</th></tr></thead>
+        <tbody>
+          <tr><td>Under 350 px</td><td>Checkbox · Activity name (one line, ellipsis) · details chevron</td></tr>
+          <tr><td>350 px and wider</td><td>+ Duration (<code>dd.mm.yyyy → dd.mm.yyyy</code>, 160 px)</td></tr>
+          <tr><td>712 px and wider</td><td>+ Timeline (2026 → 2027, zone band, today line); the name column grows to 360 px</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Behaviour</th><th>Edit view</th><th>Site details · Activity tab</th></tr></thead>
+        <tbody>
+          <tr><td>Default width</td><td>360 px</td><td>300 px</td></tr>
+          <tr><td>Resize</td><td>Drag the left edge (240 px to page width − 360)</td><td>Same</td></tr>
+          <tr><td>Bottom dock</td><td>Yes, via the position toggle</td><td>No</td></tr>
+          <tr><td>Minimise</td><td>Yes (48 px strip)</td><td>No; ✕ closes the zone</td></tr>
+          <tr><td>Footer</td><td>Lock note · Reset</td><td>Reset · Save</td></tr>
+          <tr><td>Groups</td><td colspan="2">Linked to this zone, then Other activities; both fold</td></tr>
+          <tr><td>Details drawer</td><td colspan="2">Chevron on a row opens Activity Details (340 px) beside the panel; Esc or ✕ closes it</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="ribbon" aria-labelledby="rib-h">
+    <h2 id="rib-h">Ribbon</h2>
+    <p>Figma component <b>Ribbon</b> (Mode = Collapsed), 48 px, background <code>#F2F2F2</code>. The search box holds the only filter button.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Order</th><th>Group</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td>Always</td><td>Search</td><td>Search icon, “Search activities”, clear ✕, filter icon (olive; badge = active filters). 320 px while any group shows, shrinks to 120 px otherwise</td></tr>
+          <tr><td>1</td><td>Time</td><td>Monthly ▾, ‹ ›, TODAY</td></tr>
+          <tr><td>2</td><td>Group / Sort</td><td>Group ▾, Sort ▾</td></tr>
+          <tr><td>3</td><td>Level / View</td><td>Level ▾, View ▾</td></tr>
+          <tr><td>4</td><td>File</td><td>Import / export ▾</td></tr>
+          <tr><td>5–7</td><td>Display</td><td>Active Tasks switch · Zoom out, Fit, Zoom in, Fit screen · Compact switch</td></tr>
+          <tr><td>8</td><td>Defaults</td><td>Set as default (lock)</td></tr>
+          <tr><td>9</td><td>Info</td><td>Legends, Refresh, Last updated</td></tr>
+          <tr><td>End</td><td>More ⋯</td><td>Shown only when a group doesn't fit</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="plain">
+      <li><strong>Fitting:</strong> groups drop from the end (9 → 1) until the row fits. Dropped groups appear in ⋯ in ribbon order.</li>
+      <li><strong>More menu</strong> (Figma New Planning “Pop-up · More (⋯)”): 240 px, 32 px rows, icon 20 in a 24 box, 14 px text, separators <code>#E5E5E7</code> between sections, check + olive text on toggles that are on, right-aligned 4 px under ⋯. Outside click or ⋯ closes it.</li>
+    </ul>
+  </section>
+
+  <section id="rules" aria-labelledby="rules-h">
+    <h2 id="rules-h">Rules</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Rule</th><th>Behaviour</th></tr></thead>
+        <tbody>
+          <tr><td>Linking</td><td>Checkbox links / unlinks a row; the header checkbox does all visible rows. The count badge shows linked activities.</td></tr>
+          <tr><td>Crosses the zone</td><td>An activity whose dates start before or end after the zone dates. Its timeline bar gets an orange outline; the drawer explains why.</td></tr>
+          <tr><td>Lock zone duration</td><td>When on (edit form), activities that cross the zone can't be linked: greyed rows, footer note “Lock zone duration is on · N can't be linked”.</td></tr>
+          <tr><td>Save (Activity tab)</td><td>Disabled until a link changes. Save keeps the current links; Reset returns to the last save.</td></tr>
+          <tr><td>Reset (edit view)</td><td>Returns the links to the state the view opened with.</td></tr>
+          <tr><td>Filter</td><td>Start / End date, Filter for this floor, Site, Building, Floor, Organization (multi), Discipline, Zone. Apply is disabled until something changes.</td></tr>
+          <tr><td>Zone dates</td><td>Start, Duration and End stay in sync; changing them re-checks which activities cross the zone.</td></tr>
+          <tr><td>Shapes</td><td>Single Shape: a new drag replaces the shape. Multi Shape: each drag adds one. Esc hides the shape being drawn.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sizes" aria-labelledby="sizes-h">
+    <h2 id="sizes-h">Sizes</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Element</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Side nav · app bar</td><td>64 px · 64 px; Back bar 40 px (Floor and Site details)</td></tr>
+          <tr><td>Floor panel</td><td>320 px, <code>#F2F2F2</code>, zone rows 48 px with a 48 px colour block and a 32 px number circle</td></tr>
+          <tr><td>Floor icon strip</td><td>56 px wide, 56 px buttons, icons 20 px <code>#54545D</code></td></tr>
+          <tr><td>Zone panel</td><td>300 px; header 48 px; tabs 40 px (active: olive text, 2 px olive underline, <code>rgba(239,239,216,.5)</code>)</td></tr>
+          <tr><td>Add Zone form</td><td>400 px; header 48 px <code>#E1E1E3</code>; footer 68 px</td></tr>
+          <tr><td>Link Activity rows</td><td>44 px; group rows 32 px; header 32 px</td></tr>
+          <tr><td>Activity Details drawer</td><td>340 px</td></tr>
+          <tr><td>Filter pop-up</td><td>340 px</td></tr>
+          <tr><td>Ribbon · More menu</td><td>48 px · 240 px</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="impl" aria-labelledby="impl-h">
+    <h2 id="impl-h">Implementation</h2>
+    <p>The whole demo is one file, <code>site/index.html</code>. The view is a data attribute on <code>.app</code>; CSS shows and hides parts per view, so the Link Activity panel is never duplicated.</p>
+    <div class="code">
+      <div class="code-bar"><span>View switching (JS)</span><button class="copy" data-copy="js-go">Copy</button></div>
+      <pre id="js-go">// .app[data-view="floor" | "site" | "edit"][data-tab="details" | "activity"]
+go('site', zoneId)   // open Site details for a zone (panel 300 px, Details tab)
+go('edit', zoneId)   // Edit Zone (name filled in); go('edit') = Add Zone
+go('floor')          // back to Floor; closes the drawer, filter and menus
+setTab('activity')   // Details | Activity inside Site details</pre>
+    </div>
+    <div class="code">
+      <div class="code-bar"><span>Panel parts per view (CSS)</span><button class="copy" data-copy="css-view">Copy</button></div>
+      <pre id="css-view">.app[data-view="floor"] .dock { display: none; }                 /* no panel on Floor */
+.app[data-view="site"] .d-head { display: none; }                /* zone header + tabs instead */
+.app[data-view="edit"] .z-head, .app[data-view="edit"] .z-tabs { display: none; }
+.app[data-view="site"][data-tab="details"] .d-table { display: none; }</pre>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Function</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>render()</code></td><td>Builds the activity table: columns per width, groups, linked state, Save state, filter badge</td></tr>
+          <tr><td><code>fitRib()</code> · <code>ribMore()</code></td><td>Ribbon fitting and the ⋯ menu</td></tr>
+          <tr><td><code>details(id)</code></td><td>Activity Details drawer</td></tr>
+          <tr><td><code>drawFilter()</code></td><td>Filter pop-up</td></tr>
+          <tr><td><code>go()</code> · <code>setTab()</code> · <code>drawZones()</code></td><td>Views, tabs and the Floor zone list</td></tr>
+          <tr><td><code>layoutCanvas()</code></td><td>Centres plan, toolbar and hint in the space left of the panel</td></tr>
+          <tr><td><code>ACT</code> · <code>ZONE</code> · <code>FZONES</code></td><td>Sample activities, zone dates, Floor zones</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="notes" aria-labelledby="notes-h">
+    <h2 id="notes-h">Notes</h2>
+    <ul class="plain">
+      <li><strong>No backend.</strong> Links, Save and the zone form live in the page; reloading resets them.</li>
+      <li><strong>Visual only for now:</strong> the other Floor strip icons, zone row ⋮ menus, Unlink Activity, Take a Note, and most ribbon tools (period, Group, Sort, Level, View, Import, Legends, Refresh). Search, filter, the switches and ⋯ work.</li>
+      <li><strong>Zone dates</strong> on Details show the dates the Activity tab checks against (02.09.2026 – 31.03.2027), not the Figma placeholder.</li>
+      <li><strong>Zone shapes</strong> are part of the floor plan image; transparent buttons sit over them.</li>
+    </ul>
+  </section>
+
+  <section id="log" aria-labelledby="log-h">
+    <h2 id="log-h">Changes</h2>
+    <ul class="log">
+      <li><time>10 Nov 2026</time><code>9c9f24a</code><span>Ribbon More menu (New Planning reference); single filter inside search</span></li>
+      <li><time>10 Nov 2026</time><code>5c39205</code><span>Floor → Site details (Details | Activity, read-only with Save/Reset) → Edit view</span></li>
+      <li><time>10 Nov 2026</time><code>882e337</code><span>Single-line ribbon in Link Activity panel; note card matches Figma</span></li>
+    </ul>
+  </section>
+
+  <footer>Companion file: <a href="site.json"><code>site.json</code></a> holds the same values in machine-readable form.</footer>
+</main>
+<script src="spec.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "module": "Planning",
+  "updated": "2026-11-10",
+  "demo": "../planning/single-line.html",
+  "figma": { "file": "PPpA7P8JQ9CYNQ4LVlV8mR", "page": "New Planning",
+    "frames": { "ribbonV3": "14167:7214", "ribbonSet": "14170:8447", "morePopup": "14197:12186", "ribbonV2": "14140:7672", "ribbonV1": "14019:3848" } },
+  "ribbon": {
+    "height": 64,
+    "sections": ["find", "time", "sort", "group", "column", "level", "view", "file", "display", "defaults", "info"],
+    "search": { "minWidth": 240, "maxWidth": 360, "filterInside": true, "rowCount": true },
+    "foldOrder": ["group", "time", "level", "sort", "display", "view", "find"],
+    "passes": ["fold sections in foldOrder", "labels to icons right to left", "sections into More right to left"],
+    "moreMenu": { "width": 240, "rowHeight": 32, "align": "right" },
+    "options": {
+      "period": ["Yearly", "Quarterly", "Monthly", "Weekly", "Project Duration"], "periodDefault": "Monthly",
+      "sort": ["Default", "Start Date", "End Date"],
+      "group": ["Discipline", "Zone", "Organization", "Phase", "Site", "Floor", "None"],
+      "view": ["Dependencies", "Full screen", "Progress % (Time / Work)"],
+      "filter": ["Start Date", "End Date", "Organization", "Discipline", "Site", "Floor"]
+    },
+    "zoom": { "min": 50, "max": 200, "step": 10, "fit": 100 },
+    "setDefaultSaves": ["time", "group", "sort", "column", "level"],
+    "iconColor": "#54545D"
+  },
+  "gantt": {
+    "rowHeight": 48, "rowHeightCompact": 36,
+    "lines": { "today": "olive dotted", "lastUpdated": "#D82034 dotted", "lastUpdatedDate": "2026-10-27" },
+    "rowTints": { "criticalDate": "rgba(245,191,94,.24)", "volumeNormal": "rgba(68,223,183,.32)", "volumeCritical": "rgba(216,32,52,.16)", "other": "rgba(180,134,240,.32)" },
+    "currentPeriod": { "header": "#D9D8A2", "column": "#F4F7F9" },
+    "dependencies": { "line": "#B0B0B5", "selected": "#F7A21B" }
+  },
+  "colors": { "olive": "#969300", "oliveBtn": "#969311", "olive200": "#C0BE69", "olive50": "#F5F5E6", "raisin": "#262633", "t2": "#54545D", "t3": "#818187", "borderBar": "#DCDCDD", "borderField": "#DFDFE1", "borderRow": "#E5E5E7", "grid": "#E0E0E0", "subtle": "#F2F2F2", "today": "#D82034" }
+}

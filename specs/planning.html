@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planning Spec</title>
+<link rel="icon" type="image/svg+xml" href="../lim-logo.svg">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="spec.css">
+</head>
+<body>
+<div class="bar"><img src="../lim-logo.svg" alt=""><b>LIM</b>
+  <nav><a href="../">Overview</a><a href="planning.html" aria-current="page">Planning spec</a><a href="site.html">Site spec</a></nav>
+</div>
+<main class="page">
+  <header class="intro">
+    <span class="eyebrow">LIM · Planning module · Updated 10 Nov 2026</span>
+    <h1>Planning: Gantt and the single-row ribbon</h1>
+    <p class="lead">The Settings drawer is gone. Every view setting now lives in one ribbon row above the Gantt. When the screen narrows, sections fold into named buttons, labels give way to icons, and whatever still doesn't fit moves into ⋯.</p>
+    <div class="btns" style="margin-top:8px"><a class="btn primary" href="../planning/single-line.html"><span class="ms">open_in_new</span>Open Planning demo</a><a class="btn line" href="planning.json"><span class="ms">data_object</span>planning.json</a></div>
+    <nav class="toc" aria-label="On this page" style="margin-top:8px"><a href="#demo">Live demo</a><a href="#ribbon">Ribbon</a><a href="#fit">Fitting</a><a href="#controls">Controls</a><a href="#gantt">Gantt</a><a href="#figma">Figma</a><a href="#impl">Implementation</a><a href="#notes">Notes</a><a href="#log">Changes</a></nav>
+  </header>
+
+  <section id="demo" aria-labelledby="demo-h">
+    <h2 id="demo-h">Live demo</h2>
+    <div class="demo">
+      <div class="demo-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">planning/single-line.html · 1366 × 800</span><a class="btn line" style="height:30px" href="../planning/single-line.html">Open full page</a></div>
+      <div class="demo-stage" data-scale="height"><iframe src="../planning/single-line.html" title="Planning demo" width="1366" height="800" loading="lazy"></iframe></div>
+      <p class="demo-note">Resize the full page to watch the ribbon fold. Data is kept in the browser; avatar → Reset demo data restores it.</p>
+    </div>
+  </section>
+
+  <section id="ribbon" aria-labelledby="rib-h">
+    <h2 id="rib-h">Ribbon</h2>
+    <p>One 64 px row that fills the width. Sections are divided by lines only. Wide screens show Time, Sort and Group as inline picks; narrower screens fold them into a named button with a menu.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Section</th><th>Contents</th><th>Options</th></tr></thead>
+        <tbody>
+          <tr><td>Search + Filter</td><td>One box (240–360 px, takes spare room), row count “10 of 23”, filter icon inside; filter pop-up opens under the box</td><td>Start / End Date, Organization, Discipline, Site, Floor</td></tr>
+          <tr><td>Time</td><td>Period, ‹ › and TODAY</td><td>Yearly, Quarterly, Monthly (default), Weekly, Project Duration</td></tr>
+          <tr><td>Sort</td><td>Sort by</td><td>Default, Start Date, End Date</td></tr>
+          <tr><td>Group</td><td>Group by</td><td>Discipline, Zone, Organization, Phase, Site, Floor, None</td></tr>
+          <tr><td>Column</td><td>Column menu with checkboxes on the left</td><td>Visible Gantt columns</td></tr>
+          <tr><td>Level</td><td>− / input / +; Expand all · Collapse all</td><td>1 to the deepest level</td></tr>
+          <tr><td>View</td><td>View modes</td><td>Dependencies, Full screen, Progress % (Time / Work)</td></tr>
+          <tr><td>File</td><td>Import, Download</td><td>Import opens the file picker</td></tr>
+          <tr><td>Display</td><td>Active tasks · Zoom − Fit + · Compact</td><td>Zoom 50–200 % in 10 % steps; Fit = 100 %; Compact = 36 px rows (default 48 px)</td></tr>
+          <tr><td>Set default</td><td>lock_outline tile</td><td>Saves Time, Group, Sort, Column and Level as the user's default</td></tr>
+          <tr><td>Info</td><td>Legends · Refresh · Last updated</td><td>Last updated 27.10.2026 (as in the live app)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="plain">
+      <li><strong>Active states:</strong> Set default turns active only after a click. A tile turns olive only when its choice differs from the saved default (Sort, Group, Column, Level).</li>
+      <li><strong>Tooltips</strong> explain each tool in a short title + one line.</li>
+      <li><strong>Icon colour</strong> <code>#54545D</code>; the Legends icon <code>legend_toggle</code> comes from Material Design Icons (community), not Amlog Material Icons.</li>
+    </ul>
+  </section>
+
+  <section id="fit" aria-labelledby="fit-h">
+    <h2 id="fit-h">Fitting</h2>
+    <p>The ribbon re-fits on every resize and once fonts have loaded (icon names measure wide until Material Icons arrives). Three passes run until the row fits:</p>
+    <div class="flow">
+      <div class="step"><span class="n">1</span><b>Fold sections</b><span>Open sections fold into their named button in this order: Group, Time, Level, Sort, Display, View, Search.</span></div>
+      <div class="step"><span class="n">2</span><b>Labels → icons</b><span>Named buttons lose their labels, right to left.</span></div>
+      <div class="step"><span class="n">3</span><b>Into ⋯</b><span>Whole sections move into ⋯, right to left. ⋯ lists them in ribbon order with dividers.</span></div>
+    </div>
+    <div class="code">
+      <div class="code-bar"><span>assets/js/ribbon-single.js · fit()</span><button class="copy" data-copy="js-fit">Copy</button></div>
+      <pre id="js-fit">const FOLD_ORDER = ['group', 'time', 'level', 'sort', 'display', 'view', 'find'];
+// 1 · open sections fold into their named button, in FOLD_ORDER
+for (const name of FOLD_ORDER) { if (!over()) break; /* fold section */ }
+// 2 · labels give way to icons, right to left
+for (let i = gs.length - 1; i >= 0 &amp;&amp; over(); i--) { /* icon only */ }
+// 3 · sections move into ⋯, right to left
+for (let i = gs.length - 1; i &gt; 0 &amp;&amp; over(); i--) { /* hide, add to ⋯ */ }</pre>
+    </div>
+    <ul class="plain">
+      <li><strong>Search box:</strong> an open search field (while typing) stays open during fitting.</li>
+      <li><strong>Dividers</strong> show only between two visible sections.</li>
+      <li><strong>⋯ menu:</strong> 240 px, right-aligned, 32 px rows with icon + label, toggles show a check; Figma “Pop-up · More (⋯)”.</li>
+    </ul>
+  </section>
+
+  <section id="controls" aria-labelledby="ctl-h">
+    <h2 id="ctl-h">Where the old Settings drawer went</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Settings drawer (live app)</th><th>New place</th></tr></thead>
+        <tbody>
+          <tr><td>Time Period, Group By, Sort By, Column, Level</td><td>Ribbon sections (picks or named buttons)</td></tr>
+          <tr><td>Set as default</td><td>One Set default tile; saves all five</td></tr>
+          <tr><td>Full Screen, Dependencies, Progress %</td><td>View section</td></tr>
+          <tr><td>Download, Import</td><td>File section</td></tr>
+          <tr><td>Legend</td><td>Info section › Legends pop-up</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="gantt" aria-labelledby="gantt-h">
+    <h2 id="gantt-h">Gantt</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Item</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Row height</td><td>48 px; Compact 36 px</td></tr>
+          <tr><td>Today line</td><td>Dotted olive, tooltip “Today” (viewer's current date)</td></tr>
+          <tr><td>Last updated line</td><td>Dotted red <code>#D82034</code>, tooltip “Last updated”</td></tr>
+          <tr><td>‹ ›</td><td>Move one period: Yearly 1 year, Quarterly 1 quarter, Monthly 1 month, Weekly 1 week (animated)</td></tr>
+          <tr><td>Row colours</td><td>Critical Date <code>rgba(245,191,94,.24)</code> · Volume normal <code>rgba(68,223,183,.32)</code> · Volume critical <code>rgba(216,32,52,.16)</code> · Other <code>rgba(180,134,240,.32)</code></td></tr>
+          <tr><td>Current period</td><td>Header <code>#D9D8A2</code>, column <code>#F4F7F9</code></td></tr>
+          <tr><td>Dependencies</td><td>Lines <code>#B0B0B5</code>; selected chain <code>#F7A21B</code></td></tr>
+          <tr><td>Activity Details</td><td>Right-hand drawer (new design), opened from a row</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="figma" aria-labelledby="figma-h">
+    <h2 id="figma-h">Figma</h2>
+    <p>Page <b>New Planning</b>.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Frame</th><th>What it is</th><th>Figma</th></tr></thead>
+        <tbody>
+          <tr><td>Ribbon v3</td><td>Section with components and six screens</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14167-7214">14167:7214</a></td></tr>
+          <tr><td>Ribbon (component set)</td><td>Mode × Width: Expanded 2560 / 1920 / 1600 / 1366 / 1100, Collapsed 1366 / 850</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14170-8447">14170:8447</a></td></tr>
+          <tr><td>Pop-up · More (⋯)</td><td>⋯ menu reference</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14197-12186">14197:12186</a></td></tr>
+          <tr><td>Ribbon v2</td><td>Earlier version (single line + classic)</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14140-7672">14140:7672</a></td></tr>
+          <tr><td>Single-line ribbon v1</td><td>First version</td><td><a target="_blank" rel="noopener" href="https://www.figma.com/design/PPpA7P8JQ9CYNQ4LVlV8mR/LIM?node-id=14019-3848">14019:3848</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="impl" aria-labelledby="impl-h">
+    <h2 id="impl-h">Implementation</h2>
+    <p>Plain HTML, CSS and JavaScript, no build step. Page: <code>planning/single-line.html</code>. Older versions stay available as <code>single-line-v2.html</code> and <code>single-line-v1.html</code>.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>File</th><th>What is there</th></tr></thead>
+        <tbody>
+          <tr><td><code>assets/js/ribbon-single.js</code></td><td>Ribbon: sections, fitting, ⋯ menu, pop-ups (filter, view modes, legends, display)</td></tr>
+          <tr><td><code>assets/js/gantt.js</code></td><td>Table + timeline, tree, grouping, sorting, filtering, bars, dependencies, drag / resize</td></tr>
+          <tr><td><code>assets/js/details-v3.js</code></td><td>Activity Details drawer</td></tr>
+          <tr><td><code>assets/js/panels.js</code></td><td>Edit Activity Date, Assign Zone, Add (Sub) Activity, Edit</td></tr>
+          <tr><td><code>assets/js/time.js</code></td><td>Time periods and column headers</td></tr>
+          <tr><td><code>assets/js/store.js</code></td><td>View state, defaults, <code>localStorage</code></td></tr>
+          <tr><td><code>assets/js/data.js</code></td><td>Sample data from the live app (project Amazon)</td></tr>
+          <tr><td><code>assets/css/app.css</code> · <code>single-line.css</code></td><td>Tokens and base styles · ribbon v3 styles</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code">
+      <div class="code-bar"><span>Cache busting</span><button class="copy" data-copy="cache">Copy</button></div>
+      <pre id="cache">&lt;!-- raise ?v= on every CSS / JS link after a change so browsers fetch the new file --&gt;
+&lt;script src="assets/js/ribbon-single.js?v=20261113.1"&gt;&lt;/script&gt;</pre>
+    </div>
+  </section>
+
+  <section id="notes" aria-labelledby="notes-h">
+    <h2 id="notes-h">Notes</h2>
+    <ul class="plain">
+      <li><strong>No backend.</strong> Settings and edits live in <code>localStorage</code>; avatar → Reset demo data restores everything.</li>
+      <li><strong>Sample data</strong> follows the live app recording; some cut-off names were completed (marked <code>// completed</code> in <code>data.js</code>).</li>
+      <li><strong>Import</strong> only opens the file picker.</li>
+      <li><strong>Legend labels</strong> use the Figma text (“Logistics Volume - Normal / Critical”); the live app says “High / Low”.</li>
+    </ul>
+  </section>
+
+  <section id="log" aria-labelledby="log-h">
+    <h2 id="log-h">Changes</h2>
+    <ul class="log">
+      <li><time>10 Nov 2026</time><code>549ca13</code><span>Set default active only after a click; olive tiles only when a choice differs from the default</span></li>
+      <li><time>10 Nov 2026</time><code>c265791</code><span>New Activity Details drawer; no divider next to the open search box</span></li>
+      <li><time>10 Nov 2026</time><code>9e6f607</code><span>Search + filter in one box (filter pop-up under the box), Set default active state, Time/Work as picks</span></li>
+      <li><time>10 Nov 2026</time><code>9ad7c18</code><span>One responsive row (sections fold, then move into ⋯), inline picks for Time/Sort/Group, row count, tooltips</span></li>
+      <li><time>10 Nov 2026</time><code>c025164</code><span>Filter with Start/End Date, Organization, Discipline, Site, Floor</span></li>
+    </ul>
+  </section>
+
+  <footer>Companion file: <a href="planning.json"><code>planning.json</code></a> holds the same values in machine-readable form.</footer>
+</main>
+<script src="spec.js"></script>
+</body>
+</html>

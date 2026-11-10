@@ -1,0 +1,31 @@
+{
+  "module": "Site",
+  "updated": "2026-11-10",
+  "demo": "../site/",
+  "figma": { "file": "PPpA7P8JQ9CYNQ4LVlV8mR", "page": "New Site",
+    "frames": { "floor": "14238:46485", "siteDetails": "14183:25736", "addZoneDefault1920": "14144:7336", "widePanel": "14149:576", "activityDetails": "14150:8343", "filter": "14150:9162", "bottomDock": "14150:9837", "default1440": "14151:1934", "detailsDrawer": "14150:8141", "components": "14141:7249" } },
+  "flow": [
+    { "from": "floor", "action": "click zone row or shape", "to": "siteDetails" },
+    { "from": "floor", "action": "drawing tools icon", "to": "edit", "mode": "add" },
+    { "from": "siteDetails", "action": "close or back", "to": "floor" },
+    { "from": "siteDetails", "action": "pencil", "to": "edit", "mode": "edit" },
+    { "from": "edit", "action": "back, cancel or save", "to": "floor" }
+  ],
+  "linkActivityPanel": {
+    "widthDefault": { "edit": 360, "siteDetails": 300 },
+    "resize": { "min": 240, "max": "viewport - 360" },
+    "columns": [ { "minWidth": 0, "show": ["checkbox", "name", "details"] }, { "minWidth": 350, "add": "duration", "width": 160 }, { "minWidth": 712, "add": "timeline", "nameWidth": 360 } ],
+    "bottomDock": { "edit": true, "siteDetails": false },
+    "footer": { "edit": ["lockNote", "reset"], "siteDetails": ["reset", "save"] },
+    "rowHeight": 44, "groupRowHeight": 32
+  },
+  "ribbon": {
+    "height": 48, "background": "#F2F2F2",
+    "search": { "width": 320, "minWidth": 120, "filterInside": true },
+    "groups": ["time", "groupSort", "levelView", "file", "activeTasks", "zoom", "compact", "setDefault", "info"],
+    "fitting": "drop groups from the end until the row fits; dropped groups go to More in ribbon order",
+    "moreMenu": { "width": 240, "rowHeight": 32, "iconBox": 24, "icon": 20, "fontSize": 14, "separator": "#E5E5E7", "gap": 4, "align": "right" }
+  },
+  "sizes": { "sideNav": 64, "appBar": 64, "backBar": 40, "floorPanel": 320, "zoneRow": 48, "iconStrip": 56, "zonePanel": 300, "zoneHeader": 48, "tabs": 40, "addZoneForm": 400, "detailsDrawer": 340, "filterPopup": 340 },
+  "colors": { "olive": "#969300", "olive200": "#C0BE69", "olive50": "#F5F5E6", "raisin": "#262633", "t2": "#54545D", "t3": "#818187", "borderField": "#DFDFE1", "borderRow": "#E5E5E7", "subtle": "#F2F2F2", "zoneRowSelected": "#D9D8A2", "zonePanel": "#F9F9F9", "tabActiveBg": "rgba(239,239,216,.5)" }
+}
