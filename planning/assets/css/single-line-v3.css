@@ -1,0 +1,183 @@
+/* Colours from the Amberg Loglay library (v3 page only):
+   Primary/Main #969300 · Primary/50 #EFEFD8 · Secondary/Main #262633 · Secondary/300 #54545D (icons, labels)
+   Secondary/200 #818187 (inactive toggle, checkbox, radio) · Secondary/50 #DFDFE1 (borders, dividers) · Surface/Background #F2F2F2 */
+:root { --olive: #969300; --olive-50: #EFEFD8; --t1: #262633; --t2: #54545D; --t3: #818187; --border-bar: #DFDFE1; --border-field: #DFDFE1; --subtle: #F2F2F2; }
+/* checkbox and radio: unchecked in the inactive-toggle colour */
+.rb-check .cb { border-color: var(--t3); }
+.rb-check.on .cb { border-color: var(--olive); }
+.rb-radio .rd { border-color: var(--t3); }
+.rb-radio.on .rd { border-color: var(--olive); }
+/* the − / + of the Level stepper are icons too */
+.rb-stepper button { color: var(--t2); }
+/* Search and Filter share a section; a divider sits between them only when search is a tile or an icon */
+.rx-g[data-g="find"]:not(.is-fold) + .rx-d-find { display: none; }
+
+/* Ribbon v3 · one 64px row that fills the width (LIM project 2 recording); MS ribbon tiles in the LIM style.
+   Sections fold right to left: open → folded (named button ▾) → icon only → ⋯ */
+.rx { height: 64px; display: flex; align-items: center; gap: 4px; padding: 8px 12px 8px 16px; background: var(--subtle); border-bottom: 1px solid var(--border-bar); }
+.rx-items { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 4px; overflow: hidden; }
+.rx-g, .rx-g > .v-open, .rx-g > .v-fold { display: flex; align-items: center; gap: 2px; flex: none; }
+.rx-g:not(.is-fold) > .v-fold, .rx-g.is-fold > .v-open { display: none; }
+.rx-d { width: 1px; height: 40px; background: var(--border-bar); flex: none; margin: 0; }
+.rx .lbt { display: flex; align-items: center; font-size: 12px; line-height: 14px; letter-spacing: .2px; color: var(--t2); white-space: nowrap; }
+.rx .lbt .ms { margin-right: -4px; }
+
+/* tiles: icon with the label underneath */
+.rx-t { position: relative; height: 48px; min-width: 44px; padding: 4px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 4px; color: var(--t2); flex: none; }
+.rx-t:hover:not(:disabled) { background: rgba(38,38,51,.06); }
+.rx-t:disabled { opacity: .38; }
+.rx-t.set, .rx-t.set .lbt { color: var(--olive); }
+.rx-t.sl-filter.on { color: var(--olive); background: var(--olive-50); }
+.rx-t.sl-filter.on .lbt { color: var(--olive); }
+.rx-t .sl-badge { top: 2px; right: 6px; }
+.rx-t .ddc { display: none; }
+.rx-period { min-width: 88px; }
+.rx-t.rb-switch { height: 48px; padding: 4px 6px; flex-direction: column; gap: 4px; }
+/* icon state: 32px icon buttons (▾ next to the icon for menus) */
+.rx-g.is-icon .rx-t.ic { height: 32px; min-width: 32px; padding: 0 6px; flex-direction: row; gap: 0; }
+.rx-g.is-icon .rx-t.ic .lbt { display: none; }
+.rx-g.is-icon .rx-t.ic.rx-ddt { padding: 0 2px 0 6px; }
+.rx-g.is-icon .rx-t.ic .ddc { display: block; }
+.rx-g.is-icon .rx-t .sl-badge { top: -2px; right: -2px; }
+#slMore.rx-t { height: 32px; min-width: 32px; padding: 0 6px; flex-direction: row; }
+#slMore .lbt { display: none; }
+
+/* radio picks: the choices shown directly; the current one is highlighted */
+.rx-lead { width: 24px; height: 48px; display: grid; place-items: center; color: var(--t2); flex: none; }
+.rx-picks { display: grid; grid-template-columns: repeat(var(--cols), auto); gap: 2px; align-content: center; flex: none; }
+.rx-pk { height: 22px; padding: 0 8px; border: .75px solid var(--border-field); border-radius: 4px; font-size: 12px; line-height: 16px; letter-spacing: .2px; color: var(--t2); white-space: nowrap; text-align: left; }
+.rx-pk:hover { background: rgba(38,38,51,.06); }
+.rx-pk.on { background: var(--olive-50); border-color: var(--olive); color: var(--olive); font-weight: 500; }
+
+/* small stacked buttons (‹ ›), like Excel's small buttons */
+.rx-stk { display: flex; flex-direction: column; }
+.rx-stk .rb-ib { width: 28px; height: 24px; }
+/* level and zoom: control on top, label under it */
+.rx-lv, .rx-zoom { height: 48px; padding: 0 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: none; }
+.rx-zoom .rb-zc { display: flex; align-items: center; height: 30px; }
+.rx-zoom .rb-ib { height: 30px; }
+.rx-lv .rx-step { height: 28px; }
+.rx .rx-zoom .lbt { font-size: 10px; }
+.rx-step { width: 84px; height: 32px; }
+.rx-step input { width: 28px; height: 20px; border: 0; padding: 0; background: none; text-align: center; font: inherit; font-size: 12px; letter-spacing: .2px; color: var(--t1); }
+.rx-step input:focus { outline: none; background: var(--subtle); border-radius: 2px; }
+.rb-stepper button:disabled { opacity: .38; }
+/* view modes shown directly: two columns of two */
+.rx-vm { display: grid; grid-template-columns: auto auto; column-gap: 16px; row-gap: 6px; padding: 0 6px; align-items: center; }
+.rx-vm .rb-radios { height: 18px; gap: 8px; }
+
+/* search: a field that takes the spare room (320–360px) → a tile → an icon */
+.sl-search { flex: none; min-width: 0; gap: 6px; transition: width .18s ease-out, background-color .18s; }
+.sl-sicon { display: flex; align-items: center; justify-content: center; color: var(--t2); flex: none; }
+.sl-search .rb-clear { margin-right: 8px; }
+.rx-g[data-g="find"]:not(.is-fold) { flex: 1 1 320px; min-width: 320px; max-width: 360px; }
+.rx-g[data-g="find"]:not(.is-fold) .sl-search, .sl-search.open { width: 100%; height: 32px; padding-left: 8px; background: #fff; border: 1px solid var(--border-bar); cursor: text; }
+.sl-search.open { width: 280px; }
+.rx-g[data-g="find"]:not(.is-fold) .sl-sicon { pointer-events: none; }
+.sl-search .lbt { display: none; }
+.rx-g[data-g="find"].is-fold .sl-search:not(.open) { width: auto; height: 48px; padding: 0; border: 1px solid transparent; background: none; cursor: pointer; }
+.rx-g[data-g="find"].is-fold .sl-search:not(.open) input, .rx-g[data-g="find"].is-fold .sl-search:not(.open) .rb-clear, .rx-g[data-g="find"].is-fold .sl-search:not(.open) .sl-count { width: 0; min-width: 0; flex: 0 0 0; padding: 0; overflow: hidden; opacity: 0; }
+.rx-g[data-g="find"].is-fold .sl-search:not(.open) .sl-sicon { height: 48px; min-width: 44px; padding: 4px 6px; flex-direction: column; gap: 4px; border-radius: 4px; }
+.rx-g[data-g="find"].is-fold .sl-search:not(.open) .sl-sicon:hover { background: rgba(38,38,51,.06); }
+.rx-g[data-g="find"].is-fold:not(.is-icon) .sl-search:not(.open) .lbt { display: flex; }
+.rx-g[data-g="find"].is-icon .sl-search:not(.open) .sl-sicon { height: 32px; min-width: 32px; padding: 0 6px; }
+/* "10 of 25" while searching or filtering */
+.sl-count { flex: none; font-size: 11px; color: var(--t3); white-space: nowrap; margin-left: 4px; }
+.sl-count.hidden + .rb-clear { margin-left: 0; }
+
+/* filter: olive with a count when filters are applied */
+.sl-filter { position: relative; }
+.sl-badge { position: absolute; top: 3px; right: 2px; min-width: 14px; height: 14px; padding: 0 3px; border-radius: 7px; background: var(--olive); color: #fff; font-size: 9px; font-weight: 500; line-height: 14px; font-style: normal; text-align: center; }
+
+/* − Fit + · "Fit" goes back to the default view (LIM project recording) */
+.sl-fit { height: 32px; padding: 0 6px; border-radius: 4px; font-size: 12px; line-height: 16px; letter-spacing: .25px; color: var(--t2); }
+.sl-fit:hover { background: rgba(38,38,51,.06); }
+
+/* pop-ups */
+.sl-pop { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
+.sl-lr { justify-content: space-between; height: 20px; }
+.sl-pop .rb-stepper { width: 168px; }
+.sl-pop .rb-switch { padding: 0; font-size: 12px; color: var(--t1); }
+.sl-zrow { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--t2); }
+.menu .mi.hi { background: var(--subtle); }
+.menu.sl-cols .mi .ms.ck { color: var(--olive); }
+/* menu icons sit in a 24px slot, so evened-out icon sizes keep the labels aligned */
+.menu .mi > .ms:first-child { width: 24px; text-align: center; }
+
+/* Filter · Start Date and End Date side by side, each with its own label */
+.fp-dur { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+.fp-dur .fp-date { width: 100%; }
+.fp-dur + .ovl { margin-top: 20px; }
+
+/* Gantt (v3) · white page, horizontal row lines, row colour runs to the end of the timeline, coloured bars.
+   The ribbon keeps its grey. */
+.g-scroll { background: #fff; }
+.g-corner, .g-th { background: #fff; }
+.g-th.cur { background: var(--cur-head); }
+.g-col { border-left: 0; }
+.g-track { background: var(--tint, transparent); border-bottom: 1px solid var(--border-row); }
+.g-row:hover .g-track { box-shadow: inset 0 0 0 999px rgba(38,38,51,.04); }
+.g-row.sel .g-track { box-shadow: inset 0 0 0 999px rgba(38,38,51,.08); }
+.g-row[style*="--cat-f"] .g-bar { background: var(--cat-t); }
+.g-row[style*="--cat-f"] .g-fill { background: var(--cat-f); }
+
+/* Search + Filter in one box when search is a field (LIM reference): × clears, the filter button sits at the right */
+.sl-fbtn { position: relative; width: 28px; height: 28px; margin-right: 2px; flex: none; display: grid; place-items: center; border-radius: 4px; color: var(--olive); }
+.sl-fbtn:hover, .sl-fbtn.on { background: var(--olive-50); }
+.sl-fbtn .sl-badge { top: -2px; right: -3px; }
+.rx-g[data-g="find"]:not(.is-fold) .sl-search { padding-right: 0; }
+.rx-g[data-g="find"]:not(.is-fold) .rb-clear { margin-right: 2px; }
+.rx-g[data-g="find"]:not(.is-fold) ~ .rx-g[data-g="filter"] { display: none; }
+.rx-g[data-g="find"].is-fold .sl-fbtn { display: none; }
+.rx-g[data-g="find"].is-fold .sl-search.open .rb-clear { margin-right: 8px; }
+/* the filter pop-up under the search box takes the box width */
+.fp-pop.box .fp { padding: 16px 20px 12px; }
+/* Set default: active while the current view is the saved default */
+.rx-t.act, .rx-t.act .lbt { color: var(--olive); }
+.rx-t.act { background: var(--olive-50); }
+
+/* View modes on the ribbon: Time / Work are picks under Progress % (single choice, like Sort) */
+.rx-vm { row-gap: 4px; }
+.rx-basis { padding-left: 22px; }
+.rx-pk:disabled { opacity: .4; cursor: default; }
+.rx-pk:disabled:hover { background: none; }
+
+/* Activity Details drawer (v3) · Figma "Activity Details · Planning" (340px) */
+.panel { width: 340px; }
+.panel-open .fab { right: 376px; }
+.panel-open #toasts { right: 432px; }
+.panel .pn-h { height: 48px; gap: 4px; padding: 0 8px 0 16px; }
+.panel .pn-h h3 { color: var(--t1); }
+.panel .pn-h .rb-ib .ms { font-size: 24px; }
+.panel.dr3 .pn-b { padding: 12px 16px 20px; }
+.dr-name { font-size: 15px; line-height: 21px; font-weight: 500; color: var(--t1); word-break: break-word; }
+.dr-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; color: var(--t3); font-size: 12px; line-height: 16px; }
+.dr-link { margin-top: 12px; padding: 12px; border: 1px solid var(--border-field); border-radius: 6px; display: flex; flex-direction: column; gap: 10px; }
+.dr-zones .lbl2 { display: block; font-size: 12px; color: var(--t2); margin-bottom: 6px; }
+.dr-zones .none { color: var(--t3); font-size: 13px; }
+.dr-sec { margin: 22px 0 2px; font-weight: 500; font-size: 13px; letter-spacing: 1.25px; text-transform: uppercase; color: var(--t3); }
+.dv { display: grid; grid-template-columns: 124px 1fr; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--border-row); align-items: start; }
+.dv > span { color: var(--t2); font-size: 12px; line-height: 20px; }
+.dv > b { font-weight: 400; font-size: 13px; line-height: 20px; color: var(--t1); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; word-break: break-word; }
+.dv > b .ms { color: var(--t2); }
+.dv .arr { color: var(--t3); margin: 0 2px; }
+.dv .nowrap { white-space: nowrap; }
+.vchips { display: flex; flex-wrap: wrap; gap: 4px; }
+.vchip { background: #EEEEF0; color: var(--t1); border-radius: 4px; padding: 0 6px; font-size: 12px; line-height: 20px; }
+.vchip.site { background: var(--olive-50); color: #6E6B00; }
+.stat { display: inline-flex; align-items: center; gap: 6px; }
+.stat i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dr-none { color: var(--t3); font-size: 13px; line-height: 20px; padding: 4px 0; }
+.dr-deps { display: flex; flex-direction: column; padding: 2px 0; }
+.dr-dep { text-align: left; font-size: 13px; line-height: 20px; padding: 4px 0; color: var(--t1); border-bottom: 1px solid var(--border-row); }
+.dr-dep:hover { color: var(--olive); }
+.dr-nread { margin-top: 4px; padding: 8px; border: 1px solid var(--border-field); border-radius: 4px; background: #FAFAFA; font-size: 13px; line-height: 20px; color: var(--t1); word-break: break-word; }
+.dr-ncard { margin-top: 16px; padding: 8px 12px 12px; border: 1px solid var(--border-field); border-radius: 4px; }
+.dr-ncard .who { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+.dr-ncard .av { width: 40px; height: 40px; border-radius: 50%; background: #EEEEF0; color: var(--t3); display: grid; place-items: center; flex: none; }
+.dr-ncard .who b { display: block; font-weight: 500; font-size: 14px; line-height: 16px; color: var(--t1); }
+.dr-ncard .who span { display: block; margin-top: 2px; font-size: 12px; line-height: 16px; color: var(--t2); }
+.dr-ncard .more { padding-left: 52px; display: flex; flex-direction: column; gap: 2px; font-size: 12px; line-height: 16px; color: var(--t2); }
+.dr-ncard .more time { margin-top: 8px; }
+/* open search box (filter inside): no divider before Time either; side by side (tile + Filter) keeps both dividers */
+.rx-g[data-g="find"]:not(.is-fold) ~ .rx-g[data-g="filter"] + .rx-d { display: none; }

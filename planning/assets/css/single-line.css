@@ -66,11 +66,11 @@
 .rx-vm { display: grid; grid-template-columns: auto auto; column-gap: 16px; row-gap: 6px; padding: 0 6px; align-items: center; }
 .rx-vm .rb-radios { height: 18px; gap: 8px; }
 
-/* search: a field that takes the spare room (320–360px) → a tile → an icon */
+/* search: a fixed 320px field → the search icon (field opens below it as a pop-up) */
 .sl-search { flex: none; min-width: 0; gap: 6px; transition: width .18s ease-out, background-color .18s; }
 .sl-sicon { display: flex; align-items: center; justify-content: center; color: var(--t2); flex: none; }
 .sl-search .rb-clear { margin-right: 8px; }
-.rx-g[data-g="find"]:not(.is-fold) { flex: 1 1 320px; min-width: 320px; max-width: 360px; }
+.rx-g[data-g="find"]:not(.is-fold) { flex: none; width: 320px; }
 .rx-g[data-g="find"]:not(.is-fold) .sl-search, .sl-search.open { width: 100%; height: 32px; padding-left: 8px; background: #fff; border: 1px solid var(--border-bar); cursor: text; }
 .sl-search.open { width: 280px; }
 .rx-g[data-g="find"]:not(.is-fold) .sl-sicon { pointer-events: none; }
@@ -96,7 +96,7 @@
 /* pop-ups */
 .sl-pop { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
 .sl-lr { justify-content: space-between; height: 20px; }
-.sl-pop .rb-stepper { width: 168px; }
+.sl-pop .rb-stepper { width: 100%; }
 .sl-pop .rb-switch { padding: 0; font-size: 12px; color: var(--t1); }
 .sl-zrow { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--t2); }
 .menu .mi.hi { background: var(--subtle); }
@@ -181,3 +181,142 @@
 .dr-ncard .more time { margin-top: 8px; }
 /* open search box (filter inside): no divider before Time either; side by side (tile + Filter) keeps both dividers */
 .rx-g[data-g="find"]:not(.is-fold) ~ .rx-g[data-g="filter"] + .rx-d { display: none; }
+
+/* ================= Ribbon v4 =================
+   Detailed (64px tiles) and Single line (48px, Figma "Ribbon · Mode=Collapsed"), switched by Compact.
+   Search: field with chips + filter inside; when compact only the search icon, which opens the field as a pop-up. */
+.sl-vcol { display: flex; flex-direction: column; gap: 6px; }
+.sl-hdiv { display: block; height: 1px; background: var(--border-field); margin: 10px -16px; }
+.sl-blk { display: flex; flex-direction: column; gap: 6px; }
+.sl-vpop { width: 208px; min-width: 0; }
+
+/* single line ribbon · 48px, 16px dividers, primary tools left and the rest right */
+.rx.rx-one { height: 48px; padding: 0 16px; }
+.rx-one .rx-items { justify-content: space-between; gap: 4px; }
+.rx-one .rx-d { height: 16px; }
+.rx-sp { flex: 1 1 0; min-width: 0; }
+.sl-ld { height: 32px; padding: 0 2px 0 6px; display: flex; align-items: center; gap: 2px; border-radius: 4px; color: var(--t2); flex: none; }
+.sl-ld .ms.s22 { font-size: 22px; }
+.sl-li { height: 32px; min-width: 32px; padding: 0 6px; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: var(--t2); flex: none; }
+.sl-ld:hover, .sl-li:hover:not(:disabled), .sl-period:hover, .sl-today:hover { background: rgba(38,38,51,.06); }
+.sl-ld.on, .sl-li.on, .sl-period.on { background: rgba(38,38,51,.08); }
+.sl-li:disabled { opacity: .38; }
+.sl-ld.set { color: var(--olive); }
+.sl-li.act { color: var(--olive); background: var(--olive-50); }
+.sl-period { width: 112px; height: 32px; padding: 0 2px 0 8px; display: flex; align-items: center; gap: 2px; border-radius: 4px; flex: none; color: var(--t2); }
+.sl-period > span:not(.ms) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; font-size: 14px; line-height: 16px; letter-spacing: .1px; color: var(--t1); }
+.sl-today { height: 36px; padding: 0 8px; border-radius: 4px; font-weight: 700; font-size: 12px; line-height: 16px; letter-spacing: 1.25px; text-transform: uppercase; color: var(--olive); flex: none; }
+.sl-sw { flex: none; }
+.sl-zoom { display: flex; align-items: center; flex: none; padding: 0 4px; }
+.sl-zoom .rb-ib { height: 30px; }
+
+/* search · chips for applied filters, inside the box (attachment 01) */
+.sl-chips { display: flex; align-items: center; gap: 4px; flex: none; min-width: 0; }
+.sl-chip { height: 24px; max-width: 112px; padding: 0 2px 0 10px; display: inline-flex; align-items: center; gap: 2px; border-radius: 12px; background: #EEEEF0; color: var(--t1); font-size: 12px; font-weight: 500; line-height: 16px; letter-spacing: .1px; flex: none; }
+.sl-chip .ct { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sl-chip button { width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; color: var(--t3); flex: none; }
+.sl-chip button:hover { background: rgba(38,38,51,.08); color: var(--t1); }
+.sl-chip button .ms { font-size: 14px; }
+.sl-chip.more { padding: 0 8px; color: var(--t2); }
+.sl-chip.more:hover { background: #E2E2E5; }
+.sl-search input { min-width: 64px; }
+.sl-search .rb-clear { color: var(--t2); }
+.rx-g[data-g="find"]:not(.is-fold) .sl-search .rb-clear { margin-right: 0; }
+.sl-sicon { position: relative; }
+.sl-dot { display: none; }
+
+/* compact search: only the icon (tile in Detailed); olive with a count while searching or filtering */
+.rx-g[data-g="find"].is-fold .sl-search:not(.pop) .sl-chips, .rx-g[data-g="find"].is-fold .sl-search:not(.pop) .sl-fbtn { display: none; }
+.rx-g[data-g="find"].is-fold .sl-search:not(.pop) input, .rx-g[data-g="find"].is-fold .sl-search:not(.pop) .rb-clear, .rx-g[data-g="find"].is-fold .sl-search:not(.pop) .sl-count { display: none; }
+.rx-g[data-g="find"].is-fold .sl-search.active .sl-sicon, .rx-g[data-g="find"].is-fold .sl-search.active .sl-sicon .lbt { color: var(--olive); }
+.rx-g[data-g="find"].is-fold .sl-search.active .sl-sicon { background: var(--olive-50); }
+.rx-g[data-g="find"].is-fold .sl-dot { display: block; position: absolute; top: 3px; right: 4px; min-width: 8px; height: 8px; padding: 0; border-radius: 7px; background: var(--olive); color: #fff; font-size: 9px; font-weight: 500; font-style: normal; line-height: 14px; text-align: center; }
+.rx-g[data-g="find"].is-fold .sl-dot:not(:empty) { min-width: 14px; height: 14px; padding: 0 3px; top: 1px; right: 1px; }
+.rx-one .rx-g[data-g="find"].is-fold .sl-search:not(.pop) .sl-sicon { height: 32px; min-width: 32px; padding: 0 6px; }
+
+/* the search pop-up · opens over the ribbon from the search icon, same box as the field (Google Docs find) */
+.sl-spop { position: fixed; z-index: 60; }
+.sl-search.pop { width: 448px; height: 40px; padding: 0 4px 0 8px; gap: 6px; background: #fff; border: 1px solid var(--border-bar); border-radius: 6px; box-shadow: var(--pop-shadow); animation: pop .12s ease-out; }
+.sl-search.pop:focus-within { border-color: var(--olive); }
+.sl-search.pop .lbt, .sl-search.pop .sl-dot { display: none; }
+.sl-search.pop .sl-sicon { pointer-events: none; }
+.sl-search.pop .sl-fbtn { width: 32px; height: 32px; }
+
+/* Others ▾ · what moved in, legends shown directly */
+.sl-op { width: 264px; padding: 4px 0; }
+.sl-op .mi { display: flex; align-items: center; gap: 8px; width: 100%; height: 32px; padding: 0 12px; text-align: left; font-size: 14px; line-height: 16px; color: var(--t1); white-space: nowrap; }
+.sl-op .mi .ms { color: var(--t2); }
+.sl-op .mi > .ms:first-child { width: 24px; text-align: center; }
+.sl-op .mi:hover { background: var(--subtle); }
+.sl-op .mi.on, .sl-op .mi.on .ms { color: var(--olive); }
+.sl-op .mi .op-go { margin-left: auto; color: var(--t3); }
+.sl-op .msep { height: 1px; background: var(--border-row); margin: 4px 0; }
+.op-lg { padding: 8px 16px 8px 16px; display: flex; flex-direction: column; gap: 8px; }
+.op-lg .ovl { margin-bottom: 2px; }
+.op-upd { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 12px; font-size: 12px; line-height: 16px; color: var(--t3); }
+.op-upd .ms { width: 24px; text-align: center; color: var(--t3); }
+.sl-search.pop .sl-chip { max-width: 104px; }
+.sl-search.pop input { min-width: 48px; }
+
+/* ===== v4b ===== */
+/* Level box on the ribbon: stroke only; white while hovered or in use */
+.rx .rx-step { background: transparent; transition: background-color .12s; }
+.rx .rx-step:hover, .rx .rx-step:focus-within { background: #fff; }
+/* Time as one group: ‹ Today › on top, the period ▾ under it (once View ▾ is full) */
+.rx-tg { width: 104px; height: 48px; display: flex; flex-direction: column; justify-content: center; gap: 2px; flex: none; }
+.rx-tg-top { height: 24px; display: flex; align-items: center; justify-content: space-between; }
+.rx-tg-top .rb-ib { width: 24px; height: 24px; }
+.rx-tg-today { flex: 1; height: 24px; padding: 0 6px; border-radius: 4px; font-size: 12px; line-height: 16px; letter-spacing: .2px; color: var(--t2); }
+.rx-tg-per { height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 12px; line-height: 14px; letter-spacing: .2px; color: var(--t2); white-space: nowrap; }
+.rx-tg-today:hover, .rx-tg-per:hover, .rx-tg-per.on { background: rgba(38,38,51,.06); }
+/* Time: 1st fold = Monthly ▾ · ‹ › · Today; then one drop-down (‹ Today › + periods with a check) */
+.rx-g[data-g="time"] .rx-t1 { display: flex; align-items: center; gap: 2px; }
+.rx-g[data-g="time"] .rx-tic, .rx-g[data-g="time"].is-grp .rx-t1 { display: none; }
+.rx-g[data-g="time"].is-grp .rx-tic { display: flex; }
+/* Time ▾ pop-up: ‹ Today › first, then the periods (check at the right, like Sort) */
+.sl-tp { width: 200px; }
+.sl-tp .rx-tg-top { height: 32px; padding: 0 8px; }
+.sl-tp .rx-tg-top .rb-ib { width: 28px; height: 28px; }
+.sl-tp .rx-tg-today { height: 28px; font-size: 14px; color: var(--t1); }
+.sl-op .mhead { height: 28px; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t2); cursor: default; }
+.sl-op .mhead:hover { background: none; }
+.sl-op .mi .chk { margin-left: auto; color: var(--olive); }
+/* while the search pop-up is open, the icon on the ribbon shows as pressed */
+.rx-g[data-g="find"].is-fold .sl-search.ph .sl-sicon { background: rgba(38,38,51,.08); }
+.rx-g[data-g="find"].is-fold .sl-search.ph.active .sl-sicon { background: var(--olive-50); box-shadow: inset 0 0 0 1px var(--olive); }
+/* single line on wide screens: the name beside the icon, before ▾ (goes first when space runs out) */
+.sl-ld .ldl { margin: 0 0 0 4px; font-size: 14px; line-height: 16px; letter-spacing: .1px; color: var(--t1); white-space: nowrap; }
+.sl-ld.set .ldl { color: var(--olive); }
+.rx-g.is-icon .sl-ld .ldl { display: none; }
+
+/* ===== v4e · one label line for every tile =====
+   Every Detailed tile is a 24px control row + 4px + a 16px label row, so all labels sit on the same line
+   (Level box, Expand all, Zoom, the switches and the icon tiles). */
+.rx .lbt { height: 16px; }
+.rx-t { justify-content: flex-start; padding-top: 2px; padding-bottom: 2px; }
+.rx-t > .ms:first-child { height: 24px; display: flex; align-items: center; justify-content: center; flex: none; }
+/* the switch keeps its own 33×20 track; 2px above and below centre it in the 24px control row */
+.rx-t.rb-switch > .sw { margin: 2px 0; }
+.rx-g.is-icon .rx-t.ic { justify-content: center; padding-top: 0; padding-bottom: 0; }
+.rx-lv, .rx-zoom { justify-content: flex-start; padding-top: 0; gap: 4px; }
+.rx-lv .rx-step { height: 28px; margin-bottom: -2px; }
+.rx-zoom .rb-zc, .rx-zoom .rb-ib, .rx-zoom .sl-fit { height: 28px; }
+.rx-zoom .rb-zc { margin-bottom: -2px; }
+.rx .rx-zoom .lbt { font-size: 12px; }
+.rx-t.rb-switch { padding-top: 2px; padding-bottom: 2px; justify-content: flex-start; }
+
+/* ===== v4h ===== */
+/* search pop-up: at most 320px, like the field */
+.sl-search.pop { width: 320px; max-width: 320px; }
+/* one header style in every drop-down (the "TIME PERIOD" header) */
+.menu .mi.mhead, .menu .mi.mhead:disabled, .sl-op .mhead, .popover .ovl, .lg .ovl, .fp .ovl {
+  font-size: 10px; line-height: 12px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t2); opacity: 1; }
+.menu .mi.mhead, .sl-op .mhead { height: 28px; cursor: default; }
+.menu .mi.mhead:hover { background: none; }
+/* the Search button follows the same tile rows as the other tiles (24px icon row + 16px label row) */
+.rx:not(.rx-one) .rx-g[data-g="find"].is-fold:not(.is-icon) .sl-search:not(.pop) .sl-sicon { justify-content: flex-start; padding: 2px 6px; gap: 4px; }
+.rx:not(.rx-one) .rx-g[data-g="find"].is-fold:not(.is-icon) .sl-sicon > .ms { height: 24px; display: flex; align-items: center; justify-content: center; }
+/* View ▾: Time / Work belong to Progress %, indented under it as on the ribbon */
+.sl-vpop .rb-radios { padding-left: 22px; }
+/* Display: − Fit + starts on the same left edge as the switches */
+.sl-zrow .rb-zc { margin-left: -6px; }

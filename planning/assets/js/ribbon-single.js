@@ -1,10 +1,14 @@
-/* Ribbon v3 · one responsive ribbon for the LIM planning module (LIM project 2 recording, MS ribbon style)
-   One row that fills the width, sections in priority order from left to right:
-     Search | Filter | Time | Sort | Group | Column | Level | View | File | Display | Set default | Legends · Refresh · Updated
-   Every section has up to three states: open → folded (one named button ▾ with the same choices) → icon only.
-   When the row gets too narrow, open sections fold first (Group, Time, Level, Sort, Display, View, Search), then labels give way to icons
-   (rightmost first), and when everything is as small as it gets, sections move into ⋯, again from the right.
-   On wide screens Time, Sort and Group show their choices directly (radio picks) instead of a pop-up. */
+/* Ribbon v4 · LIM planning module
+   Two ribbons, switched by the Compact toggle (remembered):
+     Detailed (default) · 64px row, icon tiles with labels, Time / Sort / Group as picks on wide screens
+     Single line        · 48px row, 32px icons with ▾ (Figma "Ribbon · Mode=Collapsed")
+   Gantt rows are always the compact 36px rows.
+   Search: a field with the filter button inside when there is room; otherwise only the search icon, which opens the same
+   field as a pop-up over the ribbon (like Google Docs find). Applied filters show as chips inside the field.
+   Shrinking, right to left, the same in both ribbons:
+     1 · Others ▾ takes Updated, Refresh, Legends, then Set default
+     2 · View ▾ takes Level (stepper shown directly), then Display (Active tasks, zoom, Compact)
+     then labels give way to icons (Detailed) and the last sections move into Others. */
 window.R = (function () {
   const { esc, ms, fmt } = UI;
   const V = () => S.view;
@@ -15,29 +19,31 @@ window.R = (function () {
   const COL_OPTS = [['org', 'Organization'], ['discipline', 'Discipline'], ['floors', 'Floor'], ['site', 'Site'], ['volumeActual', 'Volume Actual'], ['start', 'Start Date'], ['end', 'End Date']];
   const PERIOD_SHORT = { yearly: 'Year', quarterly: 'Quarter', monthly: 'Month', weekly: 'Week', project: 'Project' };
   const PERIOD_TIP = { yearly: 'Shows one year at a time', quarterly: 'Shows one quarter at a time', monthly: 'Shows one month at a time', weekly: 'Shows one week at a time', project: 'Shows the whole project from start to end' };
+  const LEGENDS = [['#F5BF5E', 'Critical Date'], ['#06A77D', 'Logistics Volume - Normal'], ['#D82034', 'Logistics Volume - Critical']];
   const lbl = (opts, k) => (opts.find((o) => o[0] === k) || ['', ''])[1];
   const colsLabel = () => (V().columns.length ? V().columns.map((c) => lbl(COL_OPTS, c)).join(', ') : 'None');
-  // tooltip: a title and one line that says what the control does
   const tp = (title, text) => esc(`<b>${esc(title)}</b>${text ? `<br>${esc(text)}` : ''}`);
   const switchHtml = (on, id, label) => `<button class="rb-switch ${on ? 'on' : ''}" id="${id}" role="switch" aria-checked="${on}"><i class="sw"><i></i></i><span>${label}</span></button>`;
   const iconBtn = (act, icon, tip, disabled) => `<button class="rb-ib" data-act="${act}" data-tip="${tip}" ${disabled ? 'disabled' : ''}>${ms(icon, 's20')}</button>`;
-  // tile: icon with its label underneath (▾ after the label when it opens a menu); "ic" tiles lose the label in the icon state
   const tile = (act, icon, label, tip, o = {}) => `<button class="rx-t ${o.dd ? 'rx-ddt' : ''} ${o.ic === false ? '' : 'ic'} ${o.on ? 'set' : ''} ${o.cls || ''}" data-act="${act}" ${o.id ? `id="${o.id}"` : ''} data-tip="${tip}" ${o.disabled ? 'disabled' : ''}>${ms(icon, 's20')}${o.dd ? ms('arrow_drop_down', 's16 ddc') : ''}<span class="lbt">${esc(label)}${o.dd ? ms('arrow_drop_down', 's16') : ''}</span>${o.badge || ''}</button>`;
   const swTile = (act, on, label, tip) => `<button class="rx-t rb-switch ${on ? 'on' : ''}" data-act="${act}" role="switch" aria-checked="${on}" data-tip="${tip}"><i class="sw"><i></i></i><span class="lbt">${label}</span></button>`;
-  // radio picks: the choices shown directly, the current one highlighted
   const picks = (name, opts, cur, cols, tipFn, disabled) => `<div class="rx-picks" role="radiogroup" style="--cols:${cols}">${opts.map(([k, l]) => `<button class="rx-pk ${cur === k ? 'on' : ''}" role="radio" aria-checked="${cur === k}" data-pick="${name}" data-val="${k}" data-tip="${tipFn(k, l)}" ${disabled ? 'disabled' : ''}>${esc(l)}</button>`).join('')}</div>`;
   const lead = (icon, tip) => `<span class="rx-lead" data-tip="${tip}">${ms(icon, 's20')}</span>`;
-  // Material glyphs fill their box differently (zoom and search look small, refresh and info look right):
-  // these sizes give every 20px ribbon icon about the same visible size as refresh / info
+  // single line · Figma "Ribbon / Line dropdown": icon + ▾ (32px) or the 112px Time period label
+  const lineDd = (act, icon, tip, on, name) => `<button class="sl-ld ${on ? 'set' : ''}" data-act="${act}" data-tip="${tip}">${ms(icon, 's22')}${name ? `<span class="ldl">${esc(name)}</span>` : ''}${ms('arrow_drop_down', 's16')}</button>`;
+  const lineIc = (act, icon, tip, o = {}) => `<button class="sl-li ${o.cls || ''}" data-act="${act}" data-tip="${tip}" ${o.disabled ? 'disabled' : ''}>${ms(icon, 's20')}${o.dd ? ms('arrow_drop_down', 's16') : ''}</button>`;
+  const lineSw = (act, on, label, tip) => `<button class="rb-switch sl-sw ${on ? 'on' : ''}" data-act="${act}" role="switch" aria-checked="${on}" data-tip="${tip}"><i class="sw"><i></i></i><span>${label}</span></button>`;
   const ICON_PX = { search: 23, zoom_in: 23, zoom_out: 23, filter_list: 22, sort: 22, view_column: 22, format_list_bulleted: 22, import_export: 22, lock_outline: 20 };
   const evenIcons = (root, sel = '.ms.s20') => root && root.querySelectorAll(sel).forEach((i) => { const px = ICON_PX[i.textContent.trim()]; if (px) i.style.fontSize = px + 'px'; });
-  // menus opened from the ribbon (⋯) get the same icon sizes
   new MutationObserver((ms_) => ms_.forEach((m) => m.addedNodes.forEach((n) => n.nodeType === 1 && evenIcons(n, '.mi > .ms:first-child')))).observe(document.getElementById('layer'), { childList: true, subtree: true });
   const ZOOM_MAX = 200;
   const check = (id, on, label) => `<button class="rb-check ${on ? 'on' : ''}" id="${id}" role="checkbox" aria-checked="${on}"><i class="cb">${on ? ms('check', 's16') : ''}</i><span>${label}</span></button>`;
   const radio = (name, val, on, label, disabled) => `<button class="rb-radio ${on ? 'on' : ''}" data-radio="${name}" data-val="${val}" ${disabled ? 'disabled' : ''}><i class="rd"></i><span>${label}</span></button>`;
-  let searchOpen = false;
-  // a choice differs from the saved default → its tile is olive (Sort, Group, Column, Level)
+
+  // rows are always compact now; the Compact toggle switches the ribbon
+  S.prefs.density = 'compact';
+  const single = () => S.prefs.ribbonMode === 'single';
+
   const D = () => S.prefs.defaults;
   const changedFrom = {
     sort: () => V().sortBy !== D().sortBy,
@@ -45,7 +51,6 @@ window.R = (function () {
     cols: () => V().columns.join() !== (D().columns || []).join(),
     level: () => V().level !== D().level,
   };
-  // Set default is active right after it is pressed, until the view changes; after a refresh it is grey again
   let savedNow = false;
   const isDefault = () => {
     const v = V(), d = D();
@@ -53,157 +58,264 @@ window.R = (function () {
     return savedNow;
   };
 
+  // ---------- search + filter chips ----------
+  const CHIP_KEYS = [['org', 'Org', 'Organization'], ['discipline', 'Discipline', 'Discipline'], ['site', 'Site', 'Site'], ['floor', 'Floor', 'Floor']];
   function chips() {
     const f = V().filters, out = [];
-    if (f.from || f.to) out.push(['dur', `${f.from ? fmt(f.from) : '…'} – ${f.to ? fmt(f.to) : '…'}`]);
-    [['org', 'Organization'], ['discipline', 'Discipline'], ['site', 'Site'], ['floor', 'Floor']].forEach(([k, l]) => { if (f[k]) out.push([k, `${l}: ${f[k]}`]); });
+    if (f.from || f.to) { const t = `${f.from ? fmt(f.from) : '…'} – ${f.to ? fmt(f.to) : '…'}`; out.push(['dur', `Dates: ${t}`, `Dates: ${t}`]); }
+    CHIP_KEYS.forEach(([k, s, l]) => { if (f[k]) out.push([k, `${s}: ${f[k]}`, `${l}: ${f[k]}`]); });
     return out;
   }
-
-  const searchHtml = (open) => `<div class="rb-search sl-search ${open ? 'open' : ''}" id="slSearch">
-        <button class="sl-sicon" id="rbSearchBtn" data-tip="${open ? '' : tp('Search', 'Finds activities by name and in the visible columns')}" tabindex="${open ? -1 : 0}">${ms('search', 's20')}<span class="lbt">Search</span></button>
-        <input id="rbQ" placeholder="Search within visible columns" value="${esc(V().search)}" autocomplete="off">
-        <span class="sl-count hidden" id="rbCount"></span>
-        <button class="rb-clear ${V().search ? '' : 'hidden'}" id="rbClear" data-tip="${tp('Clear search', 'Removes the search and shows all activities')}">${ms('close', 's16')}</button>
-        <button class="sl-fbtn ${chips().length ? 'on' : ''}" data-act="filterBox" data-tip="${filterTip(chips())}">${ms('filter_list', 's20')}${badge(chips())}</button>
-      </div>`;
-  const filterTip = (ch) => (ch.length ? tp('Filter', ch.map((c) => c[1]).join(', ')) : tp('Filter', 'Narrows the plan by dates, organization, discipline, site or floor'));
+  const filterTip = (ch) => (ch.length ? tp('Filter', ch.map((c) => c[2]).join(', ')) : tp('Filter', 'Narrows the plan by dates, organization, discipline, site or floor'));
   const badge = (ch) => (ch.length ? `<i class="sl-badge">${ch.length}</i>` : '');
-  const stepper = (v, maxL) => `<div class="rb-stepper rx-step"><button data-act="lvMinus" data-tip="${tp('Level down', 'Shows one level less of the structure')}" ${v.level <= 0 ? 'disabled' : ''}>${ms('remove', 's20')}</button><input id="lvIn" value="${v.level}" inputmode="numeric" aria-label="Level"><button data-act="lvPlus" data-tip="${tp('Level up', 'Shows one level more of the structure')}" ${v.level >= maxL ? 'disabled' : ''}>${ms('add', 's20')}</button></div>`;
+  // chips inside the box: the first one (two in the pop-up), the rest as "+N"
+  const chipsHtml = (max) => {
+    const ch = chips(); if (!ch.length) return '';
+    const shown = ch.slice(0, max), rest = ch.length - shown.length;
+    return `<span class="sl-chips">${shown.map(([k, s, l]) => `<span class="sl-chip" data-tip="${esc(l)}"><span class="ct">${esc(s)}</span><button data-chipx="${k}" aria-label="Remove ${esc(l)}">${ms('close', 's14')}</button></span>`).join('')}${rest ? `<button class="sl-chip more" data-act="filterBox" data-tip="${filterTip(ch.slice(max))}">+${rest}</button>` : ''}</span>`;
+  };
+  let searchPop = false;
+  const searchHtml = () => {
+    const v = V(), ch = chips(), active = !!v.search || ch.length > 0;
+    return `<div class="rb-search sl-search ${active ? 'active' : ''}" id="slSearch">
+        <button class="sl-sicon" id="rbSearchBtn" data-tip="${tp('Search', active ? `Searching${v.search ? ` “${v.search}”` : ''}${ch.length ? ` · ${ch.length} filter${ch.length > 1 ? 's' : ''}` : ''}` : 'Finds activities by name and in the visible columns, with filters')}">${ms('search', 's20')}<span class="lbt">Search</span>${active ? `<i class="sl-dot">${ch.length || ''}</i>` : ''}</button>
+        ${chipsHtml(1)}
+        <input id="rbQ" placeholder="Search within visible columns" value="${esc(v.search)}" autocomplete="off">
+        <span class="sl-count hidden" id="rbCount"></span>
+        <button class="rb-clear ${active ? '' : 'hidden'}" id="rbClear" data-tip="${tp('Clear', 'Removes the search and all filters')}">${ms('close', 's20')}</button>
+        <button class="sl-fbtn ${ch.length ? 'on' : ''}" data-act="filterBox" data-tip="${filterTip(ch)}">${ms('filter_list', 's20')}</button>
+      </div>`;
+  };
+  const stepper = (v, maxL, pre = '') => `<div class="rb-stepper rx-step"><button data-act="lvMinus" data-tip="${tp('Level down', 'Shows one level less of the structure')}" ${v.level <= 0 ? 'disabled' : ''}>${ms('remove', 's20')}</button><input id="${pre}lvIn" value="${v.level}" inputmode="numeric" aria-label="Level"><button data-act="lvPlus" data-tip="${tp('Level up', 'Shows one level more of the structure')}" ${v.level >= maxL ? 'disabled' : ''}>${ms('add', 's20')}</button></div>`;
 
   // a section: data-n = number of states, data-fold / data-icon = the state where it folds / goes icon-only
   const sec = (g, n, fold, icon, open, folded) => `<div class="rx-g" data-g="${g}" data-n="${n}" ${fold != null ? `data-fold="${fold}"` : ''} ${icon != null ? `data-icon="${icon}"` : ''} data-s="0">${folded != null ? `<div class="v-open">${open}</div><div class="v-fold">${folded}</div>` : open}</div>`;
+  const D_ = '<i class="rx-d"></i>';
+  // after Search: hidden while the search box is open, shown once Search is a button
+  const D_FIND = '<i class="rx-d rx-d-find"></i>';
+  const othersTip = tp('Others', 'Tools that don’t fit the ribbon');
 
-  function render() {
-    const v = V(), stepL = T.STEP_LABEL[v.period], maxL = S.maxDepth(), ch = chips(), all = v.level >= maxL;
-    const open = searchOpen || !!v.search;
+  function detailedHtml() {
+    const v = V(), stepL = T.STEP_LABEL[v.period], maxL = S.maxDepth(), all = v.level >= maxL;
     const prev = `<div class="rx-stk"><button class="rb-ib" data-act="prev" data-tip="${tp(stepL ? `Previous ${stepL}` : 'Previous', stepL ? `Moves the timeline back one ${stepL}` : '')}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_left', 's20')}</button>
             <button class="rb-ib" data-act="next" data-tip="${tp(stepL ? `Next ${stepL}` : 'Next', stepL ? `Moves the timeline forward one ${stepL}` : '')}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_right', 's20')}</button></div>`;
     const today = tile('today', 'today', 'Today', tp('Today', 'Jumps to today on the timeline'));
     const zoomBox = `<div class="rx-zoom"><div class="rb-zc">${iconBtn('zoomOut', 'zoom_out', tp('Zoom out', `Shows more of the timeline (${v.zoom}%)`), v.zoom <= 50)}<button class="sl-fit" data-act="fit" data-tip="${tp('Fit', 'Back to the default zoom')}">Fit</button>${iconBtn('zoomIn', 'zoom_in', tp('Zoom in', `Shows less of the timeline in more detail (${v.zoom}%)`), v.zoom >= ZOOM_MAX)}</div><span class="lbt">Zoom ${v.zoom}%</span></div>`;
-    el().innerHTML = `
-    <div class="rx" id="rx">
-      <div class="rx-items" id="slItems">
-        ${sec('find', 3, 1, 2, searchHtml(open))}
-        <i class="rx-d rx-d-find"></i>
-        ${sec('filter', 2, null, 1, tile('filter', 'filter_list', 'Filter', filterTip(ch), { cls: 'sl-filter' + (ch.length ? ' on' : ''), badge: badge(ch) }))}
-        <i class="rx-d"></i>
-        ${sec('time', 3, 1, 2,
+    // Time as one group once View ▾ is full: ‹ Today › on top, the period ▾ under it; an icon ▾ when even smaller
+    // Time · 1st fold = Monthly ▾ · ‹ › · Today (as before); later one drop-down (‹ Today › + the periods with a check)
+    const tgroup = `<div class="rx-t1">${tile('period', 'date_range', lbl(T.PERIODS, v.period), tp(`Time period: ${lbl(T.PERIODS, v.period)}`, 'Choose how much of the timeline you see'), { dd: 1, ic: false, cls: 'rx-period' })}${prev}${today}</div>
+        ${tile('timeIc', 'date_range', lbl(T.PERIODS, v.period), tp(`Time: ${lbl(T.PERIODS, v.period)}`, 'Today, previous / next and the time period'), { dd: 1, cls: 'rx-tic' })}`;
+    return `
+        ${sec('find', 3, 1, 2, searchHtml())}${D_FIND}
+        ${sec('time', 4, 1, 3,
           `${lead('date_range', tp('Time period', 'Choose how much of the timeline you see'))}${picks('period', T.PERIODS.map(([k]) => [k, PERIOD_SHORT[k]]), v.period, 3, (k) => tp(lbl(T.PERIODS, k), PERIOD_TIP[k]))}${prev}${today}`,
-          `${tile('period', 'date_range', lbl(T.PERIODS, v.period), tp(`Time period: ${lbl(T.PERIODS, v.period)}`, 'Choose how much of the timeline you see'), { dd: 1, ic: false, cls: 'rx-period' })}${prev}${today}`)}
-        <i class="rx-d"></i>
+          tgroup)}${D_}
         ${sec('sort', 3, 1, 2,
           `${lead('sort', tp('Sort', 'Choose the order of the activities'))}${picks('sort', [['default', 'Default'], ['start', 'Start'], ['end', 'End']], v.sortBy, 3, (k) => tp(`Sort by ${lbl(SORT_OPTS, k)}`, k === 'default' ? 'Keeps the plan order' : k === 'start' ? 'Earliest start first' : 'Earliest end first'))}`,
-          tile('sort', 'sort', 'Sort', tp(`Sort by ${lbl(SORT_OPTS, v.sortBy)}`, 'Choose the order of the activities'), { dd: 1, on: changedFrom.sort() }))}
-        <i class="rx-d"></i>
+          tile('sort', 'sort', 'Sort', tp(`Sort by ${lbl(SORT_OPTS, v.sortBy)}`, 'Choose the order of the activities'), { dd: 1, on: changedFrom.sort() }))}${D_}
         ${sec('group', 3, 1, 2,
           `${lead('workspaces', tp('Group', 'Groups the activities by one field'))}${picks('group', GROUP_OPTS, v.groupBy, 4, (k, l) => tp(k === 'none' ? 'No grouping' : `Group by ${l}`, k === 'none' ? 'Shows the plan without groups' : `Puts activities with the same ${l.toLowerCase()} together`))}`,
-          tile('group', 'workspaces', 'Group', tp(`Group by ${lbl(GROUP_OPTS, v.groupBy)}`, 'Groups the activities by one field'), { dd: 1, on: changedFrom.group() }))}
-        <i class="rx-d"></i>
-        ${sec('column', 2, null, 1, tile('cols', 'view_column', 'Column', tp('Column', `Choose the columns in the table · ${colsLabel()}`), { dd: 1, on: changedFrom.cols() }))}
-        <i class="rx-d"></i>
-        ${sec('level', 3, 1, 2,
-          `<div class="rx-lv">${stepper(v, maxL)}<span class="lbt">Level</span></div>${tile('lvAll', all ? 'unfold_less' : 'unfold_more', all ? 'Collapse all' : 'Expand all', all ? tp('Collapse all', 'Closes every level of the structure') : tp('Expand all', 'Opens every level of the structure'))}`,
-          tile('level', 'format_list_bulleted', 'Level', tp(`Level ${v.level}`, 'Choose how many levels of the structure are open'), { dd: 1, on: changedFrom.level() }))}
-        <i class="rx-d"></i>
+          tile('group', 'workspaces', 'Group', tp(`Group by ${lbl(GROUP_OPTS, v.groupBy)}`, 'Groups the activities by one field'), { dd: 1, on: changedFrom.group() }))}${D_}
+        ${sec('column', 2, null, 1, tile('cols', 'view_column', 'Column', tp('Column', `Choose the columns in the table · ${colsLabel()}`), { dd: 1, on: changedFrom.cols() }))}${D_}
+        ${sec('level', 1, null, null, `<div class="rx-lv">${stepper(v, maxL)}<span class="lbt">Level</span></div>${tile('lvAll', all ? 'unfold_less' : 'unfold_more', all ? 'Collapse all' : 'Expand all', all ? tp('Collapse all', 'Closes every level of the structure') : tp('Expand all', 'Opens every level of the structure'))}`)}${D_}
         ${sec('view', 3, 1, 2,
           `<div class="rx-vm">${check('vDeps', v.showDeps, 'Dependencies')}${check('vProg', v.showProgress, 'Progress %')}
             ${check('vFull', v.fullscreen, 'Full screen')}<div class="rx-basis">${picks('basis', [['time', 'Time'], ['work', 'Work']], v.progressBasis, 2, (k) => tp(k === 'time' ? 'Progress by time' : 'Progress by work', k === 'time' ? 'How much of the planned time has passed' : 'How much of the planned work is done'), !v.showProgress)}</div></div>`,
-          tile('view', 'visibility', 'View', tp('View modes', 'Dependencies, full screen and progress %'), { dd: 1 }))}
-        <i class="rx-d"></i>
-        ${sec('file', 2, null, 1, tile('file', 'import_export', 'File', tp('File', 'Import a plan or download it as CSV'), { dd: 1 }))}
-        <i class="rx-d"></i>
-        ${sec('display', 3, 1, 2,
-          `${swTile('active', v.activeToday, 'Active tasks', tp('Active tasks', 'Shows only the activities running today'))}${zoomBox}${swTile('density', S.prefs.density === 'compact', 'Compact', tp('Compact', 'Smaller rows, so more activities fit on screen'))}`,
-          tile('display', 'tune', 'Display', tp('Display', 'Active tasks, zoom and row size'), { dd: 1 }))}
-        <i class="rx-d"></i>
-        ${sec('defaults', 2, null, 1, tile('setDefault', 'lock_outline', 'Set default', isDefault() ? tp('This view is your default', 'Change the view to save a new default') : tp('Set as default', 'Saves the current settings as your default view'), { cls: isDefault() ? 'act' : '' }))}
-        <i class="rx-d"></i>
-        ${sec('info', 2, null, 1, `${tile('legend', 'legend_toggle', 'Legends', tp('Legends', 'Explains the row and bar colours'))}${tile('refresh', 'sync', 'Refresh', tp('Refresh', 'Reloads the planning data'))}${tile('info', 'info', 'Updated', tp('Last updated', fmt(LIM_DATA.LAST_UPDATED)))}`)}
-      </div>
-      <i class="rx-d rx-d-more hidden"></i>
-      <button class="rx-t ic hidden" id="slMore" data-act="more" data-tip="${tp('More', 'Tools that don’t fit the ribbon')}">${ms('more_horiz', 's20')}<span class="lbt">More</span></button>
-    </div>`;
+          tile('view', 'visibility', 'View', tp('View', 'View modes, plus Display and Level when they don’t fit'), { dd: 1 }))}${D_}
+        ${sec('zoom', 1, null, null, zoomBox)}${D_}
+        ${sec('file', 2, null, 1, tile('file', 'import_export', 'File', tp('File', 'Import a plan or download it as CSV'), { dd: 1 }))}${D_}
+        ${sec('display', 2, 1, null, `${swTile('active', v.activeToday, 'Active tasks', tp('Active tasks', 'Shows only the activities running today'))}${swTile('compact', false, 'Compact', tp('Compact', 'Switches to the single-line ribbon'))}`,
+          tile('display', 'tune', 'Display', tp('Display', 'Active tasks, zoom and the Compact ribbon'), { dd: 1, on: V().activeToday }))}${D_}
+        ${sec('defaults', 2, null, 1, tile('setDefault', 'lock_outline', 'Set default', defTip(), { cls: isDefault() ? 'act' : '' }))}${D_}
+        ${sec('legend', 2, null, 1, tile('legend', 'legend_toggle', 'Legends', tp('Legends', 'Explains the row and bar colours')))}
+        ${sec('refresh', 2, null, 1, tile('refresh', 'sync', 'Refresh', tp('Refresh', 'Reloads the planning data')))}
+        ${sec('updated', 2, null, 1, tile('info', 'info', 'Updated', tp('Last updated', fmt(LIM_DATA.LAST_UPDATED))))}
+        ${sec('others', 2, null, 1, tile('others', 'more_horiz', 'Others', othersTip, { dd: 1, id: 'slOthers' }))}`;
+  }
+
+  // single line · Figma "Ribbon · Mode=Collapsed, Width=1366" (14170:8361)
+  function singleHtml() {
+    const v = V(), stepL = T.STEP_LABEL[v.period];
+    return `
+        ${sec('find', 2, 1, 1, searchHtml())}${D_FIND}
+        ${sec('time', 2, 1, null, `<button class="sl-period" data-act="period" data-tip="${tp('Time period', 'Choose how much of the timeline you see')}"><span>${esc(lbl(T.PERIODS, v.period))}</span>${ms('arrow_drop_down', 's16')}</button>
+          ${lineIc('prev', 'keyboard_arrow_left', tp(stepL ? `Previous ${stepL}` : 'Previous', stepL ? `Moves the timeline back one ${stepL}` : ''), { disabled: !stepL })}${lineIc('next', 'keyboard_arrow_right', tp(stepL ? `Next ${stepL}` : 'Next', stepL ? `Moves the timeline forward one ${stepL}` : ''), { disabled: !stepL })}
+          <button class="sl-today" data-act="today" data-tip="${tp('Today', 'Jumps to today on the timeline')}">Today</button>`,
+          `<button class="sl-period" data-act="timeIc" data-tip="${tp(`Time: ${lbl(T.PERIODS, v.period)}`, 'Today, previous / next and the time period')}"><span>${esc(lbl(T.PERIODS, v.period))}</span>${ms('arrow_drop_down', 's16')}</button>`)}${D_}
+        ${sec('group', 2, null, 1, lineDd('group', 'workspaces', tp(`Group by ${lbl(GROUP_OPTS, v.groupBy)}`, 'Groups the activities by one field'), changedFrom.group(), 'Group'))}
+        ${sec('sort', 2, null, 1, lineDd('sort', 'sort', tp(`Sort by ${lbl(SORT_OPTS, v.sortBy)}`, 'Choose the order of the activities'), changedFrom.sort(), 'Sort'))}
+        ${sec('column', 2, null, 1, lineDd('cols', 'view_column', tp('Column', `Choose the columns in the table · ${colsLabel()}`), changedFrom.cols(), 'Column'))}
+        ${sec('level', 2, null, 1, lineDd('level', 'format_list_bulleted', tp(`Level ${v.level}`, 'Choose how many levels of the structure are open'), changedFrom.level(), 'Level'))}
+        ${sec('view', 2, null, 1, lineDd('view', 'visibility', tp('View', 'View modes, plus Display and Level when they don’t fit'), false, 'View'))}
+        ${sec('full', 1, null, null, lineIc('full', 'settings_overscan', tp('Full screen', v.fullscreen ? 'Leave full screen' : 'Hides the side menu and top bar'), { cls: v.fullscreen ? 'act' : '' }))}${D_}
+        ${sec('zoom', 1, null, null, `<div class="sl-zoom">${iconBtn('zoomOut', 'zoom_out', tp('Zoom out', `Shows more of the timeline (${v.zoom}%)`), v.zoom <= 50)}<button class="sl-fit" data-act="fit" data-tip="${tp('Fit', `Back to the default zoom (now ${v.zoom}%)`)}">Fit</button>${iconBtn('zoomIn', 'zoom_in', tp('Zoom in', `Shows less of the timeline in more detail (${v.zoom}%)`), v.zoom >= ZOOM_MAX)}</div>`)}${D_}
+        ${sec('file', 2, null, 1, lineDd('file', 'import_export', tp('File', 'Import a plan or download it as CSV'), false, 'File'))}${D_}
+        ${sec('display', 2, 1, null, `${lineSw('active', v.activeToday, 'Active Tasks', tp('Active tasks', 'Shows only the activities running today'))}${lineSw('compact', true, 'Compact', tp('Compact', 'Switches back to the detailed ribbon'))}`,
+          lineDd('display', 'tune', tp('Display', 'Active tasks, zoom and the Compact ribbon'), v.activeToday))}${D_}
+        ${sec('defaults', 1, null, null, lineIc('setDefault', 'lock_outline', defTip(), { cls: isDefault() ? 'act' : '' }))}${D_}
+        ${sec('legend', 1, null, null, lineIc('legend', 'legend_toggle', tp('Legends', 'Explains the row and bar colours')))}
+        ${sec('refresh', 1, null, null, lineIc('refresh', 'sync', tp('Refresh', 'Reloads the planning data')))}
+        ${sec('updated', 1, null, null, lineIc('info', 'info', tp('Last updated', fmt(LIM_DATA.LAST_UPDATED))))}
+        ${sec('others', 1, null, null, lineIc('others', 'more_horiz', othersTip, { dd: 1 }))}`;
+  }
+  const defTip = () => (isDefault() ? tp('This view is your default', 'Change the view to save a new default') : tp('Set as default', 'Saves the current settings as your default view'));
+
+  function render() {
+    UI.closeFloat();
+    const sp = $('slSpop'); if (sp) sp.remove();
+    el().classList.toggle('one', single());
+    el().innerHTML = `<div class="rx ${single() ? 'rx-one' : ''}" id="rx"><div class="rx-items" id="slItems">${single() ? singleHtml() : detailedHtml()}</div></div>`;
     bind();
     evenIcons(el());
     fit();
     count();
+    if (searchPop) openSearchPop(false);
   }
 
   const changed = () => { G.render(); render(); };
-  // "10 of 25" in the search field while searching or filtering
   function count() {
     const c = $('rbCount'); if (!c || !G.counts) return;
     const on = !!V().search || chips().length > 0, n = G.counts();
     c.classList.toggle('hidden', !on); c.textContent = on ? `${n.shown} of ${n.total}` : '';
   }
 
-  // ---------- fitting: right to left, open → folded → icon, then into ⋯ ----------
-  let hiddenGroups = [];
-  // which open sections fold first when room runs out (wider screens keep View modes and Display open)
-  const FOLD_ORDER = ['group', 'time', 'level', 'sort', 'display', 'view', 'find'];
+  // ---------- fitting ----------
+  let tucked = [];   // sections that moved into Others or View, in the order they moved
   const setS = (g, s) => {
     g.dataset.s = s;
     g.classList.toggle('is-fold', g.dataset.fold != null && s >= +g.dataset.fold);
     g.classList.toggle('is-icon', g.dataset.icon != null && s >= +g.dataset.icon);
+    g.classList.toggle('is-grp', g.dataset.g === 'time' && g.dataset.fold != null && s >= +g.dataset.fold + 1);
   };
-  // a divider shows only between two visible sections
   const tidy = (box) => {
     let seen = false, last = null;
     [...box.children].forEach((c) => {
       if (c.classList.contains('rx-d')) { c.classList.add('hidden'); if (seen) last = c; return; }
+      if (c.classList.contains('rx-sp')) { last = null; return; }
       if (!c.classList.contains('hidden')) { if (last) last.classList.remove('hidden'); last = null; seen = true; }
     });
   };
+  const NARROW = 1350;
+  const INTO_OTHERS = ['updated', 'refresh', 'legend', 'defaults'];
+  // these move into View ▾ together, in one step
+  const INTO_VIEW = ['level', 'full', 'zoom', 'display'];
+  const isFindCompact = () => { const g = el().querySelector('.rx-g[data-g="find"]'); return !!g && g.classList.contains('is-fold'); };
   function fit() {
     const box = $('slItems'); if (!box) return;
-    const more = $('slMore'), dMore = el().querySelector('.rx-d-more');
     const over = () => box.scrollWidth > box.clientWidth + 1;
     const gs = [...box.querySelectorAll(':scope > .rx-g')];
+    const G_ = (n) => gs.find((x) => x.dataset.g === n);
+    const others = G_('others');
     gs.forEach((g) => { g.classList.remove('hidden'); setS(g, 0); });
-    hiddenGroups = []; more.classList.add('hidden'); dMore.classList.add('hidden'); tidy(box);
-    // an open search field (typing) stays open
-    if ($('slSearch').classList.contains('open')) gs[0].dataset.n = 1; else gs[0].dataset.n = 3;
-    // 1 · open sections fold into their named button, in FOLD_ORDER (Group and Time first, so View modes and Display stay open)
-    for (const name of FOLD_ORDER) { if (!over()) break; const g = gs.find((x) => x.dataset.g === name); if (g && +g.dataset.n > 1) setS(g, +g.dataset.fold); }
-    // 2 · labels give way to icons, right to left
-    for (let i = gs.length - 1; i >= 0 && over(); i--) if (+gs[i].dataset.n > 1) setS(gs[i], +gs[i].dataset.n - 1);
-    for (let i = gs.length - 1; i > 0 && over(); i--) {
-      gs[i].classList.add('hidden'); hiddenGroups.push(gs[i].dataset.g);
-      more.classList.remove('hidden'); dMore.classList.remove('hidden'); tidy(box);
+    tucked = []; others.classList.add('hidden'); tidy(box);
+    const tuck = (n) => { const g = G_(n); if (!g || g.classList.contains('hidden')) return; g.classList.add('hidden'); tucked.push(n); if (!INTO_VIEW.includes(n)) others.classList.remove('hidden'); tidy(box); };
+    const fold = (n) => { const g = G_(n); if (g && +g.dataset.n > 1 && g.dataset.fold != null && +g.dataset.s < +g.dataset.fold) setS(g, +g.dataset.fold); };
+    const steps = [];
+    let preTime = 0;   // steps that always come before Time and Search collapse
+    // 1 · Detailed: Group picks become a button
+    if (!single()) steps.push(() => fold('group'));
+    // Single line: the names beside the icons go first, right to left
+    if (single()) ['file', 'view', 'level', 'column', 'sort', 'group'].forEach((n) => steps.push(() => { const g = G_(n); if (g) setS(g, 1); }));
+    // 2 · Others ▾ takes Updated, Refresh, Legends, Set default
+    INTO_OTHERS.forEach((n) => steps.push(() => tuck(n)));
+    // 3 · Display ▾ forms (Active tasks, Zoom, Compact), then the view modes fold into View ▾
+    steps.push(() => { tuck('zoom'); fold('display'); });
+    steps.push(() => fold('view'));
+    // 4 · Detailed: Sort picks become a button (they stay down to about 1440px)
+    if (!single()) steps.push(() => fold('sort'));
+    // 5 · Level and Display move into View ▾ together, before Time and Search collapse
+    steps.push(() => { tuck('display'); tuck('level'); });
+    preTime = steps.length;
+    // 6 · Detailed: the Time picks become Monthly ▾ · ‹ › · Today; Full screen moves into View ▾ (single line)
+    if (!single()) steps.push(() => fold('time'));
+    steps.push(() => tuck('full'));
+    // 7 · Detailed: Time becomes one drop-down (‹ Today › + the periods with a check), before search collapses
+    if (!single()) steps.push(() => { const g = G_('time'); setS(g, +g.dataset.fold + 1); });
+    // 8 · the search field becomes the icon (the field opens below it)
+    steps.push(() => fold('find'));
+    // 9 · Detailed: labels give way to icons, right to left
+    if (!single()) steps.push(() => { for (let i = gs.length - 1; i >= 0 && over(); i--) if (!gs[i].classList.contains('hidden') && +gs[i].dataset.n > 1 && !single()) setS(gs[i], +gs[i].dataset.n - 1); });
+    // 10 · last: sections move into Others, right to left
+    (single() ? ['file', 'column', 'sort', 'group', 'time'] : ['file', 'column', 'group', 'sort', 'time']).forEach((n) => steps.push(() => tuck(n)));
+    let from = 0;
+    // 1350px and smaller: everything that folds before Time stays folded (nothing comes back on a smaller screen),
+    // Search is the icon and Time is one drop-down (Monthly ▾)
+    if (innerWidth <= NARROW) {
+      for (; from < preTime; from++) steps[from]();
+      fold('find');
+      const t = G_('time'); if (t) setS(t, single() ? 1 : +t.dataset.fold + 1);
     }
+    for (const s of steps.slice(from)) { if (!over()) break; s(); }
+    // if the search pop-up is open but the field fits again, the field takes over
+    if (searchPop && !isFindCompact()) searchPop = false;
   }
-  window.addEventListener('resize', () => { if (el().firstElementChild) fit(); });
-  // icon names are wide text until the Material Icons font has loaded, so measure again then
-  document.fonts && document.fonts.ready.then(() => { if (el().firstElementChild) fit(); });
+  window.addEventListener('resize', () => { if (el().firstElementChild) { searchPop = false; render(); } });
+  document.fonts && document.fonts.ready.then(() => { if (el().firstElementChild) render(); });
+
+  // ---------- search pop-up: opens below the search icon, like the other drop-downs ----------
+  function openSearchPop(focus = true) {
+    const box = $('slSearch'), ic = $('rbSearchBtn'), g = el().querySelector('.rx-g[data-g="find"]'); if (!box || !ic || !g) return;
+    if (!isFindCompact()) { searchPop = false; if (focus) $('rbQ').focus(); return; }
+    if ($('slSpop')) return;
+    searchPop = true;
+    const r = ic.getBoundingClientRect();
+    // the icon stays on the ribbon (a copy, shown as pressed) while the box opens below it in the pop-up layer
+    const ph = box.cloneNode(true); ph.removeAttribute('id'); ph.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id')); ph.classList.add('ph');
+    ph.onclick = () => closeSearchPop();
+    const pop = document.createElement('div'); pop.className = 'sl-spop'; pop.id = 'slSpop';
+    const ch = box.querySelector('.sl-chips'); if (ch) ch.outerHTML = chipsHtml(1);
+    pop.appendChild(box); box.classList.add('pop'); g.appendChild(ph); $('layer').appendChild(pop);
+    pop.style.left = Math.max(8, Math.min(innerWidth - 328, r.left)) + 'px';
+    pop.style.top = (r.bottom + 4) + 'px';
+    bindSearch();
+    if (focus) { const q = $('rbQ'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+  }
+  // closing puts the box back in its place without redrawing the ribbon, so a click on another tool still lands
+  const closeSearchPop = () => {
+    if (!searchPop) return; searchPop = false; UI.closeFloat();
+    const box = $('slSearch'), pop = $('slSpop'), g = el().querySelector('.rx-g[data-g="find"]'); if (!box || !g) { if (pop) pop.remove(); return; }
+    g.querySelectorAll('.sl-search.ph').forEach((n) => n.remove());
+    box.classList.remove('pop'); g.appendChild(box); if (pop) pop.remove();
+    const ch = box.querySelector('.sl-chips'); if (ch) ch.outerHTML = chipsHtml(1);
+    $('rbQ').blur(); bindSearch();
+  };
+  document.addEventListener('mousedown', (e) => {
+    if (!searchPop) return;
+    const pop = $('slSpop'), layer = $('layer');
+    if ((pop && pop.contains(e.target)) || (layer && layer.contains(e.target)) || (e.target.closest && e.target.closest('.sl-search.ph'))) return;
+    closeSearchPop();
+  });
+
+  function bindSearch() {
+    const v = V(), q = $('rbQ');
+    $('rbSearchBtn').onclick = () => { if (isFindCompact() && !searchPop) openSearchPop(); else q.focus(); };
+    q.oninput = () => { v.search = q.value; G.render(); $('rbClear').classList.toggle('hidden', !q.value && !chips().length); count(); };
+    q.onkeydown = (e) => {
+      if (e.key === 'Escape') { e.stopPropagation(); if (searchPop) closeSearchPop(); else q.blur(); }
+      if (e.key === 'Enter') { e.stopPropagation(); q.blur(); }
+    };
+    $('rbClear').onclick = () => { v.search = ''; V().filters = EMPTY_FILTERS(); G.render(); render(); const n = $('rbQ'); n && n.focus(); };
+    document.querySelectorAll('#slSearch [data-chipx]').forEach((b) => b.onclick = (e) => {
+      e.stopPropagation(); const k = b.dataset.chipx, f = V().filters;
+      if (k === 'dur') { f.from = ''; f.to = ''; } else f[k] = '';
+      G.render(); render();
+    });
+    document.querySelectorAll('#slSearch [data-act="filterBox"]').forEach((b) => b.onclick = () => filterPop($('slSearch'), true));
+  }
 
   function bind() {
     const v = V();
-    // search
-    const q = $('rbQ'), box = $('slSearch');
-    $('rbSearchBtn').onclick = () => { searchOpen = true; box.classList.add('open'); fit(); q.focus(); };
-    q.onfocus = () => { searchOpen = true; if (!box.classList.contains('open')) { box.classList.add('open'); fit(); } };
-    q.oninput = () => { v.search = q.value; G.render(); $('rbClear').classList.toggle('hidden', !q.value); count(); };
-    q.onkeydown = (e) => keys(e);
-    box.addEventListener('transitionend', (e) => { if (e.propertyName === 'width') fit(); });
-    q.onblur = () => setTimeout(() => {
-      if (document.activeElement === q) return;
-      if (!v.search && searchOpen) { searchOpen = false; box.classList.remove('open'); fit(); }
-    }, 120);
-    $('rbClear').onclick = () => { v.search = ''; searchOpen = false; changed(); };
-    // level · typed value
+    bindSearch();
     const lv = $('lvIn');
     if (lv) {
       lv.onchange = (e) => setLevel(parseInt(e.target.value, 10));
       lv.onkeydown = (e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'ArrowUp') { e.preventDefault(); setLevel(V().level + 1); } if (e.key === 'ArrowDown') { e.preventDefault(); setLevel(V().level - 1); } };
       lv.onfocus = (e) => e.target.select();
     }
-    // view modes shown directly
     const on = (id, fn) => { const n = $(id); if (n) n.onclick = fn; };
     on('vDeps', () => toggleView('showDeps'));
     on('vFull', () => toggleView('fullscreen'));
     on('vProg', () => toggleView('showProgress'));
-    // radio picks
     el().querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => {
       const k = b.dataset.val, p = b.dataset.pick;
       if (p === 'period') { if (k !== v.period) setPeriod(k); return; }
@@ -212,16 +324,14 @@ window.R = (function () {
       if (p === 'basis') v.progressBasis = k;
       changed();
     });
-    // everything else
-    el().querySelectorAll('[data-act]').forEach((b) => b.onclick = (e) => ACT[b.dataset.act] && ACT[b.dataset.act](e.currentTarget));
+    el().querySelectorAll('.rx-items [data-act]:not([data-act="filterBox"])').forEach((b) => b.onclick = (e) => ACT[b.dataset.act] && ACT[b.dataset.act](e.currentTarget));
   }
   const ACT = {
-    filter: (b) => filterPop(b),
-    filterBox: () => filterPop($('slSearch'), true),
     prev: () => go(T.step(V().period, V().anchor, -1)),
     next: () => go(T.step(V().period, V().anchor, 1)),
     today: () => goToday(),
     period: (b) => periodMenu(b),
+    timeIc: (b) => timePop(b),
     sort: (b) => sortMenu(b),
     group: (b) => groupMenu(b),
     cols: (b) => colsMenu(b),
@@ -230,27 +340,28 @@ window.R = (function () {
     lvAll: () => toggleAll(),
     level: (b) => levelPop(b),
     view: (b) => viewPop(b),
+    display: (b) => displayPop(b),
     file: (b) => UI.menu(b, [{ label: 'Import', icon: 'publish', onClick: doImport }, { label: 'Download', icon: 'download', onClick: doDownload }], { width: 180 }),
     active: () => toggleActive(),
     zoomOut: () => zoom(-10),
     zoomIn: () => zoom(10),
     fit: () => { V().zoom = 100; changed(); },
-    density: () => toggleDensity(),
-    display: (b) => displayPop(b),
+    full: () => toggleView('fullscreen'),
+    compact: () => toggleRibbon(),
     setDefault: () => setDefault(),
     legend: (b) => legendPop(b),
     refresh: (b) => refresh(b.querySelector('.ms')),
     info: () => {},
-    more: (b) => moreMenu(b),
+    others: (b) => othersPop(b),
   };
 
-  // ---------- actions (shared by the ribbon, ⋯ and search) ----------
+  // ---------- actions ----------
   const go = (to) => { const v = V(); if (to === v.anchor) return; G.slideFrom(v.anchor); v.anchor = to; changed(); };
   const goToday = () => { const v = V(); if (v.period === 'project') G.scrollToToday(); else go(T.align(v.period, LIM_DATA.TODAY)); };
   const setPeriod = (k) => { const v = V(), sc = G.scale(); const keep = sc && LIM_DATA.TODAY >= sc.start && LIM_DATA.TODAY < sc.end ? LIM_DATA.TODAY : v.anchor; v.period = k; v.anchor = T.align(k, keep); v.zoom = 100; changed(); };
   const zoom = (d) => { const v = V(); v.zoom = Math.max(50, Math.min(ZOOM_MAX, v.zoom + d)); changed(); };
   const toggleActive = () => { V().activeToday = !V().activeToday; changed(); };
-  const toggleDensity = () => { S.prefs.density = S.prefs.density === 'compact' ? 'comfortable' : 'compact'; S.savePrefs(); changed(); };
+  const toggleRibbon = () => { S.prefs.ribbonMode = single() ? 'detailed' : 'single'; S.savePrefs(); searchPop = false; changed(); };
   const setLevel = (n) => { const v = V(), max = S.maxDepth(); n = Math.max(0, Math.min(max, isNaN(n) ? v.level : n)); G.applyLevel(n); changed(); };
   const toggleAll = () => { if (V().level >= S.maxDepth()) G.collapseAll(); else G.expandAll(); changed(); };
   const refresh = (icon) => { icon && icon.classList.add('spin'); setTimeout(() => { icon && icon.classList.remove('spin'); G.render(); UI.toast('Planning data refreshed'); }, 700); };
@@ -273,14 +384,24 @@ window.R = (function () {
 
   // ---------- menus and pop-ups ----------
   const menuW = (a, min) => Math.max(a.getBoundingClientRect().width, min);
-  function periodMenu(a) { const v = V(); UI.menu(a, T.PERIODS.map(([k, l]) => ({ label: l, on: v.period === k, onClick: () => setPeriod(k) })), { width: menuW(a, 180) }); }
+  function periodMenu(a) { const v = V(); UI.menu(a, [{ label: 'Time period', disabled: true }, ...T.PERIODS.map(([k, l]) => ({ label: l, on: v.period === k, onClick: () => setPeriod(k) }))], { width: menuW(a, 200) }); markHead(); }
+  // Time ▾ (icon, or from Others): ‹ Today › first, then the periods with a check at the right
+  function timePop(a, align) {
+    const v = V(), stepL = T.STEP_LABEL[v.period];
+    const pop = UI.float(a, `<div class="sl-op sl-tp"><div class="rx-tg-top"><button class="rb-ib" data-tp="prev" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_left', 's20')}</button><button class="rx-tg-today" data-tp="today">Today</button><button class="rb-ib" data-tp="next" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_right', 's20')}</button></div><div class="msep"></div>
+      <div class="mi mhead">Time period</div>${T.PERIODS.map(([k, l]) => `<button class="mi ${v.period === k ? 'on' : ''}" data-per="${k}"><span class="grow">${esc(l)}</span>${v.period === k ? ms('check', 'chk') : ''}</button>`).join('')}</div>`, { cls: 'popover', align }); if (!pop) return;
+    // ‹ Today › move the timeline and keep the pop-up open (click outside to close)
+    const move = (to) => { const vv = V(); if (to === vv.anchor) return; G.slideFrom(vv.anchor); vv.anchor = to; G.render(); };
+    pop.querySelector('[data-tp=prev]').onclick = () => move(T.step(V().period, V().anchor, -1));
+    pop.querySelector('[data-tp=next]').onclick = () => move(T.step(V().period, V().anchor, 1));
+    pop.querySelector('[data-tp=today]').onclick = () => { const vv = V(); if (vv.period === 'project') G.scrollToToday(); else move(T.align(vv.period, LIM_DATA.TODAY)); };
+    pop.querySelectorAll('[data-per]').forEach((b) => b.onclick = () => setPeriod(b.dataset.per));
+  }
   function sortMenu(a) { const v = V(); UI.menu(a, [{ label: 'Sort By', disabled: true }, ...SORT_OPTS.map(([k, l]) => ({ label: l, on: v.sortBy === k, onClick: () => { v.sortBy = k; changed(); } }))], { width: 200 }); markHead(); }
   function groupMenu(a) { const v = V(); UI.menu(a, [{ label: 'Group By', disabled: true }, ...GROUP_OPTS.map(([k, l]) => ({ label: l, on: v.groupBy === k, onClick: () => { v.groupBy = k; v.collapsedGroups = new Set(); changed(); } }))], { width: 200 }); markHead(); }
   const markHead = () => { const m = document.querySelector('#layer .menu .mi[disabled]'); m && m.classList.add('mhead'); };
   function colsMenu(a) {
-    // multi-select: stays open, each click toggles a column (live app behaviour)
     const v = V();
-    // each option has a checkbox on the left
     const items = [{ label: 'Column', disabled: true }, ...COL_OPTS.map(([k, l]) => ({ label: l, icon: 'check_box_outline_blank', keepOpen: true, onClick: (b) => {
       v.columns = v.columns.includes(k) ? v.columns.filter((c) => c !== k) : COL_OPTS.map((o) => o[0]).filter((c) => c === k || v.columns.includes(c));
       G.render(); refresh_(b.closest('.menu'));
@@ -292,84 +413,95 @@ window.R = (function () {
     const m = UI.menu(a, items, { width: 220, onClose: () => render() }); markHead();
     if (m) { m.classList.add('sl-cols'); refresh_(m); }
   }
+  // Level block: the − n + box shown directly, with Expand / Collapse all
+  const levelBlock = () => {
+    const v = V(), maxL = S.maxDepth();
+    return `<div class="sl-blk"><div class="rb-lr sl-lr"><span class="ovl">Level</span><button class="rb-lbtn" data-pa="lvAll">${v.level >= maxL ? 'Collapse all' : 'Expand all'}</button></div>
+      <div class="rb-stepper"><button data-pa="lvMinus" ${v.level <= 0 ? 'disabled' : ''}>${ms('remove', 's20')}</button><span>${v.level}</span><button data-pa="lvPlus" ${v.level >= maxL ? 'disabled' : ''}>${ms('add', 's20')}</button></div></div>`;
+  };
+  const displayBlock = () => {
+    const v = V();
+    return `<div class="sl-blk"><div class="rb-lr sl-lr"><span class="ovl">Display</span></div>
+      ${switchHtml(v.activeToday, 'dpActive', 'Active tasks')}
+      ${tucked.includes('zoom') ? `<div class="sl-zrow"><div class="rb-zc"><button class="rb-ib" data-pa="zOut" ${v.zoom <= 50 ? 'disabled' : ''}>${ms('zoom_out', 's20')}</button><button class="sl-fit" data-pa="zFit">Fit</button><button class="rb-ib" data-pa="zIn" ${v.zoom >= ZOOM_MAX ? 'disabled' : ''}>${ms('zoom_in', 's20')}</button></div><span>Zoom ${v.zoom}%</span></div>` : ''}
+      ${switchHtml(single(), 'dpCompact', 'Compact')}</div>`;
+  };
+  // shared handlers for the blocks inside pop-ups; redraw keeps the pop-up open
+  const bindBlocks = (pop, draw) => {
+    const q = (s) => pop.querySelector(s);
+    const act = { lvAll: () => (V().level >= S.maxDepth() ? G.collapseAll() : G.expandAll()), lvMinus: () => G.applyLevel(Math.max(0, V().level - 1)), lvPlus: () => G.applyLevel(Math.min(S.maxDepth(), V().level + 1)),
+      zOut: () => { V().zoom = Math.max(50, V().zoom - 10); }, zIn: () => { V().zoom = Math.min(ZOOM_MAX, V().zoom + 10); }, zFit: () => { V().zoom = 100; } };
+    pop.querySelectorAll('[data-pa]').forEach((b) => b.onclick = () => { act[b.dataset.pa](); G.render(); draw(); });
+    if (q('#dpActive')) q('#dpActive').onclick = () => { V().activeToday = !V().activeToday; G.render(); draw(); };
+    if (q('#dpFull')) q('#dpFull').onclick = () => { const v = V(); v.fullscreen = !v.fullscreen; $('app').classList.toggle('fullscreen', v.fullscreen); G.render(); draw(); };
+    if (q('#dpCompact')) q('#dpCompact').onclick = () => toggleRibbon();
+  };
   function levelPop(a) {
-    const pop = UI.float(a, '<div class="sl-pop" id="lvPop"></div>', { cls: 'popover' }); if (!pop) return;
-    const draw = () => {
-      const v = V(), maxL = S.maxDepth();
-      pop.querySelector('#lvPop').innerHTML = `<div class="rb-lr sl-lr"><span class="ovl">Level</span><button class="rb-lbtn" id="lvAll">${v.level >= maxL ? 'Collapse all' : 'Expand all'}</button></div>
-        <div class="rb-stepper"><button id="lvMinus" data-tip="Level down" ${v.level <= 0 ? 'disabled' : ''}>${ms('remove', 's20')}</button><span>${v.level}</span><button id="lvPlus" data-tip="Level up" ${v.level >= maxL ? 'disabled' : ''}>${ms('add', 's20')}</button></div>`;
-      pop.querySelector('#lvMinus').onclick = () => { G.applyLevel(Math.max(0, V().level - 1)); G.render(); draw(); };
-      pop.querySelector('#lvPlus').onclick = () => { G.applyLevel(Math.min(S.maxDepth(), V().level + 1)); G.render(); draw(); };
-      pop.querySelector('#lvAll').onclick = () => { if (V().level >= S.maxDepth()) G.collapseAll(); else G.expandAll(); G.render(); draw(); };
-    };
+    const pop = UI.float(a, '<div class="sl-pop" id="lvPop"></div>', { cls: 'popover', onClose: () => render() }); if (!pop) return;
+    const draw = () => { pop.querySelector('#lvPop').innerHTML = levelBlock(); bindBlocks(pop, draw); };
     draw();
   }
-  function viewPop(a) {
-    const pop = UI.float(a, '<div class="sl-pop" id="vwPop"></div>', { cls: 'popover' }); if (!pop) return;
-    const draw = () => {
-      const v = V();
-      pop.querySelector('#vwPop').innerHTML = `<div class="rb-lr sl-lr"><span class="ovl">View modes</span></div>
-        <div class="sl-vcol">${check('vDeps', v.showDeps, 'Dependencies')}${check('vFull', v.fullscreen, 'Full screen')}</div>
-        <i class="sl-hdiv"></i>
-        <div class="sl-vcol">${check('vProg', v.showProgress, 'Progress %')}
-          <div class="rb-radios">${radio('basis', 'time', v.progressBasis === 'time', 'Time', !v.showProgress)}${radio('basis', 'work', v.progressBasis === 'work', 'Work', !v.showProgress)}</div></div>`;
-      const t = (k) => () => { toggleView(k); draw(); };
-      pop.querySelector('#vDeps').onclick = t('showDeps');
-      pop.querySelector('#vFull').onclick = t('fullscreen');
-      pop.querySelector('#vProg').onclick = t('showProgress');
-      pop.querySelectorAll('[data-radio]').forEach((b) => b.onclick = () => { V().progressBasis = b.dataset.val; G.render(); draw(); });
-    };
-    draw();
-  }
-
-  // Display ▾ · Active tasks, zoom and Compact when the section is folded
+  // Display ▾ · Active tasks, Zoom, Compact (until it merges into View ▾)
   function displayPop(a) {
-    const pop = UI.float(a, '<div class="sl-pop" id="dpPop"></div>', { cls: 'popover' }); if (!pop) return;
+    const pop = UI.float(a, '<div class="sl-pop sl-vpop" id="dpPop"></div>', { cls: 'popover', onClose: () => render() }); if (!pop) return;
+    const draw = () => { pop.querySelector('#dpPop').innerHTML = displayBlock(); bindBlocks(pop, draw); };
+    draw();
+  }
+  // View ▾ · view modes (Full screen always here, as in the Detailed ribbon), then Display and Level once they have moved in
+  function viewPop(a) {
+    const pop = UI.float(a, '<div class="sl-pop sl-vpop" id="vwPop"></div>', { cls: 'popover', onClose: () => render() }); if (!pop) return;
     const draw = () => {
-      const v = V();
-      pop.querySelector('#dpPop').innerHTML = `<div class="rb-lr sl-lr"><span class="ovl">Display</span></div>
-        ${switchHtml(v.activeToday, 'dpActive', 'Active tasks')}
-        <div class="sl-zrow"><div class="rb-zc"><button class="rb-ib" id="dpOut" ${v.zoom <= 50 ? 'disabled' : ''}>${ms('zoom_out', 's20')}</button><button class="sl-fit" id="dpFit">Fit</button><button class="rb-ib" id="dpIn" ${v.zoom >= ZOOM_MAX ? 'disabled' : ''}>${ms('zoom_in', 's20')}</button></div><span>Zoom ${v.zoom}%</span></div>
-        ${switchHtml(S.prefs.density === 'compact', 'dpDensity', 'Compact')}`;
-      const q = (id) => pop.querySelector('#' + id);
-      q('dpActive').onclick = () => { V().activeToday = !V().activeToday; G.render(); draw(); };
-      q('dpOut').onclick = () => { V().zoom = Math.max(50, V().zoom - 10); G.render(); draw(); };
-      q('dpIn').onclick = () => { V().zoom = Math.min(ZOOM_MAX, V().zoom + 10); G.render(); draw(); };
-      q('dpFit').onclick = () => { V().zoom = 100; G.render(); draw(); };
-      q('dpDensity').onclick = () => { S.prefs.density = S.prefs.density === 'compact' ? 'comfortable' : 'compact'; S.savePrefs(); G.render(); draw(); };
+      const v = V(), moved = tucked.includes('display');
+      pop.querySelector('#vwPop').innerHTML = `<div class="sl-blk"><div class="rb-lr sl-lr"><span class="ovl">View modes</span></div>
+        <div class="sl-vcol">${check('vDeps', v.showDeps, 'Dependencies')}${!single() || tucked.includes('full') ? check('vFull', v.fullscreen, 'Full screen') : ''}</div>
+        <div class="sl-vcol">${check('vProg', v.showProgress, 'Progress %')}
+          <div class="rb-radios">${radio('basis', 'time', v.progressBasis === 'time', 'Time', !v.showProgress)}${radio('basis', 'work', v.progressBasis === 'work', 'Work', !v.showProgress)}</div></div></div>
+        ${moved ? `<i class="sl-hdiv"></i>${levelBlock()}<i class="sl-hdiv"></i>${displayBlock()}` : ''}`;
+      const t = (k) => () => { const vv = V(); if (k === 'fullscreen') { vv.fullscreen = !vv.fullscreen; $('app').classList.toggle('fullscreen', vv.fullscreen); } else vv[k] = !vv[k]; G.render(); draw(); };
+      pop.querySelector('#vDeps').onclick = t('showDeps');
+      if (pop.querySelector('#vFull')) pop.querySelector('#vFull').onclick = t('fullscreen');
+      pop.querySelector('#vProg').onclick = t('showProgress');
+      pop.querySelectorAll('[data-radio]').forEach((b) => b.onclick = () => { if (b.disabled) return; V().progressBasis = b.dataset.val; G.render(); draw(); });
+      bindBlocks(pop, draw);
+    };
+    draw();
+  }
+  // Others ▾ · what moved in, in ribbon order: sections that didn't fit, Set default, Legends (shown directly), Refresh, Last updated
+  function othersPop(a) {
+    // a row that opens its own menu (Time period, Group, Sort, Column) replaces this pop-up without redrawing the ribbon
+    let sub = false;
+    const pop = UI.float(a, '<div class="sl-op" id="opPop"></div>', { cls: 'popover', align: 'right', onClose: () => { if (!sub) render(); } }); if (!pop) return;
+    const subMenu = (fn) => () => { sub = true; fn(a); };
+    const draw = () => {
+      const v = V(), has = (n) => tucked.includes(n), parts = [];
+      const row = (pa, icon, label, o = {}) => `<button class="mi ${o.on ? 'on' : ''}" data-oa="${pa}" ${o.disabled ? 'disabled' : ''}>${ms(icon)}<span class="grow">${esc(label)}</span>${o.on ? ms('check', 'chk') : ''}${o.dd ? ms('chevron_right', 's20 op-go') : ''}</button>`;
+      const secs = [];
+      if (has('time')) secs.push(row('time', 'date_range', `Time: ${lbl(T.PERIODS, v.period)}`, { dd: 1 }));
+      if (has('group')) secs.push(row('group', 'workspaces', `Group by: ${lbl(GROUP_OPTS, v.groupBy)}`, { dd: 1 }));
+      if (has('sort')) secs.push(row('sort', 'sort', `Sort by: ${lbl(SORT_OPTS, v.sortBy)}`, { dd: 1 }));
+      if (has('column')) secs.push(row('cols', 'view_column', 'Column', { dd: 1 }));
+      if (has('file')) secs.push(row('import', 'publish', 'Import'), row('download', 'download', 'Download CSV'));
+      if (secs.length) parts.push(secs.join(''));
+      if (has('defaults')) parts.push(row('setDefault', 'lock_outline', isDefault() ? 'This view is your default' : 'Set as default', { on: isDefault() }));
+      const tail = [];
+      if (has('refresh')) tail.push(row('refresh', 'sync', 'Refresh'));
+      if (has('updated')) tail.push(`<div class="op-upd">${ms('info', 's20')}<span>Last updated on ${fmt(LIM_DATA.LAST_UPDATED)}</span></div>`);
+      if (tail.length) parts.push(tail.join(''));
+      if (has('legend')) parts.push(`<div class="op-lg"><div class="ovl">Legends</div>${LEGENDS.map(([c, t]) => `<div class="lg-i"><i style="background:${c}"></i>${t}</div>`).join('')}</div>`);
+      pop.querySelector('#opPop').innerHTML = parts.join('<div class="msep"></div>');
+      evenIcons(pop, '.mi > .ms:first-child');
+      const A = {
+        time: subMenu((x) => timePop(x, 'right')), group: subMenu(groupMenu), sort: subMenu(sortMenu), cols: subMenu(colsMenu),
+        import: () => { UI.closeFloat(); doImport(); }, download: () => { UI.closeFloat(); doDownload(); },
+        setDefault: () => { setDefault(); },
+        refresh: (b) => refresh(b.querySelector('.ms')),
+      };
+      pop.querySelectorAll('[data-oa]').forEach((b) => b.onclick = () => A[b.dataset.oa](b));
     };
     draw();
   }
 
-  // ⋯ lists the sections that didn't fit, in ribbon order, with their choices
-  function moreMenu(a) {
-    const v = V(), all = v.level >= S.maxDepth();
-    const order = ['filter', 'time', 'sort', 'group', 'column', 'level', 'view', 'file', 'display', 'defaults', 'info'];
-    const G_ITEMS = {
-      filter: [{ label: 'Filter', icon: 'filter_list', onClick: () => filterPop(a) }],
-      time: [{ label: `Time period: ${lbl(T.PERIODS, v.period)}`, icon: 'date_range', onClick: () => periodMenu(a) }, { label: 'Today', icon: 'today', onClick: goToday }],
-      sort: [{ label: `Sort by: ${lbl(SORT_OPTS, v.sortBy)}`, icon: 'sort', onClick: () => sortMenu(a) }],
-      group: [{ label: `Group by: ${lbl(GROUP_OPTS, v.groupBy)}`, icon: 'workspaces', onClick: () => groupMenu(a) }],
-      column: [{ label: 'Column', icon: 'view_column', onClick: () => colsMenu(a) }],
-      level: [{ label: `Level: ${v.level}`, icon: 'format_list_bulleted', onClick: () => levelPop(a) }, { label: all ? 'Collapse all' : 'Expand all', icon: all ? 'unfold_less' : 'unfold_more', onClick: toggleAll }],
-      view: [{ label: 'View modes', icon: 'visibility', onClick: () => viewPop(a) }],
-      file: [{ label: 'Import', icon: 'publish', onClick: doImport }, { label: 'Download', icon: 'download', onClick: doDownload }],
-      display: [{ label: 'Active tasks', icon: 'event_available', on: v.activeToday, onClick: toggleActive }, { label: `Zoom out (${v.zoom}%)`, icon: 'zoom_out', disabled: v.zoom <= 50, onClick: () => zoom(-10) }, { label: 'Fit', icon: 'fit_screen', onClick: () => { v.zoom = 100; changed(); } }, { label: `Zoom in (${v.zoom}%)`, icon: 'zoom_in', disabled: v.zoom >= ZOOM_MAX, onClick: () => zoom(10) }, { label: 'Compact', icon: 'density_small', on: S.prefs.density === 'compact', onClick: toggleDensity }],
-      defaults: [{ label: isDefault() ? 'This view is your default' : 'Set as default', icon: 'lock_outline', on: isDefault(), onClick: setDefault }],
-      info: [{ label: 'Legends', icon: 'legend_toggle', onClick: () => legendPop(a) }, { label: 'Refresh', icon: 'sync', onClick: () => refresh() }, { label: `Last updated on: ${fmt(LIM_DATA.LAST_UPDATED)}`, icon: 'info', disabled: true }],
-    };
-    const items = [];
-    order.filter((g) => hiddenGroups.includes(g)).forEach((g, i) => { if (i) items.push({ sep: true }); items.push(...G_ITEMS[g]); });
-    UI.menu(a, items, { width: 240, align: 'right' });
-  }
-
-  // ---------- search: a plain search on the activity name and the visible columns ----------
-  // matching rows are shown in the Gantt as you type (no dropdown); Esc leaves the field
-  function keys(e) {
-    if (e.key === 'Escape' || e.key === 'Enter') { e.stopPropagation(); $('rbQ').blur(); }
-  }
-
-  // Filter popover · LIM filter: Start / End date, Organization, Discipline, Site, Floor, Reset / Apply
+  // Filter pop-up · under the search box, same width
   const FILTER_FIELDS = [['org', 'Organization'], ['discipline', 'Discipline'], ['site', 'Site'], ['floor', 'Floor']];
   const EMPTY_FILTERS = () => ({ from: '', to: '', activeToday: false, udf1: '', udf2: '', udf3: '', org: '', discipline: '', site: '', floor: '' });
   function filterPop(anchor, box) {
@@ -381,8 +513,7 @@ window.R = (function () {
       <div class="fp-f"><button class="btn text" id="fReset">Reset</button><button class="btn contained" id="fApply">Apply</button></div>
     </div>`, { cls: 'popover fp-pop' + (box ? ' box' : '') });
     if (!pop) return;
-    // from the search box: same left edge and width as the box
-    if (box) { const r = anchor.getBoundingClientRect(); pop.style.width = r.width + 'px'; pop.style.left = r.left + 'px'; pop.style.top = r.bottom + 4 + 'px'; }
+    if (box) { const r = anchor.getBoundingClientRect(); pop.style.width = Math.max(r.width, 320) + 'px'; pop.style.left = Math.min(r.left, innerWidth - Math.max(r.width, 320) - 8) + 'px'; pop.style.top = r.bottom + 4 + 'px'; }
     pop.querySelector('#fReset').onclick = () => { V().filters = EMPTY_FILTERS(); UI.closeFloat(); changed(); };
     pop.querySelector('#fApply').onclick = () => {
       Object.assign(f, { from: pop.querySelector('#fFrom').value, to: pop.querySelector('#fTo').value, activeToday: false, udf1: '', udf2: '', udf3: '' });
@@ -391,10 +522,9 @@ window.R = (function () {
     };
   }
 
-  // Legends popover
   function legendPop(anchor) {
     UI.float(anchor, `<div class="lg"><div class="ovl">Legends</div>
-      ${[['#F5BF5E', 'Critical Date'], ['#06A77D', 'Logistics Volume - Normal'], ['#D82034', 'Logistics Volume - Critical']].map(([c, t]) => `<div class="lg-i"><i style="background:${c}"></i>${t}</div>`).join('')}</div>`, { cls: 'popover lg-pop', align: 'right' });
+      ${LEGENDS.map(([c, t]) => `<div class="lg-i"><i style="background:${c}"></i>${t}</div>`).join('')}</div>`, { cls: 'popover lg-pop', align: 'right' });
   }
 
   return { render };
