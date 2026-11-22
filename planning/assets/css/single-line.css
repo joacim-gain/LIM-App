@@ -10,7 +10,7 @@
 /* the − / + of the Level stepper are icons too */
 .rb-stepper button { color: var(--t2); }
 /* Search and Filter share a section; a divider sits between them only when search is a tile or an icon */
-.rx-g[data-g="find"]:not(.is-fold) + .rx-d-find { display: none; }
+/* (v5) a divider always follows Search, open box or button (user Figma update 22 Nov) */
 
 /* Ribbon v3 · one 64px row that fills the width (LIM project 2 recording); MS ribbon tiles in the LIM style.
    Sections fold right to left: open → folded (named button ▾) → icon only → ⋯ */
@@ -320,3 +320,72 @@
 .sl-vpop .rb-radios { padding-left: 22px; }
 /* Display: − Fit + starts on the same left edge as the switches */
 .sl-zrow .rb-zc { margin-left: -6px; }
+
+/* ===== v5 · user Figma update (22 Nov): Section 1 + pop-ups board ===== */
+/* section dividers are 48px in the Detailed ribbon (16px in the single line) */
+.rx:not(.rx-one) .rx-d { height: 48px; }
+/* chips: 4px apart, 6px side padding; columns stretch so stacked chips share a width */
+.rx-picks { gap: 4px; }
+.rx-pk { padding: 0 6px; }
+/* title tile in front of the chips (Period, Group by): icon row + label row, like every tile */
+.rx-ld { height: 48px; padding: 2px 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; color: var(--t2); flex: none; }
+.rx-ld > .ms { height: 24px; display: flex; align-items: center; }
+.rx-g[data-g="time"] > .v-open, .rx-g[data-g="group"] > .v-open { gap: 8px; }
+.rx-g[data-g="time"] > .v-open > .rx-stk { margin-left: -6px; }
+.rx-g[data-g="time"].no-lead .rx-ld { display: none; }
+/* Sort: "Sort by" row on top, chips in one row underneath */
+.rx-sortv { height: 48px; display: flex; flex-direction: column; align-items: center; gap: 2px; flex: none; }
+.rx-ldr { height: 24px; display: flex; align-items: center; gap: 4px; color: var(--t2); }
+.rx-sortv .rx-picks { grid-template-columns: repeat(3, auto); }
+/* Group chips: Discipline Zone Organization / Phase Floor Site None */
+.rx-gp { grid-template-columns: repeat(3, auto); }
+.rx-pk2 { display: flex; gap: 4px; }
+.rx-pk2 .rx-pk { flex: 1; }
+/* Level box: 84 × 24 */
+.rx-lv { padding-top: 2px; }
+.rx-lv .rx-step { height: 24px; margin-bottom: 0; }
+/* View modes on the ribbon: column 1 | divider | column 2 */
+.rx-vm2 { height: 48px; display: flex; align-items: center; gap: 16px; padding: 0 6px; flex: none; }
+.rx-vc { display: flex; flex-direction: column; gap: 6px; }
+.rx-vc2 { gap: 4px; }
+.rx-vc2 .rx-basis { padding-left: 0; }
+.rx-vd { width: 1px; height: 48px; background: var(--border-bar); flex: none; display: block; }
+/* Display on the ribbon: Active tasks | Compact */
+/* View ▾ pop-up: blocks 20px apart, no lines between them; a line between the two view-mode columns */
+#vwPop { gap: 20px; }
+#vwPop .sl-blk { gap: 8px; }
+.sl-hline { display: block; height: 1px; background: var(--border-field); }
+.sl-vcol2 { gap: 4px; }
+.sl-vpop .rx-basis { padding-left: 0; }
+.sl-vpop .rx-picks { justify-content: start; }
+/* Display block: Zoom row first; "Zoom 100%" at the right in grey */
+.sl-blk .sl-zrow { justify-content: space-between; }
+.sl-blk .sl-zrow > span { color: var(--t3); }
+/* Others ▾: separators inset 16px; Last updated is a plain row */
+.sl-op .msep { background: #E5E5E7; }
+.sl-op .msep.in { margin: 4px 16px; }
+.sl-op .mi.op-upd { cursor: default; font-size: 14px; color: var(--t1); padding: 0 12px; height: 32px; }
+.sl-op .mi.op-upd:hover { background: none; }
+.sl-op .mi.op-upd .ms { color: var(--t2); }
+/* Others ▾ legends (Figma): 12px squares, 12px text in the main text colour */
+.op-lg .lg-i { color: var(--t1); letter-spacing: 0; }
+.op-lg .lg-i i { width: 12px; height: 12px; }
+/* v5b · one gap everywhere (set by evenGaps after fitting): tools, dividers, and the dividers inside View and Display */
+.rx .rx-items { justify-content: flex-start; gap: var(--g, 4px); }
+.rx-vm2, .rx .rx-g[data-g="display"] > .v-open { gap: var(--g, 4px); }
+/* Sort by: title row and chips aligned left (Figma) */
+.rx-sortv { align-items: flex-start; padding: 0 4px; }
+/* v5c · View ▾ / Display ▾ pop-ups measured against Figma "Popover · View" / "Popover · Display" */
+.sl-pop .sl-lr { height: 12px; }                                  /* header row = the 12px text, so header → content is 8px */
+.sl-pop .rb-lbtn { letter-spacing: 1.25px; }                       /* EXPAND ALL: Medium 10, 1.25 */
+.sl-hline { background: transparent; margin: -2px 0; }             /* Figma's divider has no fill: 6px · 1px · 6px of space */
+.sl-vpop .rx-basis { padding-left: 2px; }
+.sl-pop .rb-stepper span { font-size: 12px; line-height: 16px; letter-spacing: .2px; color: var(--t1); }
+.sl-dcol { display: flex; flex-direction: column; gap: 4px; }      /* Zoom row · Active tasks · Compact, 4px apart */
+#dpPop .sl-blk, #dpPop .sl-dcol { gap: 6px; }                       /* stand-alone Display ▾: 6px rhythm */
+.sl-zrow .rb-zc { margin-left: 0; }                                /* − Fit + start at the block edge */
+.sl-zrow .rb-ib { height: 30px; }
+/* checkbox square 14px inside an 18px box (Figma Checkbox/Enabled 18 × 18) */
+.rb-check .cb { width: 14px; height: 14px; margin: 2px; }
+.rb-check .cb .ms { font-size: 12px; }
+#dpPop .sl-zrow { height: 40px; }                                  /* Figma "Popover · Display": Zoom row 40px */

@@ -15,7 +15,7 @@
 </div>
 <main class="page">
   <header class="intro">
-    <span class="eyebrow">LIM · Planning module · Updated 17 Nov 2026</span>
+    <span class="eyebrow">LIM · Planning module · Updated 22 Nov 2026</span>
     <h1>Planning: Gantt and the ribbon (v4)</h1>
     <p class="lead">The Settings drawer is gone. Every view setting lives in one ribbon row above the Gantt, in two styles: <b>Detailed</b> (default, 64 px tiles) and <b>Single line</b> (48 px icons), switched by the Compact toggle. When the screen narrows, tools form groups (Others ▾, Display ▾, View ▾); at 1350 px and below Search and Time collapse; then labels give way to icons.</p>
     <div class="btns" style="margin-top:8px"><a class="btn primary" href="../planning/single-line.html"><span class="ms">open_in_new</span>Open Planning demo</a><a class="btn line" href="planning.json"><span class="ms">data_object</span>planning.json</a></div>
@@ -47,17 +47,17 @@
       <table>
         <thead><tr><th>Section</th><th>Contents</th><th>Options</th></tr></thead>
         <tbody>
-          <tr><td>Search</td><td>Fixed 320 px box: search icon, filter chips (×), input, row count “10 of 23”, clear, filter button. No divider after the open box. As a button it opens the same box below it as a 320 px pop-up (one chip, then “+N”); a divider follows the Search button.</td><td>Filter: Start / End Date, Organization, Discipline, Site, Floor</td></tr>
-          <tr><td>Time</td><td>Wide: period chips + ‹ › + Today. ≤1350 px: one “Monthly ▾”; its drop-down shows ‹ Today › (stays open while stepping), then TIME PERIOD with a check at the right</td><td>Yearly, Quarterly, Monthly (default), Weekly, Project Duration</td></tr>
-          <tr><td>Sort</td><td>Chips down to ≈1440 px, then Sort ▾</td><td>Default, Start Date, End Date</td></tr>
-          <tr><td>Group</td><td>Chips on very wide screens, then Group ▾</td><td>Discipline, Zone, Organization, Phase, Site, Floor, None</td></tr>
+          <tr><td>Search</td><td>Fixed 320 px box: search icon, filter chips (×), input, row count “10 of 23”, clear, filter button. A divider always follows Search. As a button it opens the same box below it as a 320 px pop-up (one chip, then “+N”).</td><td>Filter: Start / End Date, Organization, Discipline, Site, Floor</td></tr>
+          <tr><td>Time</td><td>Wide: “Period” title (very wide only) + chips in 3 columns + ‹ › + Today. ≤1350 px: one “Monthly ▾”; its drop-down shows ‹ Today › (stays open while stepping), then TIME PERIOD with a check at the right</td><td>Yearly, Quarterly, Monthly (default), Weekly, Project Duration</td></tr>
+          <tr><td>Sort</td><td>“Sort by” title row with the chips in one row underneath (left-aligned), down to ≈1440 px; then Sort ▾</td><td>Default, Start Date, End Date</td></tr>
+          <tr><td>Group</td><td>Very wide: “Group by” title + chips (Discipline · Zone · Organization / Phase · Floor · Site · None); then Group ▾</td><td>Discipline, Zone, Organization, Phase, Site, Floor, None</td></tr>
           <tr><td>Column</td><td>Column ▾ with checkboxes on the left</td><td>Visible Gantt columns</td></tr>
           <tr><td>Level</td><td>− / input / + box (stroke only; white on hover / in use) + Expand all · Collapse all</td><td>0 to the deepest level</td></tr>
-          <tr><td>View</td><td>View modes inline, then View ▾ (View modes &gt; Level &gt; Display)</td><td>Dependencies, Full screen, Progress % (Time / Work)</td></tr>
+          <tr><td>View</td><td>View modes inline (Dependencies, Full screen | Progress % with Time / Work chips), then View ▾ (View modes &gt; Level &gt; Display)</td><td>Dependencies, Full screen, Progress % (Time / Work)</td></tr>
           <tr><td>Zoom</td><td>− Fit + with “Zoom 100%”</td><td>50–200 % in 10 % steps; Fit = 100 %</td></tr>
           <tr><td>File</td><td>File ▾: Import, Download CSV</td><td>Import opens the file picker</td></tr>
-          <tr><td>Display</td><td>Active tasks · Compact inline; then Display ▾ (tune icon) holding Active tasks, Zoom, Compact</td><td>Compact switches to the Single line ribbon</td></tr>
-          <tr><td>Set default · Legends · Refresh · Updated</td><td>Tiles on wide screens; then in Others ▾</td><td>Others ▾ order: Set default, Refresh, Last updated, Legends (shown directly)</td></tr>
+          <tr><td>Display</td><td>Active tasks | Compact inline; then Display ▾ (tune icon) holding Zoom, Active tasks, Compact</td><td>Compact switches to the Single line ribbon</td></tr>
+          <tr><td>Set default · Legends · Refresh · Updated</td><td>Tiles on wide screens; then in Others ▾</td><td>Others ▾ order: Set default, Refresh, Last updated, Legends (shown directly); separators inset 16 px</td></tr>
         </tbody>
       </table>
     </div>
@@ -83,7 +83,7 @@
     </div>
     <ul class="plain">
       <li><strong>Search box</strong> is a fixed 320 px; it never stretches.</li>
-      <li><strong>Dividers</strong> show only between two visible sections; none after the open search box, one after the Search button.</li>
+      <li><strong>Spacing:</strong> one gap everywhere — between tools, on both sides of every divider (Search included) and around the dividers inside View modes and Display; it is worked out per width after fitting (minimum 6 px). Detailed dividers are 48 px, single-line 16 px.</li>
       <li><strong>Pop-ups</strong> open 4 px below their button and stay on screen.</li>
     </ul>
   </section>
@@ -165,7 +165,7 @@
     <div class="code">
       <div class="code-bar"><span>Cache busting</span><button class="copy" data-copy="cache">Copy</button></div>
       <pre id="cache">&lt;!-- raise ?v= on every CSS / JS link after a change so browsers fetch the new file --&gt;
-&lt;script src="assets/js/ribbon-single.js?v=20261117.22"&gt;&lt;/script&gt;</pre>
+&lt;script src="assets/js/ribbon-single.js?v=20261122.13"&gt;&lt;/script&gt;</pre>
     </div>
   </section>
 
@@ -182,6 +182,7 @@
   <section id="log" aria-labelledby="log-h">
     <h2 id="log-h">Changes</h2>
     <ul class="log">
+      <li><time>22 Nov 2026</time><code>v5</code><span>Figma update: divider after Search always, Period / Sort by / Group by titles, chip layout, View and Display dividers, one even gap per width, View / Display / Others pop-ups to the pixel</span></li>
       <li><time>17 Nov 2026</time><code>v4</code><span>Ribbon v4: Detailed + Single line (Compact), groups Others / Display / View, fixed 320 px search with chips and pop-up, Time ▾ with ‹ Today ›, collapse at 1350 px, one header style</span></li>
       <li><time>10 Nov 2026</time><code>549ca13</code><span>Set default active only after a click; olive tiles only when a choice differs from the default</span></li>
       <li><time>10 Nov 2026</time><code>c265791</code><span>New Activity Details drawer; no divider next to the open search box</span></li>
