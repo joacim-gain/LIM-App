@@ -389,3 +389,7 @@
 .rb-check .cb { width: 14px; height: 14px; margin: 2px; }
 .rb-check .cb .ms { font-size: 12px; }
 #dpPop .sl-zrow { height: 40px; }                                  /* Figma "Popover · Display": Zoom row 40px */
+
+/* v5d · Zoom: − [fit icon] + · Figma "Ribbon / Zoom" Controls = 32 · 2 · 32 · 2 · 32 */
+.rx-zoom .rb-zc, .sl-zoom, .sl-zrow .rb-zc { gap: 2px; }
+.sl-zrow .rb-ib { height: 32px; }                                  /* pop-up Zoom row stays 32 (Figma), as when "Fit" set it */

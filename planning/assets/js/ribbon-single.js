@@ -108,7 +108,7 @@ window.R = (function () {
     const prev = `<div class="rx-stk"><button class="rb-ib" data-act="prev" data-tip="${tp(stepL ? `Previous ${stepL}` : 'Previous', stepL ? `Moves the timeline back one ${stepL}` : '')}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_left', 's20')}</button>
             <button class="rb-ib" data-act="next" data-tip="${tp(stepL ? `Next ${stepL}` : 'Next', stepL ? `Moves the timeline forward one ${stepL}` : '')}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_right', 's20')}</button></div>`;
     const today = tile('today', 'today', 'Today', tp('Today', 'Jumps to today on the timeline'));
-    const zoomBox = `<div class="rx-zoom"><div class="rb-zc">${iconBtn('zoomOut', 'zoom_out', tp('Zoom out', `Shows more of the timeline (${v.zoom}%)`), v.zoom <= 50)}<button class="sl-fit" data-act="fit" data-tip="${tp('Fit', 'Back to the default zoom')}">Fit</button>${iconBtn('zoomIn', 'zoom_in', tp('Zoom in', `Shows less of the timeline in more detail (${v.zoom}%)`), v.zoom >= ZOOM_MAX)}</div><span class="lbt">Zoom ${v.zoom}%</span></div>`;
+    const zoomBox = `<div class="rx-zoom"><div class="rb-zc">${iconBtn('zoomOut', 'zoom_out', tp('Zoom out', `Shows more of the timeline (${v.zoom}%)`), v.zoom <= 50)}${iconBtn('fit', 'aspect_ratio', tp('Fit', 'Back to the default zoom (100%)'))}${iconBtn('zoomIn', 'zoom_in', tp('Zoom in', `Shows less of the timeline in more detail (${v.zoom}%)`), v.zoom >= ZOOM_MAX)}</div><span class="lbt">Zoom ${v.zoom}%</span></div>`;
     // Time as one group once View ▾ is full: ‹ Today › on top, the period ▾ under it; an icon ▾ when even smaller
     // Time · 1st fold = Monthly ▾ · ‹ › · Today (as before); later one drop-down (‹ Today › + the periods with a check)
     const tgroup = `<div class="rx-t1">${tile('period', 'date_range', lbl(T.PERIODS, v.period), tp(`Time period: ${lbl(T.PERIODS, v.period)}`, 'Choose how much of the timeline you see'), { dd: 1, ic: false, cls: 'rx-period' })}${prev}${today}</div>
@@ -155,7 +155,7 @@ window.R = (function () {
         ${sec('level', 2, null, 1, lineDd('level', 'format_list_bulleted', tp(`Level ${v.level}`, 'Choose how many levels of the structure are open'), changedFrom.level(), 'Level'))}
         ${sec('view', 2, null, 1, lineDd('view', 'visibility', tp('View', 'View modes, plus Display and Level when they don’t fit'), false, 'View'))}
         ${sec('full', 1, null, null, lineIc('full', 'settings_overscan', tp('Full screen', v.fullscreen ? 'Leave full screen' : 'Hides the side menu and top bar'), { cls: v.fullscreen ? 'act' : '' }))}${D_}
-        ${sec('zoom', 1, null, null, `<div class="sl-zoom">${iconBtn('zoomOut', 'zoom_out', tp('Zoom out', `Shows more of the timeline (${v.zoom}%)`), v.zoom <= 50)}<button class="sl-fit" data-act="fit" data-tip="${tp('Fit', `Back to the default zoom (now ${v.zoom}%)`)}">Fit</button>${iconBtn('zoomIn', 'zoom_in', tp('Zoom in', `Shows less of the timeline in more detail (${v.zoom}%)`), v.zoom >= ZOOM_MAX)}</div>`)}${D_}
+        ${sec('zoom', 1, null, null, `<div class="sl-zoom">${iconBtn('zoomOut', 'zoom_out', tp('Zoom out', `Shows more of the timeline (${v.zoom}%)`), v.zoom <= 50)}${iconBtn('fit', 'aspect_ratio', tp('Fit', `Back to the default zoom (now ${v.zoom}%)`))}${iconBtn('zoomIn', 'zoom_in', tp('Zoom in', `Shows less of the timeline in more detail (${v.zoom}%)`), v.zoom >= ZOOM_MAX)}</div>`)}${D_}
         ${sec('file', 2, null, 1, lineDd('file', 'import_export', tp('File', 'Import a plan or download it as CSV'), false, 'File'))}${D_}
         ${sec('display', 2, 1, null, `${lineSw('active', v.activeToday, 'Active Tasks', tp('Active tasks', 'Shows only the activities running today'))}${lineSw('compact', true, 'Compact', tp('Compact', 'Switches back to the detailed ribbon'))}`,
           lineDd('display', 'tune', tp('Display', 'Active tasks, zoom and the Compact ribbon'), v.activeToday))}${D_}
@@ -444,7 +444,7 @@ window.R = (function () {
   const displayBlock = () => {
     const v = V();
     return `<div class="sl-blk"><div class="rb-lr sl-lr"><span class="ovl">Display</span></div>
-      <div class="sl-dcol">${tucked.includes('zoom') ? `<div class="sl-zrow"><div class="rb-zc"><button class="rb-ib" data-pa="zOut" ${v.zoom <= 50 ? 'disabled' : ''}>${ms('zoom_out', 's20')}</button><button class="sl-fit" data-pa="zFit">Fit</button><button class="rb-ib" data-pa="zIn" ${v.zoom >= ZOOM_MAX ? 'disabled' : ''}>${ms('zoom_in', 's20')}</button></div><span>Zoom ${v.zoom}%</span></div>` : ''}
+      <div class="sl-dcol">${tucked.includes('zoom') ? `<div class="sl-zrow"><div class="rb-zc"><button class="rb-ib" data-pa="zOut" ${v.zoom <= 50 ? 'disabled' : ''}>${ms('zoom_out', 's20')}</button><button class="rb-ib" data-pa="zFit" data-tip="Fit · Back to the default zoom">${ms('aspect_ratio', 's20')}</button><button class="rb-ib" data-pa="zIn" ${v.zoom >= ZOOM_MAX ? 'disabled' : ''}>${ms('zoom_in', 's20')}</button></div><span>Zoom ${v.zoom}%</span></div>` : ''}
       ${switchHtml(v.activeToday, 'dpActive', 'Active tasks')}
       ${switchHtml(single(), 'dpCompact', 'Compact')}</div></div>`;
   };
