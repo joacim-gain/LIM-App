@@ -131,7 +131,7 @@ window.R = (function () {
           `<div class="rx-vm2"><div class="rx-vc">${check('vDeps', v.showDeps, 'Dependencies')}${check('vFull', v.fullscreen, 'Full screen')}</div><i class="rx-vd"></i><div class="rx-vc rx-vc2">${check('vProg', v.showProgress, 'Progress %')}<div class="rx-basis">${picks('basis', [['time', 'Time'], ['work', 'Work']], v.progressBasis, 2, (k) => tp(k === 'time' ? 'Progress by time' : 'Progress by work', k === 'time' ? 'How much of the planned time has passed' : 'How much of the planned work is done'), !v.showProgress)}</div></div></div>`,
           tile('view', 'visibility', 'View', tp('View', 'View modes, plus Display and Level when they don’t fit'), { dd: 1 }))}${D_}
         ${sec('zoom', 1, null, null, zoomBox)}${D_}
-        ${sec('fitTl', 2, null, 1, tile('fitTl', 'aspect_ratio', 'Fit timeline', fitTip(), { disabled: !fitOk() }))}${D_}
+        ${sec('fitTl', 2, null, 1, `<div class="rx-zoom rx-fit"><div class="rb-zc">${iconBtn('fitTl', 'aspect_ratio', fitTip(), !fitOk())}</div><span class="lbt">Fit timeline</span></div>`)}${D_}
         ${sec('file', 2, null, 1, tile('file', 'import_export', 'File', tp('File', 'Import a plan or download it as CSV'), { dd: 1 }))}${D_}
         ${sec('display', 2, 1, null, `${swTile('active', v.activeToday, 'Active tasks', tp('Active tasks', 'Shows only the activities running today'))}<i class="rx-vd"></i>${swTile('compact', false, 'Compact', tp('Compact', 'Switches to the single-line ribbon'))}`,
           tile('display', 'tune', 'Display', tp('Display', 'Active tasks, zoom and the Compact ribbon'), { dd: 1, on: V().activeToday }))}${D_}

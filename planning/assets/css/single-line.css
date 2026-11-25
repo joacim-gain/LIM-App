@@ -400,3 +400,9 @@
 .sl-fitrow:hover:not(:disabled) { background: rgba(38,38,51,.06); }
 .sl-fitrow:disabled { opacity: .38; cursor: default; }
 .sl-li:disabled { opacity: .38; }
+
+/* v6b: Zoom + Fit timeline labels as in Figma (Roboto 10/12); Fit timeline = 32px button + label, like Zoom */
+.rx .rx-zoom .lbt { font-size: 10px; line-height: 12px; letter-spacing: 0; }
+.rx-fit:has(.rb-ib:disabled) { opacity: .38; }
+.rx-fit .rb-ib:disabled { opacity: 1; cursor: default; }
+.rx-g.is-icon .rx-fit .lbt { display: none; }
