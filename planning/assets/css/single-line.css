@@ -393,3 +393,10 @@
 /* v5d · Zoom: − [fit icon] + · Figma "Ribbon / Zoom" Controls = 32 · 2 · 32 · 2 · 32 */
 .rx-zoom .rb-zc, .sl-zoom, .sl-zrow .rb-zc { gap: 2px; }
 .sl-zrow .rb-ib { height: 32px; }                                  /* pop-up Zoom row stays 32 (Figma), as when "Fit" set it */
+
+/* v6 · Fit timeline: its own tile beside Zoom (− + only); on when an activity is selected */
+.sl-fitrow { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 6px; margin: 0 -6px; border-radius: 4px; font-size: 12px; color: var(--t1); text-align: left; }
+.sl-fitrow .ms { color: var(--t2); }
+.sl-fitrow:hover:not(:disabled) { background: rgba(38,38,51,.06); }
+.sl-fitrow:disabled { opacity: .38; cursor: default; }
+.sl-li:disabled { opacity: .38; }

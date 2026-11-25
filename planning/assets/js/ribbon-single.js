@@ -7,7 +7,8 @@
    field as a pop-up over the ribbon (like Google Docs find). Applied filters show as chips inside the field.
    Shrinking, right to left, the same in both ribbons:
      1 · Others ▾ takes Updated, Refresh, Legends, then Set default
-     2 · View ▾ takes Level (stepper shown directly), then Display (Active tasks, zoom, Compact)
+     2 · View ▾ takes Level first, then Display ▾ forms (Active tasks, Zoom, Compact) and later moves into View ▾
+     Fit timeline (selected activity, start to end) stays beside Zoom until the very end, then moves into View ▾
      then labels give way to icons (Detailed) and the last sections move into Others. */
 window.R = (function () {
   const { esc, ms, fmt } = UI;
@@ -108,7 +109,7 @@ window.R = (function () {
     const prev = `<div class="rx-stk"><button class="rb-ib" data-act="prev" data-tip="${tp(stepL ? `Previous ${stepL}` : 'Previous', stepL ? `Moves the timeline back one ${stepL}` : '')}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_left', 's20')}</button>
             <button class="rb-ib" data-act="next" data-tip="${tp(stepL ? `Next ${stepL}` : 'Next', stepL ? `Moves the timeline forward one ${stepL}` : '')}" ${stepL ? '' : 'disabled'}>${ms('keyboard_arrow_right', 's20')}</button></div>`;
     const today = tile('today', 'today', 'Today', tp('Today', 'Jumps to today on the timeline'));
-    const zoomBox = `<div class="rx-zoom"><div class="rb-zc">${iconBtn('zoomOut', 'zoom_out', tp('Zoom out', `Shows more of the timeline (${v.zoom}%)`), v.zoom <= 50)}${iconBtn('fit', 'aspect_ratio', tp('Fit', 'Back to the default zoom (100%)'))}${iconBtn('zoomIn', 'zoom_in', tp('Zoom in', `Shows less of the timeline in more detail (${v.zoom}%)`), v.zoom >= ZOOM_MAX)}</div><span class="lbt">Zoom ${v.zoom}%</span></div>`;
+    const zoomBox = `<div class="rx-zoom"><div class="rb-zc">${iconBtn('zoomOut', 'zoom_out', tp('Zoom out', `Shows more of the timeline (${v.zoom}%)`), v.zoom <= 50)}${iconBtn('zoomIn', 'zoom_in', tp('Zoom in', `Shows less of the timeline in more detail (${v.zoom}%)`), v.zoom >= ZOOM_MAX)}</div><span class="lbt">Zoom ${v.zoom}%</span></div>`;
     // Time as one group once View ▾ is full: ‹ Today › on top, the period ▾ under it; an icon ▾ when even smaller
     // Time · 1st fold = Monthly ▾ · ‹ › · Today (as before); later one drop-down (‹ Today › + the periods with a check)
     const tgroup = `<div class="rx-t1">${tile('period', 'date_range', lbl(T.PERIODS, v.period), tp(`Time period: ${lbl(T.PERIODS, v.period)}`, 'Choose how much of the timeline you see'), { dd: 1, ic: false, cls: 'rx-period' })}${prev}${today}</div>
@@ -130,6 +131,7 @@ window.R = (function () {
           `<div class="rx-vm2"><div class="rx-vc">${check('vDeps', v.showDeps, 'Dependencies')}${check('vFull', v.fullscreen, 'Full screen')}</div><i class="rx-vd"></i><div class="rx-vc rx-vc2">${check('vProg', v.showProgress, 'Progress %')}<div class="rx-basis">${picks('basis', [['time', 'Time'], ['work', 'Work']], v.progressBasis, 2, (k) => tp(k === 'time' ? 'Progress by time' : 'Progress by work', k === 'time' ? 'How much of the planned time has passed' : 'How much of the planned work is done'), !v.showProgress)}</div></div></div>`,
           tile('view', 'visibility', 'View', tp('View', 'View modes, plus Display and Level when they don’t fit'), { dd: 1 }))}${D_}
         ${sec('zoom', 1, null, null, zoomBox)}${D_}
+        ${sec('fitTl', 2, null, 1, tile('fitTl', 'aspect_ratio', 'Fit timeline', fitTip(), { disabled: !fitOk() }))}${D_}
         ${sec('file', 2, null, 1, tile('file', 'import_export', 'File', tp('File', 'Import a plan or download it as CSV'), { dd: 1 }))}${D_}
         ${sec('display', 2, 1, null, `${swTile('active', v.activeToday, 'Active tasks', tp('Active tasks', 'Shows only the activities running today'))}<i class="rx-vd"></i>${swTile('compact', false, 'Compact', tp('Compact', 'Switches to the single-line ribbon'))}`,
           tile('display', 'tune', 'Display', tp('Display', 'Active tasks, zoom and the Compact ribbon'), { dd: 1, on: V().activeToday }))}${D_}
@@ -155,7 +157,8 @@ window.R = (function () {
         ${sec('level', 2, null, 1, lineDd('level', 'format_list_bulleted', tp(`Level ${v.level}`, 'Choose how many levels of the structure are open'), changedFrom.level(), 'Level'))}
         ${sec('view', 2, null, 1, lineDd('view', 'visibility', tp('View', 'View modes, plus Display and Level when they don’t fit'), false, 'View'))}
         ${sec('full', 1, null, null, lineIc('full', 'settings_overscan', tp('Full screen', v.fullscreen ? 'Leave full screen' : 'Hides the side menu and top bar'), { cls: v.fullscreen ? 'act' : '' }))}${D_}
-        ${sec('zoom', 1, null, null, `<div class="sl-zoom">${iconBtn('zoomOut', 'zoom_out', tp('Zoom out', `Shows more of the timeline (${v.zoom}%)`), v.zoom <= 50)}${iconBtn('fit', 'aspect_ratio', tp('Fit', `Back to the default zoom (now ${v.zoom}%)`))}${iconBtn('zoomIn', 'zoom_in', tp('Zoom in', `Shows less of the timeline in more detail (${v.zoom}%)`), v.zoom >= ZOOM_MAX)}</div>`)}${D_}
+        ${sec('zoom', 1, null, null, `<div class="sl-zoom">${iconBtn('zoomOut', 'zoom_out', tp('Zoom out', `Shows more of the timeline (${v.zoom}%)`), v.zoom <= 50)}${iconBtn('zoomIn', 'zoom_in', tp('Zoom in', `Shows less of the timeline in more detail (${v.zoom}%)`), v.zoom >= ZOOM_MAX)}</div>`)}${D_}
+        ${sec('fitTl', 1, null, null, lineIc('fitTl', 'aspect_ratio', fitTip(), { disabled: !fitOk() }))}${D_}
         ${sec('file', 2, null, 1, lineDd('file', 'import_export', tp('File', 'Import a plan or download it as CSV'), false, 'File'))}${D_}
         ${sec('display', 2, 1, null, `${lineSw('active', v.activeToday, 'Active Tasks', tp('Active tasks', 'Shows only the activities running today'))}${lineSw('compact', true, 'Compact', tp('Compact', 'Switches back to the detailed ribbon'))}`,
           lineDd('display', 'tune', tp('Display', 'Active tasks, zoom and the Compact ribbon'), v.activeToday))}${D_}
@@ -164,6 +167,15 @@ window.R = (function () {
         ${sec('refresh', 1, null, null, lineIc('refresh', 'sync', tp('Refresh', 'Reloads the planning data')))}
         ${sec('updated', 1, null, null, lineIc('info', 'info', tp('Last updated', fmt(LIM_DATA.LAST_UPDATED))))}
         ${sec('others', 1, null, null, lineIc('others', 'more_horiz', othersTip, { dd: 1 }))}`;
+  }
+  // Fit timeline · on when an activity is selected: shows it from start to end
+  const fitOk = () => !!(V().selected && S.byId(V().selected));
+  const fitTip = () => (fitOk() ? tp('Fit timeline', `Shows “${S.byId(V().selected).name}” from start to end`) : tp('Fit timeline', 'Select an activity to see it from start to end'));
+  const doFit = () => { if (fitOk() && G.fitTo(V().selected)) changed(); };
+  // the selection changes in the Gantt without redrawing the ribbon: update the Fit timeline buttons in place
+  function syncFit() {
+    const ok = fitOk(), tip = fitTip();
+    document.querySelectorAll('[data-act="fitTl"], [data-pa="fitTl"]').forEach((b) => { b.disabled = !ok; b.dataset.tip = tip; });
   }
   const defTip = () => (isDefault() ? tp('This view is your default', 'Change the view to save a new default') : tp('Set as default', 'Saves the current settings as your default view'));
 
@@ -205,7 +217,7 @@ window.R = (function () {
   const NARROW = 1350;
   const INTO_OTHERS = ['updated', 'refresh', 'legend', 'defaults'];
   // these move into View ▾ together, in one step
-  const INTO_VIEW = ['level', 'full', 'zoom', 'display'];
+  const INTO_VIEW = ['level', 'full', 'zoom', 'display', 'fitTl'];
   const isFindCompact = () => { const g = el().querySelector('.rx-g[data-g="find"]'); return !!g && g.classList.contains('is-fold'); };
   // one gap everywhere: between tools, on both sides of every divider, and around the dividers inside View and Display
   const GAP_MIN = 6;
@@ -239,13 +251,14 @@ window.R = (function () {
     if (single()) ['file', 'view', 'level', 'column', 'sort', 'group'].forEach((n) => steps.push(() => { const g = G_(n); if (g) setS(g, 1); }));
     // 2 · Others ▾ takes Updated, Refresh, Legends, Set default
     INTO_OTHERS.forEach((n) => steps.push(() => tuck(n)));
-    // 3 · Display ▾ forms (Active tasks, Zoom, Compact), then the view modes fold into View ▾
+    // 3 · the view modes fold into View ▾ and Level moves in with them (Level goes before Zoom and Fit timeline)
+    steps.push(() => { fold('view'); tuck('level'); });
+    // 4 · Display ▾ forms (Active tasks, Zoom, Compact); Fit timeline stays on the ribbon
     steps.push(() => { tuck('zoom'); fold('display'); });
-    steps.push(() => fold('view'));
     // 4 · Detailed: Sort picks become a button (they stay down to about 1440px)
     if (!single()) steps.push(() => fold('sort'));
-    // 5 · Level and Display move into View ▾ together, before Time and Search collapse
-    steps.push(() => { tuck('display'); tuck('level'); });
+    // 5 · Display moves into View ▾, before Time and Search collapse
+    steps.push(() => tuck('display'));
     preTime = steps.length;
     // 6 · Detailed: the Time picks become Monthly ▾ · ‹ › · Today; Full screen moves into View ▾ (single line)
     if (!single()) steps.push(() => fold('time'));
@@ -257,7 +270,7 @@ window.R = (function () {
     // 9 · Detailed: labels give way to icons, right to left
     if (!single()) steps.push(() => { for (let i = gs.length - 1; i >= 0 && over(); i--) if (!gs[i].classList.contains('hidden') && +gs[i].dataset.n > 1 && !single()) setS(gs[i], +gs[i].dataset.n - 1); });
     // 10 · last: sections move into Others, right to left
-    (single() ? ['file', 'column', 'sort', 'group', 'time'] : ['file', 'column', 'group', 'sort', 'time']).forEach((n) => steps.push(() => tuck(n)));
+    (single() ? ['fitTl', 'file', 'column', 'sort', 'group', 'time'] : ['fitTl', 'file', 'column', 'group', 'sort', 'time']).forEach((n) => steps.push(() => tuck(n)));
     let from = 0;
     // 1350px and smaller: everything that folds before Time stays folded (nothing comes back on a smaller screen),
     // Search is the icon and Time is one drop-down (Monthly ▾)
@@ -367,7 +380,7 @@ window.R = (function () {
     active: () => toggleActive(),
     zoomOut: () => zoom(-10),
     zoomIn: () => zoom(10),
-    fit: () => { V().zoom = 100; changed(); },
+    fitTl: () => doFit(),
     full: () => toggleView('fullscreen'),
     compact: () => toggleRibbon(),
     setDefault: () => setDefault(),
@@ -381,7 +394,7 @@ window.R = (function () {
   const go = (to) => { const v = V(); if (to === v.anchor) return; G.slideFrom(v.anchor); v.anchor = to; changed(); };
   const goToday = () => { const v = V(); if (v.period === 'project') G.scrollToToday(); else go(T.align(v.period, LIM_DATA.TODAY)); };
   const setPeriod = (k) => { const v = V(), sc = G.scale(); const keep = sc && LIM_DATA.TODAY >= sc.start && LIM_DATA.TODAY < sc.end ? LIM_DATA.TODAY : v.anchor; v.period = k; v.anchor = T.align(k, keep); v.zoom = 100; changed(); };
-  const zoom = (d) => { const v = V(); v.zoom = Math.max(50, Math.min(ZOOM_MAX, v.zoom + d)); changed(); };
+  const zoom = (d) => { const v = V(); if (d > 0 && v.zoom >= ZOOM_MAX) return; v.zoom = Math.max(50, d > 0 ? Math.min(ZOOM_MAX, v.zoom + d) : v.zoom + d); changed(); };
   const toggleActive = () => { V().activeToday = !V().activeToday; changed(); };
   const toggleRibbon = () => { S.prefs.ribbonMode = single() ? 'detailed' : 'single'; S.savePrefs(); searchPop = false; changed(); };
   const setLevel = (n) => { const v = V(), max = S.maxDepth(); n = Math.max(0, Math.min(max, isNaN(n) ? v.level : n)); G.applyLevel(n); changed(); };
@@ -444,7 +457,8 @@ window.R = (function () {
   const displayBlock = () => {
     const v = V();
     return `<div class="sl-blk"><div class="rb-lr sl-lr"><span class="ovl">Display</span></div>
-      <div class="sl-dcol">${tucked.includes('zoom') ? `<div class="sl-zrow"><div class="rb-zc"><button class="rb-ib" data-pa="zOut" ${v.zoom <= 50 ? 'disabled' : ''}>${ms('zoom_out', 's20')}</button><button class="rb-ib" data-pa="zFit" data-tip="Fit · Back to the default zoom">${ms('aspect_ratio', 's20')}</button><button class="rb-ib" data-pa="zIn" ${v.zoom >= ZOOM_MAX ? 'disabled' : ''}>${ms('zoom_in', 's20')}</button></div><span>Zoom ${v.zoom}%</span></div>` : ''}
+      <div class="sl-dcol">${tucked.includes('zoom') ? `<div class="sl-zrow"><div class="rb-zc"><button class="rb-ib" data-pa="zOut" ${v.zoom <= 50 ? 'disabled' : ''}>${ms('zoom_out', 's20')}</button><button class="rb-ib" data-pa="zIn" ${v.zoom >= ZOOM_MAX ? 'disabled' : ''}>${ms('zoom_in', 's20')}</button></div><span>Zoom ${v.zoom}%</span></div>` : ''}
+      ${tucked.includes('fitTl') ? `<button class="sl-fitrow" data-pa="fitTl" data-tip="${fitTip()}" ${fitOk() ? '' : 'disabled'}>${ms('aspect_ratio', 's20')}<span>Fit timeline</span></button>` : ''}
       ${switchHtml(v.activeToday, 'dpActive', 'Active tasks')}
       ${switchHtml(single(), 'dpCompact', 'Compact')}</div></div>`;
   };
@@ -452,7 +466,7 @@ window.R = (function () {
   const bindBlocks = (pop, draw) => {
     const q = (s) => pop.querySelector(s);
     const act = { lvAll: () => (V().level >= S.maxDepth() ? G.collapseAll() : G.expandAll()), lvMinus: () => G.applyLevel(Math.max(0, V().level - 1)), lvPlus: () => G.applyLevel(Math.min(S.maxDepth(), V().level + 1)),
-      zOut: () => { V().zoom = Math.max(50, V().zoom - 10); }, zIn: () => { V().zoom = Math.min(ZOOM_MAX, V().zoom + 10); }, zFit: () => { V().zoom = 100; } };
+      zOut: () => { V().zoom = Math.max(50, V().zoom - 10); }, zIn: () => { if (V().zoom < ZOOM_MAX) V().zoom = Math.min(ZOOM_MAX, V().zoom + 10); }, fitTl: () => { if (fitOk()) G.fitTo(V().selected); } };
     pop.querySelectorAll('[data-pa]').forEach((b) => b.onclick = () => { act[b.dataset.pa](); G.render(); draw(); });
     if (q('#dpActive')) q('#dpActive').onclick = () => { V().activeToday = !V().activeToday; G.render(); draw(); };
     if (q('#dpFull')) q('#dpFull').onclick = () => { const v = V(); v.fullscreen = !v.fullscreen; $('app').classList.toggle('fullscreen', v.fullscreen); G.render(); draw(); };
@@ -473,13 +487,13 @@ window.R = (function () {
   function viewPop(a) {
     const pop = UI.float(a, '<div class="sl-pop sl-vpop" id="vwPop"></div>', { cls: 'popover', onClose: () => render() }); if (!pop) return;
     const draw = () => {
-      const v = V(), moved = tucked.includes('display');
+      const v = V();
       pop.querySelector('#vwPop').innerHTML = `<div class="sl-blk"><div class="rb-lr sl-lr"><span class="ovl">View modes</span></div>
         <div class="sl-vcol">${check('vDeps', v.showDeps, 'Dependencies')}${!single() || tucked.includes('full') ? check('vFull', v.fullscreen, 'Full screen') : ''}</div>
         <i class="sl-hline"></i>
         <div class="sl-vcol sl-vcol2">${check('vProg', v.showProgress, 'Progress %')}
           <div class="rx-basis">${picks('basis', [['time', 'Time'], ['work', 'Work']], v.progressBasis, 2, (k) => tp(k === 'time' ? 'Progress by time' : 'Progress by work', ''), !v.showProgress)}</div></div></div>
-        ${moved ? `${levelBlock()}${displayBlock()}` : ''}`;
+        ${tucked.includes('level') ? levelBlock() : ''}${tucked.includes('display') ? displayBlock() : ''}`;
       const t = (k) => () => { const vv = V(); if (k === 'fullscreen') { vv.fullscreen = !vv.fullscreen; $('app').classList.toggle('fullscreen', vv.fullscreen); } else vv[k] = !vv[k]; G.render(); draw(); };
       pop.querySelector('#vDeps').onclick = t('showDeps');
       if (pop.querySelector('#vFull')) pop.querySelector('#vFull').onclick = t('fullscreen');
@@ -550,5 +564,5 @@ window.R = (function () {
       ${LEGENDS.map(([c, t]) => `<div class="lg-i"><i style="background:${c}"></i>${t}</div>`).join('')}</div>`, { cls: 'popover lg-pop', align: 'right' });
   }
 
-  return { render };
+  return { render, syncFit };
 })();

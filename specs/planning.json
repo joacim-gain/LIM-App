@@ -30,6 +30,7 @@
       "level",
       "view",
       "zoom",
+      "fitTimeline",
       "file",
       "display",
       "defaults",
@@ -88,7 +89,10 @@
       "min": 50,
       "max": 200,
       "step": 10,
-      "fit": 100
+      "buttons": [
+        "out",
+        "in"
+      ]
     },
     "setDefaultSaves": [
       "time",
@@ -98,7 +102,7 @@
       "level"
     ],
     "iconColor": "#54545D",
-    "version": 4,
+    "version": 6,
     "modes": {
       "detailed": {
         "height": 64,
@@ -113,13 +117,13 @@
     "steps": [
       "detailed: group picks fold / single: names beside icons drop (right to left)",
       "Others takes updated, refresh, legend, defaults",
-      "Display dropdown forms (active tasks, zoom, compact)",
-      "view modes fold into View",
+      "view modes fold + level moves into View (before zoom and fit timeline)",
+      "Display dropdown forms (active tasks, zoom, compact); fit timeline stays",
       "detailed: sort picks fold (~1440px)",
-      "level + display move into View together",
+      "display moves into View",
       "<=1350px: search button + time one dropdown (earlier steps forced)",
       "labels to icons, right to left",
-      "sections move into Others, right to left"
+      "fit timeline moves into View, then sections move into Others, right to left"
     ],
     "narrowBreakpoint": 1350,
     "viewMenuOrder": [
@@ -144,6 +148,12 @@
       "case": "upper",
       "weight": 400,
       "color": "#54545D"
+    },
+    "fitTimeline": {
+      "icon": "aspect_ratio",
+      "enabledWhen": "an activity is selected",
+      "action": "show the selected activity start to end: smallest period (weekly, monthly, quarterly, yearly) that holds it, else project duration; zoom to ~90% width, up to 800%",
+      "collapse": "stays on the ribbon until last; then a row under Zoom in View"
     }
   },
   "gantt": {

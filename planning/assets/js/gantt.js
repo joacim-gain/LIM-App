@@ -177,6 +177,7 @@ window.G = (function () {
     if (prevScroll) { scroller.scrollLeft = prevScroll.l; scroller.scrollTop = prevScroll.t; }
     if ((!prevScroll || toToday) && todayX !== null) scroller.scrollLeft = Math.max(0, todayX - (el.clientWidth - LW) / 2);
     toToday = false;
+    if (fitTarget) { const t = fitTarget; fitTarget = null; const vis = el.clientWidth - LW - 17; const x1 = sc.x(t.start), x2 = sc.x(T.add(t.end, 1)); scroller.scrollLeft = Math.max(0, x1 - Math.max(0, (vis - (x2 - x1)) / 2)); }
     // slide the timeline from where the old window was, so the user sees which way it moved
     if (slideFrom) {
       const dx = Math.max(-W, Math.min(W, -sc.x(slideFrom)));
@@ -184,6 +185,7 @@ window.G = (function () {
       if (Math.abs(dx) >= 1) { el.style.setProperty('--slide', `${dx}px`); el.classList.remove('sliding'); void el.offsetWidth; el.classList.add('sliding'); clearTimeout(slideT); slideT = setTimeout(() => el.classList.remove('sliding'), 320); }
     }
     bind(el);
+    if (window.R && R.syncFit) R.syncFit();
   }
 
   function depPaths(list, RH) {
@@ -343,9 +345,31 @@ window.G = (function () {
     return lines.join('\n');
   }
 
-  let slideFrom = null, slideT = null, toToday = false;
+  let slideFrom = null, slideT = null, toToday = false, fitTarget = null;
+  /* Fit timeline · shows the selected activity from start to end, whatever its length:
+     the smallest time period that holds it (Weekly › Monthly › Quarterly › Yearly, starting just before the activity),
+     otherwise Project Duration; then the zoom that makes it fill ~90 % of the visible timeline, centred.
+     Fit may zoom past the 200 % of the + button (up to 800 %) so long activities really fill the view. */
+  const FIT_MAX = 800;
+  function fitTo(id) {
+    const a = S.byId(id); if (!a) return false;
+    const v = V(), el = host(), LW = leftW(), vis = Math.max(200, el.clientWidth - LW - 17);
+    const end = T.add(a.end, 1), dur = T.diff(a.start, end), pad = Math.max(1, Math.round(dur * 0.05));
+    const from = T.add(a.start, -pad);
+    const anchorFor = (p) => (p === 'weekly' || p === 'monthly' ? from : T.align('monthly', from));
+    let period = 'project', anchor = T.align('project', a.start);
+    for (const p of ['weekly', 'monthly', 'quarterly', 'yearly']) { const an = anchorFor(p); if (T.scale(p, an, range(), 10).end >= end) { period = p; anchor = an; break; } }
+    const u0 = T.scale(period, anchor, range(), 10).units.length;
+    const col100 = Math.max(period === 'monthly' ? 24 : 40, Math.floor(vis / u0));
+    const sc100 = T.scale(period, anchor, range(), col100);
+    const w100 = Math.max(1, sc100.x(end) - sc100.x(a.start));
+    const zoom = Math.max(50, Math.min(FIT_MAX, Math.floor((vis * 0.9 / w100) * 10) * 10));
+    slideFrom = null;
+    v.period = period; v.anchor = anchor; v.zoom = zoom; fitTarget = { start: a.start, end: a.end };
+    return true;
+  }
   const slideFromFn = (iso) => { slideFrom = iso; };
   const scrollToToday = () => { toToday = true; render(); };
 
-  return { COLS, GROUPS, render, slideFrom: slideFromFn, scrollToToday, applyLevel, expandAll, collapseAll, counts, toCSV, pct, scale: () => sc };
+  return { COLS, GROUPS, render, fitTo, slideFrom: slideFromFn, scrollToToday, applyLevel, expandAll, collapseAll, counts, toCSV, pct, scale: () => sc };
 })();

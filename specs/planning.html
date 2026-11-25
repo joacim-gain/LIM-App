@@ -38,8 +38,8 @@
       <table>
         <thead><tr><th>Ribbon</th><th>Row</th><th>Tools</th></tr></thead>
         <tbody>
-          <tr><td>Detailed (default)</td><td>64 px · icon tiles with the label underneath (24 px icon row + 16 px label row, all labels on one line)</td><td>Search · Time · Sort · Group · Column · Level · View · Zoom · File · Display (Active tasks, Compact) · Set default · Legends · Refresh · Updated · Others ▾</td></tr>
-          <tr><td>Single line (Compact on)</td><td>48 px · 32 px icons with ▾, 16 px line dividers; on wide screens the name sits beside the icon (Group, Sort, Column, Level, View, File)</td><td>Search · Monthly ▾ ‹ › TODAY · Group · Sort · Column · Level · View · Full screen · Zoom · File · Active tasks · Compact · Set default · Legends · Refresh · Updated · Others ▾</td></tr>
+          <tr><td>Detailed (default)</td><td>64 px · icon tiles with the label underneath (24 px icon row + 16 px label row, all labels on one line)</td><td>Search · Time · Sort · Group · Column · Level · View · Zoom · Fit timeline · File · Display (Active tasks, Compact) · Set default · Legends · Refresh · Updated · Others ▾</td></tr>
+          <tr><td>Single line (Compact on)</td><td>48 px · 32 px icons with ▾, 16 px line dividers; on wide screens the name sits beside the icon (Group, Sort, Column, Level, View, File)</td><td>Search · Monthly ▾ ‹ › TODAY · Group · Sort · Column · Level · View · Full screen · Zoom · Fit timeline · File · Active tasks · Compact · Set default · Legends · Refresh · Updated · Others ▾</td></tr>
         </tbody>
       </table>
     </div>
@@ -54,9 +54,10 @@
           <tr><td>Column</td><td>Column ▾ with checkboxes on the left</td><td>Visible Gantt columns</td></tr>
           <tr><td>Level</td><td>− / input / + box (stroke only; white on hover / in use) + Expand all · Collapse all</td><td>0 to the deepest level</td></tr>
           <tr><td>View</td><td>View modes inline (Dependencies, Full screen | Progress % with Time / Work chips), then View ▾ (View modes &gt; Level &gt; Display)</td><td>Dependencies, Full screen, Progress % (Time / Work)</td></tr>
-          <tr><td>Zoom</td><td>− [fit icon] + with “Zoom 100%”</td><td>50–200 % in 10 % steps; the fit icon (aspect_ratio) goes back to 100 %</td></tr>
+          <tr><td>Zoom</td><td>− + with “Zoom 100%” (no reset)</td><td>50–200 % in 10 % steps</td></tr>
+          <tr><td>Fit timeline</td><td>Tile beside Zoom (aspect_ratio icon, label “Fit timeline”; single line: icon only). Disabled until an activity is selected</td><td>Shows the selected activity from start to end: the smallest period (Weekly, Monthly, Quarterly, Yearly) that holds it, starting just before it, otherwise Project Duration; zoom fills ≈90 % of the timeline (may go past 200 %, up to 800 %)</td></tr>
           <tr><td>File</td><td>File ▾: Import, Download CSV</td><td>Import opens the file picker</td></tr>
-          <tr><td>Display</td><td>Active tasks | Compact inline; then Display ▾ (tune icon) holding Zoom, Active tasks, Compact</td><td>Compact switches to the Single line ribbon</td></tr>
+          <tr><td>Display</td><td>Active tasks | Compact inline; then Display ▾ (tune icon) holding Zoom (− +), Active tasks, Compact</td><td>Compact switches to the Single line ribbon</td></tr>
           <tr><td>Set default · Legends · Refresh · Updated</td><td>Tiles on wide screens; then in Others ▾</td><td>Others ▾ order: Set default, Refresh, Last updated, Legends (shown directly); separators inset 16 px</td></tr>
         </tbody>
       </table>
@@ -74,12 +75,12 @@
     <div class="flow">
       <div class="step"><span class="n">1</span><b>Group chips → Group ▾</b><span>Detailed. Single line: the names beside the icons go first, right to left.</span></div>
       <div class="step"><span class="n">2</span><b>Others ▾</b><span>Takes Updated, Refresh, Legends, then Set default.</span></div>
-      <div class="step"><span class="n">3</span><b>Display ▾</b><span>Active tasks, Zoom, Compact.</span></div>
-      <div class="step"><span class="n">4</span><b>View ▾</b><span>The view modes fold in.</span></div>
+      <div class="step"><span class="n">3</span><b>View modes + Level → View ▾</b><span>Level goes before Zoom and Fit timeline.</span></div>
+      <div class="step"><span class="n">4</span><b>Display ▾</b><span>Zoom moves in with Active tasks and Compact. Fit timeline stays on the ribbon.</span></div>
       <div class="step"><span class="n">5</span><b>Sort chips → Sort ▾</b><span>Detailed, below ≈1440 px.</span></div>
-      <div class="step"><span class="n">6</span><b>Level + Display → View ▾</b><span>Together, before Time and Search collapse.</span></div>
+      <div class="step"><span class="n">6</span><b>Display → View ▾</b><span>Before Time and Search collapse.</span></div>
       <div class="step"><span class="n">7</span><b>≤1350 px</b><span>Search becomes a button; Time becomes one Monthly ▾ (steps 1–6 forced).</span></div>
-      <div class="step"><span class="n">8</span><b>Labels → icons</b><span>Right to left; last, sections move into Others ▾.</span></div>
+      <div class="step"><span class="n">8</span><b>Labels → icons</b><span>Right to left; last, sections move away: Fit timeline first (into View ▾, under Zoom), then the rest into Others ▾.</span></div>
     </div>
     <ul class="plain">
       <li><strong>Search box</strong> is a fixed 320 px; it never stretches.</li>
@@ -182,6 +183,7 @@
   <section id="log" aria-labelledby="log-h">
     <h2 id="log-h">Changes</h2>
     <ul class="log">
+      <li><time>26 Nov 2026</time><code>v6</code><span>Zoom is − + only; new Fit timeline tile beside Zoom (works on the selected activity); Level moves into View ▾ before Zoom; Fit timeline leaves the ribbon last</span></li>
       <li><time>23 Nov 2026</time><code>v5d</code><span>Zoom: the “Fit” text is now a fit icon (aspect_ratio, 20 px in a 32 px button); 2 px between zoom buttons as in Figma</span></li>
       <li><time>22 Nov 2026</time><code>v5</code><span>Figma update: divider after Search always, Period / Sort by / Group by titles, chip layout, View and Display dividers, one even gap per width, View / Display / Others pop-ups to the pixel</span></li>
       <li><time>17 Nov 2026</time><code>v4</code><span>Ribbon v4: Detailed + Single line (Compact), groups Others / Display / View, fixed 320 px search with chips and pop-up, Time ▾ with ‹ Today ›, collapse at 1350 px, one header style</span></li>
